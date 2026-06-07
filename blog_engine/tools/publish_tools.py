@@ -4,35 +4,83 @@ blog_engine/tools/publish_tools.py
 MCP tools for publishing and thread management.
 """
 
+import os
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 from blog_engine.core.inventory import InventoryManager
+from blog_engine.core.draft_manager import DraftManager
+from blog_engine.core.publisher import Publisher
+from blog_engine.api.wordpress import WordPressHandler
+from blog_engine.api.devto import DevToHandler
 
 logger = get_logger(__name__)
 
 
+def _get_publisher() -> Publisher:
+    """
+    Factory function to instantiate Publisher with all dependencies.
+    Reads credentials from environment variables.
+    Raises EnvironmentError if any required credential is missing.
+    """
+    wp_url = os.getenv("WORDPRESS_URL")
+    wp_user = os.getenv("WORDPRESS_USER")
+    wp_app_password = os.getenv("WORDPRESS_APP_PASSWORD")
+    devto_api_key = os.getenv("DEVTO_API_KEY")
+    
+    missing = []
+    if not wp_url:
+        missing.append("WORDPRESS_URL")
+    if not wp_user:
+        missing.append("WORDPRESS_USER")
+    if not wp_app_password:
+        missing.append("WORDPRESS_APP_PASSWORD")
+    if not devto_api_key:
+        missing.append("DEVTO_API_KEY")
+    
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
+    
+    db = DBManager()
+    draft_manager = DraftManager(db)
+    inventory = InventoryManager()
+    wp_handler = WordPressHandler(db, wp_url, wp_user, wp_app_password)
+    devto_handler = DevToHandler(db, devto_api_key)
+    
+    return Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
+
+
 async def publish_to_wordpress(post_id: str, publish: bool = False) -> dict:
     """
-    Publish a draft to WordPress.
-    STUB: Publishing tools implemented in Phase 6.
+    Publish approved draft to WordPress.
+    Draft must have status: approved. Calls approval gate.
+    publish=False creates WP draft. publish=True publishes immediately.
+    Returns: {post_id, wp_post_id, wp_url, status}
+    On error: {"error": str(e), "post_id": post_id}
     """
-    return {
-        "status": "not_implemented",
-        "message": "Publishing tools implemented in Phase 6",
-        "post_id": post_id
-    }
+    try:
+        publisher = _get_publisher()
+        return await publisher.publish_wordpress(post_id, publish=publish)
+    except Exception as e:
+        logger.error("publish_to_wordpress.error", post_id=post_id, error=str(e))
+        return {"error": str(e), "post_id": post_id}
 
 
 async def publish_to_devto(post_id: str, published: bool = False) -> dict:
     """
-    Publish a draft to Dev.to.
-    STUB: Publishing tools implemented in Phase 6.
+    Syndicate approved draft to Dev.to.
+    WordPress must be published first (wp_url required on draft).
+    canonical_url set automatically to wp_url.
+    Returns: {post_id, devto_id, devto_url, canonical_url}
+    On error: {"error": str(e), "post_id": post_id}
     """
-    return {
-        "status": "not_implemented",
-        "message": "Publishing tools implemented in Phase 6",
-        "post_id": post_id
-    }
+    try:
+        publisher = _get_publisher()
+        return await publisher.publish_devto(post_id, published=published)
+    except Exception as e:
+        logger.error("publish_to_devto.error", post_id=post_id, error=str(e))
+        return {"error": str(e), "post_id": post_id}
 
 
 async def get_publish_status(post_id: str) -> dict:

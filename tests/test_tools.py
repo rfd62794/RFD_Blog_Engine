@@ -198,21 +198,37 @@ def test_add_to_thread_creates_thread(db):
     assert result["thread"] == "test-thread"
 
 
-def test_publish_to_wordpress_stub():
-    """Test that publish_to_wordpress returns stub response."""
+def test_publish_to_wordpress_unapproved_returns_error():
+    """Test that publish_to_wordpress returns error for unapproved draft."""
     from blog_engine.tools.publish_tools import publish_to_wordpress
+    from unittest.mock import patch
     
-    result = asyncio.run(publish_to_wordpress(post_id="test-001"))
-    
-    assert result["status"] == "not_implemented"
-    assert "Phase 6" in result["message"]
+    with patch('blog_engine.tools.publish_tools._get_publisher') as MockPublisher:
+        mock_publisher = MagicMock()
+        mock_publisher.publish_wordpress = AsyncMock(
+            side_effect=ValueError("Draft must be approved before publishing")
+        )
+        MockPublisher.return_value = mock_publisher
+        
+        result = asyncio.run(publish_to_wordpress(post_id="test-001"))
+        
+        assert "error" in result
+        assert "approved" in result["error"]
 
 
-def test_publish_to_devto_stub():
-    """Test that publish_to_devto returns stub response."""
+def test_publish_to_devto_no_wp_url_returns_error():
+    """Test that publish_to_devto returns error when wp_url missing."""
     from blog_engine.tools.publish_tools import publish_to_devto
+    from unittest.mock import patch
     
-    result = asyncio.run(publish_to_devto(post_id="test-001"))
-    
-    assert result["status"] == "not_implemented"
-    assert "Phase 6" in result["message"]
+    with patch('blog_engine.tools.publish_tools._get_publisher') as MockPublisher:
+        mock_publisher = MagicMock()
+        mock_publisher.publish_devto = AsyncMock(
+            side_effect=ValueError("WordPress must be published before Dev.to")
+        )
+        MockPublisher.return_value = mock_publisher
+        
+        result = asyncio.run(publish_to_devto(post_id="test-001"))
+        
+        assert "error" in result
+        assert "WordPress" in result["error"]
