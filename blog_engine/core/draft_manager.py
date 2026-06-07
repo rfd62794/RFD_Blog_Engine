@@ -111,27 +111,30 @@ class DraftManager:
         self,
         post_id: str,
         content: str,
+        title: str = None,
         saved_by: str = "human"
     ) -> dict:
         """
-        Update draft content.
+        Update draft content and optionally title.
         Saves revision first, then writes new content.
         """
         draft = self.get_draft(post_id)
         if draft is None:
             raise ValueError(f"Draft not found for post_id: {post_id}")
-        
+
         # Save current content as revision first
         self.save_revision(post_id, draft["content"], saved_by)
-        
+
         # Update draft
         draft["content"] = content
+        if title is not None:
+            draft["title"] = title
         draft["updated_at"] = datetime.now(timezone.utc).isoformat()
         draft["revision_count"] += 1
-        
+
         draft_path = self.drafts_dir / f"{post_id}.json"
         self._atomic_write(draft_path, draft)
-        
+
         self.logger.info("draft_updated", post_id=post_id, saved_by=saved_by, revision_count=draft["revision_count"])
         return draft
 

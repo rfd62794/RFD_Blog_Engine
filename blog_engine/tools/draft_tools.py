@@ -106,15 +106,16 @@ async def create_draft(
         return {"error": str(e), "post_id": post_id}
 
 
-async def update_draft(post_id: str, content: str, saved_by: str = "human") -> dict:
+async def update_draft(post_id: str, content: str, title: str = None, saved_by: str = "human") -> dict:
     """
     Update an existing draft.
+    Optionally update title.
     Returns updated draft dict.
     """
     try:
         # Instantiate dependencies inside tool function
         draft_manager = _get_draft_manager()
-        draft_manager.update_draft(post_id, content, saved_by=saved_by)
+        draft_manager.update_draft(post_id, content, title=title, saved_by=saved_by)
         return draft_manager.get_draft(post_id)
     except Exception as e:
         logger.error("update_draft.error", post_id=post_id, error=str(e))
