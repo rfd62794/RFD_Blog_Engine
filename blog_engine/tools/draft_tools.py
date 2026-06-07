@@ -18,6 +18,36 @@ def _get_draft_manager():
     return DraftManager(db=db)
 
 
+async def register_post(
+    post_id: str,
+    title: str,
+    category: str,
+    notes: str,
+    tags: list,
+    scheduled_date: str = None
+) -> dict:
+    """
+    Register a new post in the inventory.
+    Creates data/inventory/{post_id}.yaml with status: pending.
+    Raises if post_id already exists.
+    Returns the new post dict.
+    scheduled_date: optional ISO 8601 string e.g. "2026-07-19T09:00:00"
+    """
+    try:
+        inventory = InventoryManager()
+        return inventory.add_post(
+            post_id=post_id,
+            title=title,
+            category=category,
+            notes=notes,
+            tags=tags,
+            scheduled_date=scheduled_date
+        )
+    except Exception as e:
+        logger.error("register_post.error", post_id=post_id, error=str(e))
+        return {"error": str(e), "post_id": post_id}
+
+
 async def list_inventory(status: str = "pending", thread: str = None) -> list:
     """
     List posts from inventory, optionally filtered by status or thread.
@@ -183,6 +213,7 @@ async def get_revision_history(post_id: str) -> list:
 
 def register_draft_tools(mcp):
     """Register draft management tools with FastMCP server."""
+    mcp.tool()(register_post)
     mcp.tool()(list_inventory)
     mcp.tool()(get_draft)
     mcp.tool()(create_draft)

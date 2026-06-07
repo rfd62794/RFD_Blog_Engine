@@ -84,11 +84,22 @@ async def publish_to_wordpress(post_id: str, publish: bool = False, scheduled_da
     Draft must have status: approved. Calls approval gate.
     publish=False creates WP draft. publish=True publishes immediately.
     scheduled_date="2026-06-14T09:00:00" schedules for future publish.
+    If scheduled_date not provided, falls back to scheduled_date from inventory YAML.
     scheduled_date overrides publish parameter when provided.
     Returns: {post_id, wp_post_id, wp_url, status}
     On error: {"error": str(e), "post_id": post_id}
     """
     try:
+        # Fallback: read scheduled_date from inventory if not explicitly passed
+        if scheduled_date is None:
+            try:
+                inventory = InventoryManager()
+                post = inventory.get_post(post_id)
+                if post:
+                    scheduled_date = post.get("scheduled_date")
+            except Exception:
+                pass  # Fallback gracefully — inventory lookup failure is non-fatal
+
         publisher = _get_publisher()
         return await publisher.publish_wordpress(post_id, publish=publish, scheduled_date=scheduled_date)
     except Exception as e:

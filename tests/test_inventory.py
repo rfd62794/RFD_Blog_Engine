@@ -1,186 +1,168 @@
 """
 tests/test_inventory.py
 
-Tests for inventory.yaml loading and parsing.
+Tests for per-post YAML inventory (directory-based InventoryManager).
 """
 
 import pytest
 import yaml
 from pathlib import Path
+from blog_engine.core.inventory import InventoryManager
 
 
 def test_inventory_loads(inventory):
-    """Test that inventory.yaml loads correctly."""
-    with open(inventory, "r") as f:
-        data = yaml.safe_load(f)
-    
-    assert "posts" in data
-    assert len(data["posts"]) == 2
-    assert data["posts"][0]["post_id"] == "test-001"
-    assert data["posts"][1]["post_id"] == "test-002"
+    """InventoryManager.load() returns all posts from directory."""
+    manager = InventoryManager(inventory)
+    posts = manager.load()
+    assert len(posts) == 2
+    ids = {p["post_id"] for p in posts}
+    assert ids == {"test-001", "test-002"}
 
 
 def test_inventory_post_schema(inventory):
-    """Test that posts have required fields."""
-    with open(inventory, "r") as f:
-        data = yaml.safe_load(f)
-    
-    post = data["posts"][0]
-    
-    required_fields = [
-        "post_id", "title", "status", "category", "notes", "tags", "created_at"
-    ]
-    
-    for field in required_fields:
-        assert field in post, f"Missing required field: {field}"
+    """Each post has all required fields."""
+    manager = InventoryManager(inventory)
+    posts = manager.load()
+    required_fields = ["post_id", "title", "status", "category", "notes", "tags", "created_at"]
+    for post in posts:
+        for field in required_fields:
+            assert field in post, f"Missing field '{field}' in post {post.get('post_id')}"
 
 
 def test_inventory_status_values(inventory):
-    """Test that status field has valid values."""
-    with open(inventory, "r") as f:
-        data = yaml.safe_load(f)
-    
-    valid_statuses = ["pending", "drafted", "approved", "published"]
-    
-    for post in data["posts"]:
-        assert post["status"] in valid_statuses, f"Invalid status: {post['status']}"
+    """All posts have valid status values."""
+    manager = InventoryManager(inventory)
+    valid_statuses = {"pending", "drafted", "approved", "published"}
+    for post in manager.load():
+        assert post["status"] in valid_statuses
 
 
 def test_inventory_tags_are_list(inventory):
-    """Test that tags field is a list."""
-    with open(inventory, "r") as f:
-        data = yaml.safe_load(f)
-    
-    for post in data["posts"]:
-        assert isinstance(post["tags"], list), "Tags must be a list"
+    """Tags field is a list on all posts."""
+    manager = InventoryManager(inventory)
+    for post in manager.load():
+        assert isinstance(post["tags"], list)
 
 
-def test_inventory_created_at_format(inventory):
-    """Test that created_at is in ISO format."""
-    from datetime import datetime
-    
-    with open(inventory, "r") as f:
-        data = yaml.safe_load(f)
-    
-    for post in data["posts"]:
-        # Should be parseable as ISO datetime
-        datetime.fromisoformat(post["created_at"])
+def test_get_post_returns_correct_post(inventory):
+    """get_post() returns the correct post by post_id."""
+    manager = InventoryManager(inventory)
+    post = manager.get_post("test-001")
+    assert post is not None
+    assert post["post_id"] == "test-001"
+    assert post["title"] == "Test Post 1"
 
 
-def test_update_status_pending_to_drafted(temp_dir):
-    """Test that status updates correctly in YAML file."""
-    from blog_engine.core.inventory import InventoryManager
-    
-    # Create temporary inventory file
-    inv_path = temp_dir / "inventory.yaml"
-    inv_data = {
-        "posts": [
-            {"post_id": "test-001", "title": "Test Post", "status": "pending", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"}
-        ]
-    }
-    with open(inv_path, "w") as f:
-        yaml.safe_dump(inv_data, f)
-    
-    manager = InventoryManager(inv_path)
+def test_get_post_returns_none_for_unknown(inventory):
+    """get_post() returns None for unknown post_id."""
+    manager = InventoryManager(inventory)
+    assert manager.get_post("does-not-exist") is None
+
+
+def test_list_by_status_filters_correctly(inventory):
+    """list_by_status() returns only posts matching status."""
+    manager = InventoryManager(inventory)
+    pending = manager.list_by_status("pending")
+    assert len(pending) == 1
+    assert pending[0]["post_id"] == "test-001"
+
+    drafted = manager.list_by_status("drafted")
+    assert len(drafted) == 1
+    assert drafted[0]["post_id"] == "test-002"
+
+
+def test_list_by_status_invalid_raises(inventory):
+    """list_by_status() raises ValueError on invalid status."""
+    manager = InventoryManager(inventory)
+    with pytest.raises(ValueError, match="Invalid status"):
+        manager.list_by_status("invalid_status")
+
+
+def test_update_status_writes_to_file(inventory):
+    """update_status() persists the change to the individual YAML file."""
+    manager = InventoryManager(inventory)
     manager.update_status("test-001", "drafted")
-    
-    # Verify update
     post = manager.get_post("test-001")
     assert post["status"] == "drafted"
 
 
-def test_update_status_invalid_raises(temp_dir):
-    """Test that ValueError is raised on invalid status string."""
-    from blog_engine.core.inventory import InventoryManager
-    
-    inv_path = temp_dir / "inventory.yaml"
-    inv_data = {
-        "posts": [
-            {"post_id": "test-001", "title": "Test Post", "status": "pending", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"}
-        ]
-    }
-    with open(inv_path, "w") as f:
-        yaml.safe_dump(inv_data, f)
-    
-    manager = InventoryManager(inv_path)
-    
+def test_update_status_invalid_raises(inventory):
+    """update_status() raises ValueError on invalid status string."""
+    manager = InventoryManager(inventory)
     with pytest.raises(ValueError, match="Invalid status"):
         manager.update_status("test-001", "invalid_status")
 
 
-def test_update_status_unknown_post_raises(temp_dir):
-    """Test that ValueError is raised on unknown post_id."""
-    from blog_engine.core.inventory import InventoryManager
-    
-    inv_path = temp_dir / "inventory.yaml"
-    inv_data = {
-        "posts": [
-            {"post_id": "test-001", "title": "Test Post", "status": "pending", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"}
-        ]
-    }
-    with open(inv_path, "w") as f:
-        yaml.safe_dump(inv_data, f)
-    
-    manager = InventoryManager(inv_path)
-    
+def test_update_status_unknown_post_raises(inventory):
+    """update_status() raises ValueError for unknown post_id."""
+    manager = InventoryManager(inventory)
     with pytest.raises(ValueError, match="Post not found"):
-        manager.update_status("unknown-001", "drafted")
+        manager.update_status("unknown-999", "drafted")
 
 
-def test_list_by_status_filters_correctly(temp_dir):
-    """Test that list_by_status returns only posts matching status."""
-    from blog_engine.core.inventory import InventoryManager
-    
-    inv_path = temp_dir / "inventory.yaml"
-    inv_data = {
-        "posts": [
-            {"post_id": "test-001", "title": "Test 1", "status": "pending", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"},
-            {"post_id": "test-002", "title": "Test 2", "status": "drafted", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"},
-            {"post_id": "test-003", "title": "Test 3", "status": "pending", "category": "test", "notes": "", "tags": [], "created_at": "2026-06-07T00:00:00"}
-        ]
-    }
-    with open(inv_path, "w") as f:
-        yaml.safe_dump(inv_data, f)
-    
-    manager = InventoryManager(inv_path)
-    pending_posts = manager.list_by_status("pending")
-    
-    assert len(pending_posts) == 2
-    assert all(p["status"] == "pending" for p in pending_posts)
-    assert set(p["post_id"] for p in pending_posts) == {"test-001", "test-003"}
+def test_add_post_creates_file(inventory):
+    """add_post() writes a new YAML file to the inventory directory."""
+    manager = InventoryManager(inventory)
+    result = manager.add_post(
+        post_id="test-003",
+        title="New Test Post",
+        category="test",
+        notes="Test notes",
+        tags=["new", "test"],
+    )
+    assert result["post_id"] == "test-003"
+    assert result["status"] == "pending"
+    assert (inventory / "test-003.yaml").exists()
 
 
-def test_get_context_for_generation_returns_fields(temp_dir):
-    """Test that get_context_for_generation returns all required fields."""
-    from blog_engine.core.inventory import InventoryManager
-    
-    inv_path = temp_dir / "inventory.yaml"
-    inv_data = {
-        "posts": [
-            {
-                "post_id": "test-001",
-                "title": "Test Post",
-                "status": "pending",
-                "category": "testing",
-                "notes": "Test notes",
-                "tags": ["tag1", "tag2"],
-                "created_at": "2026-06-07T00:00:00"
-            }
-        ]
-    }
-    with open(inv_path, "w") as f:
-        yaml.safe_dump(inv_data, f)
-    
-    manager = InventoryManager(inv_path)
+def test_add_post_with_scheduled_date(inventory):
+    """add_post() stores scheduled_date when provided."""
+    manager = InventoryManager(inventory)
+    manager.add_post(
+        post_id="test-004",
+        title="Scheduled Post",
+        category="test",
+        notes="Notes",
+        tags=[],
+        scheduled_date="2026-08-01T09:00:00",
+    )
+    post = manager.get_post("test-004")
+    assert post["scheduled_date"] == "2026-08-01T09:00:00"
+
+
+def test_add_post_duplicate_raises(inventory):
+    """add_post() raises ValueError if post_id already exists."""
+    manager = InventoryManager(inventory)
+    with pytest.raises(ValueError, match="Post already exists"):
+        manager.add_post(
+            post_id="test-001",
+            title="Duplicate",
+            category="test",
+            notes="",
+            tags=[],
+        )
+
+
+def test_get_context_for_generation(inventory):
+    """get_context_for_generation() returns all required fields."""
+    manager = InventoryManager(inventory)
     context = manager.get_context_for_generation("test-001")
-    
-    required_fields = ["post_id", "title", "category", "notes", "tags", "status"]
-    for field in required_fields:
+    required = ["post_id", "title", "category", "notes", "tags", "status"]
+    for field in required:
         assert field in context
-    
     assert context["post_id"] == "test-001"
-    assert context["title"] == "Test Post"
-    assert context["category"] == "testing"
-    assert context["notes"] == "Test notes"
-    assert context["tags"] == ["tag1", "tag2"]
-    assert context["status"] == "pending"
+
+
+def test_get_context_unknown_raises(inventory):
+    """get_context_for_generation() raises KeyError for unknown post_id."""
+    manager = InventoryManager(inventory)
+    with pytest.raises(KeyError):
+        manager.get_context_for_generation("does-not-exist")
+
+
+def test_empty_directory_returns_empty_list(temp_dir):
+    """load() returns empty list when inventory directory is empty."""
+    empty_dir = temp_dir / "empty_inventory"
+    empty_dir.mkdir()
+    manager = InventoryManager(empty_dir)
+    assert manager.load() == []

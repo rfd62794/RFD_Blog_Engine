@@ -49,37 +49,39 @@ def db(temp_dir):
 
 @pytest.fixture
 def inventory(temp_dir):
-    """Minimal inventory.yaml with test posts."""
+    """Temporary inventory directory with test posts (per-post YAML files)."""
     import yaml
-    
-    inventory_data = {
-        "posts": [
-            {
-                "post_id": "test-001",
-                "title": "Test Post 1",
-                "status": "pending",
-                "category": "test",
-                "notes": "Test notes for frame extraction",
-                "tags": ["test", "fixture"],
-                "created_at": "2026-06-07T11:00:00"
-            },
-            {
-                "post_id": "test-002",
-                "title": "Test Post 2",
-                "status": "drafted",
-                "category": "test",
-                "notes": "Another test post",
-                "tags": ["test"],
-                "created_at": "2026-06-07T11:00:00"
-            }
-        ]
-    }
-    
-    inventory_file = temp_dir / "inventory.yaml"
-    with open(inventory_file, "w") as f:
-        yaml.dump(inventory_data, f)
-    
-    return inventory_file
+
+    inventory_dir = temp_dir / "inventory"
+    inventory_dir.mkdir(parents=True, exist_ok=True)
+
+    posts = [
+        {
+            "post_id": "test-001",
+            "title": "Test Post 1",
+            "status": "pending",
+            "category": "test",
+            "notes": "Test notes for frame extraction",
+            "tags": ["test", "fixture"],
+            "created_at": "2026-06-07T11:00:00",
+        },
+        {
+            "post_id": "test-002",
+            "title": "Test Post 2",
+            "status": "drafted",
+            "category": "test",
+            "notes": "Another test post",
+            "tags": ["test"],
+            "created_at": "2026-06-07T11:00:00",
+        },
+    ]
+
+    for post in posts:
+        path = inventory_dir / f"{post['post_id']}.yaml"
+        with open(path, "w") as f:
+            yaml.safe_dump(post, f, sort_keys=False)
+
+    return inventory_dir
 
 
 @pytest.fixture
