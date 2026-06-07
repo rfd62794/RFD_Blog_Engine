@@ -12,6 +12,12 @@ from blog_engine.core.draft_manager import DraftManager
 logger = get_logger(__name__)
 
 
+def _get_draft_manager():
+    """Factory function to instantiate DraftManager with DBManager."""
+    db = DBManager()
+    return DraftManager(db=db)
+
+
 async def list_inventory(status: str = "pending", thread: str = None) -> list:
     """
     List posts from inventory, optionally filtered by status or thread.
@@ -59,7 +65,7 @@ async def get_draft(post_id: str) -> dict:
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft = draft_manager.get_draft(post_id)
         if draft:
             return draft
@@ -83,7 +89,7 @@ async def create_draft(
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft_manager.create_draft(
             post_id=post_id,
             title=title,
@@ -107,7 +113,7 @@ async def update_draft(post_id: str, content: str, saved_by: str = "human") -> d
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft_manager.update_draft(post_id, content, saved_by=saved_by)
         return draft_manager.get_draft(post_id)
     except Exception as e:
@@ -122,7 +128,7 @@ async def approve_draft(post_id: str, approved_by: str = "human") -> dict:
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft_manager.approve_draft(post_id, approved_by=approved_by)
         return draft_manager.get_draft(post_id)
     except Exception as e:
@@ -137,7 +143,7 @@ async def delete_draft(post_id: str) -> dict:
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft_manager.delete_draft(post_id)
         return {"deleted": True, "post_id": post_id}
     except Exception as e:
@@ -152,7 +158,7 @@ async def revert_revision(post_id: str, revision_number: int) -> dict:
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         draft_manager.revert_revision(post_id, revision_number)
         return draft_manager.get_draft(post_id)
     except Exception as e:
@@ -167,7 +173,7 @@ async def get_revision_history(post_id: str) -> list:
     """
     try:
         # Instantiate dependencies inside tool function
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         return draft_manager.get_revision_history(post_id)
     except Exception as e:
         logger.error("get_revision_history.error", post_id=post_id, error=str(e))

@@ -13,6 +13,12 @@ from blog_engine.core.draft_manager import DraftManager
 logger = get_logger(__name__)
 
 
+def _get_draft_manager():
+    """Factory function to instantiate DraftManager with DBManager."""
+    db = DBManager()
+    return DraftManager(db=db)
+
+
 async def generate_post(post_id: str, model: str = None, override_frame: bool = False) -> dict:
     """
     Generate a blog post draft using the internal model router.
@@ -24,7 +30,7 @@ async def generate_post(post_id: str, model: str = None, override_frame: bool = 
         # Instantiate dependencies inside tool function
         db = DBManager()
         inventory = InventoryManager()
-        draft_manager = DraftManager()
+        draft_manager = _get_draft_manager()
         generator = PostGenerator(db, inventory, draft_manager)
         
         result = await generator.generate(post_id, model=model, override_frame=override_frame)
