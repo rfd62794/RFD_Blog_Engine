@@ -1,0 +1,67 @@
+# Blog Post Inventory for rfd-blog-engine
+# Status: pending | drafted | approved | published
+# This file is owned by rfd-blog-engine. Status field is the only field this tool writes.
+
+posts:
+  - post_id: "dev-001"
+    title: "I built the same game for 20 years without knowing it"
+    status: "pending"
+    category: "developer-identity"
+    notes: |
+      The voiddrift realization. Every game I've made is the same loop.
+      Frame slots to extract: MOMENT (the realization), SURPRISE (it was always there),
+      STRUGGLE (why I didn't see it), LESSON (patterns are invisible to the creator),
+      NEXT (lean into the pattern instead of fighting it).
+    tags: ["identity", "voiddrift", "origin"]
+    created_at: "2026-06-07T11:00:00"
+
+  - post_id: "dev-002"
+    title: "Why I stopped optimizing for engagement"
+    status: "pending"
+    category: "content-strategy"
+    notes: |
+      The YouTube metrics trap. Views don't equal impact.
+      Frame slots: MOMENT (burnout from chasing views), SURPRISE (quality over quantity),
+      STRUGGLE (algorithm pressure), LESSON (make for one person, not everyone),
+      NEXT (ignore analytics, focus on craft).
+    tags: ["youtube", "strategy", "burnout"]
+    created_at: "2026-06-07T11:00:00"
+
+  - post_id: "dev-003"
+    title: "The PrivyBot architecture: why MCP matters"
+    status: "pending"
+    category: "technical"
+    notes: |
+      Model Context Protocol as the future of agent-tool integration.
+      Frame slots: MOMENT (MCP clicked), SURPRISE (it's not just another API),
+      STRUGGLE (building the tool layer), LESSON (tools are the interface, not the model),
+      NEXT (standardize tool contracts across all agents).
+    tags: ["mcp", "architecture", "privybot"]
+    created_at: "2026-06-07T11:00:00"
+
+  - post_id: "dev-004"
+    title: "Spec-Driven Development saved my project"
+    status: "pending"
+    category: "methodology"
+    notes: |
+      Writing the SDD before code. The floor metric discipline.
+      Frame slots: MOMENT (adr-001 decision), SURPRISE (spec prevents scope creep),
+      STRUGGLE (resistance to writing docs first), LESSON (spec is code, just declarative),
+      NEXT (SDD-first for all future projects).
+    tags: ["sdd", "methodology", "planning"]
+    created_at: "2026-06-07T11:00:00"
+
+  - post_id: "dev-005"
+    title: "Borrowing code vs. reinventing the wheel"
+    status: "pending"
+    category: "technical"
+    notes: |
+      The PrivyBot infra files copied to rfd-blog-engine.
+      Frame slots: MOMENT (copying base_api_handler), SURPRISE (divergence is intentional),
+      STRUGGLE (sync strategy question), LESSON (copy now, sync later if needed),
+      NEXT (document divergence, don't over-engineer sync).
+    tags: ["infrastructure", "code-reuse", "privybot"]
+    created_at: "2026-06-07T11:00:00"
+
+# TODO: Expand to 70 posts following this schema
+# Each post needs: post_id, title, status, category, notes (for frame extraction), tags, created_at
