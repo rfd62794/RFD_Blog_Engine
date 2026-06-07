@@ -63,12 +63,20 @@ class Publisher:
 
         # Call WordPress API
         wp_status = "publish" if publish else "draft"
+
+        # Only include tags if they are integer IDs (WordPress expects IDs, not strings)
+        tags = draft.get("tags", [])
+        if tags and all(isinstance(t, int) for t in tags):
+            tags_to_send = tags
+        else:
+            tags_to_send = []
+
         wp_result = await self.wp.create_post(
             post_id=post_id,
             title=draft["title"],
             content=draft["content"],
             excerpt=draft.get("excerpt", ""),
-            tags=draft.get("tags", []),
+            tags=tags_to_send,
             categories=draft.get("categories", []),
             status=wp_status,
             scheduled_date=scheduled_date
