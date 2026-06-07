@@ -6,6 +6,12 @@ Exposes all tools to Claude Desktop via stdio transport.
 """
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env before any tool imports so os.getenv() calls work
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
+
 # Suppress FastMCP startup banner to avoid polluting MCP JSON stream
 os.environ["FASTMCP_LOG_LEVEL"] = "ERROR"
 
