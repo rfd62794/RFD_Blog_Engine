@@ -38,7 +38,7 @@ PrivyBot can draft blog posts to Telegram. It cannot publish them. WordPress and
 | Base API handler | BaseAPIHandler | PrivyBot infra/base_api_handler.py |
 | Config | python-dotenv (.env) | Standard |
 | CLI | Click | OpenAgent pattern |
-| Testing | pytest + pytest-asyncio | Standard |
+| Testing | pytest (asyncio.run() pattern) | Standard |
 | Dependency mgmt | uv | Tower standard |
 | Logging | structlog (JSON structured) | New |
 
