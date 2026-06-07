@@ -13,6 +13,9 @@ import sys
 # Add blog_engine to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Register pytest-asyncio plugin
+pytest_plugins = ('pytest_asyncio',)
+
 
 @pytest.fixture
 def temp_dir():
