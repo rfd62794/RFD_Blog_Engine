@@ -1,0 +1,28 @@
+{
+  "post_id": "dev-002",
+  "title": "A side effect of a side effect",
+  "status": "approved",
+  "content": "In 2016 I uploaded a review of Hybrid Animals to YouTube. It got 353 views. Then I stopped.\n\nI was in phone sales. Still a bachelor. I liked the idea of being a content creator \u2014 it looks cool, it sounds cool \u2014 but I knew pretty quickly it wasn't really for me. Making videos was work, and the work wasn't interesting enough to justify itself. I wanted to play games. I didn't want to make content about playing games.\n\nSo I stopped.\n\n---\n\nTen years later I have a YouTube channel publishing daily Shorts across six different games. I didn't change my mind about content creation. I changed what content creation costs me.\n\nContentPipeline records the session, transcribes it with Whisper, identifies the moments worth keeping, generates the captions, assembles the video, and schedules the upload. I play games. The pipeline does the rest. The channel exists because I removed the friction, not because I developed a passion for it.\n\nThe clips are a side effect of playing games. The channel is a side effect of building a pipeline. Any revenue from it would be a side effect of a side effect.\n\n---\n\nThat framing used to feel like an admission of something. Like I wasn't taking it seriously enough. Now it feels like the honest version of what most creators won't say.\n\nMost YouTube advice is about optimizing for the channel. Titles, thumbnails, posting frequency, audience retention. I don't think about any of that. I think about whether the pipeline is producing good clips and whether the games are interesting. The channel takes care of itself.\n\nThe goal I'd actually care about is streaming \u2014 not because of the audience but because of the engineering challenge. Building a live pipeline, managing the session, making it work technically. That's the interesting problem. The viewers would be incidental.\n\nI'm not a content creator. I'm someone who plays games and built infrastructure. The YouTube channel is what the infrastructure produces.\n\nThere's a version of this where the channel grows, the clips find an audience, and the side effect generates real income alongside the consulting work, the games, and everything else running in parallel. That would be a quiet bonus. A small thread alongside many others.\n\nI'd rather be the developer who has a YouTube channel than the YouTuber who also codes.\n\nThe pipeline makes that possible. I just play games.",
+  "excerpt": "",
+  "tags": [
+    "youtube",
+    "pipeline",
+    "contentengine",
+    "automation",
+    "gamedev"
+  ],
+  "categories": [],
+  "tags_source": "manual",
+  "categories_source": "manual",
+  "created_at": "2026-06-07T17:38:28.744808+00:00",
+  "updated_at": "2026-06-07T17:38:32.522347+00:00",
+  "approved_at": "2026-06-07T17:38:32.522347+00:00",
+  "approved_by": "robert",
+  "wp_post_id": null,
+  "wp_url": null,
+  "devto_id": null,
+  "devto_url": null,
+  "published_at": null,
+  "revision_count": 0,
+  "generation_source": "external"
+}
