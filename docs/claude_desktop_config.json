@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rfd-blog-engine": {
+      "command": "C:\\Github\\RFD_Blog_Engine\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "blog_engine.server"],
+      "cwd": "C:\\Github\\RFD_Blog_Engine"
+    }
+  }
+}
