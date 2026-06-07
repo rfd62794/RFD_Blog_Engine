@@ -16,6 +16,33 @@ from blog_engine.api.devto import DevToHandler
 logger = get_logger(__name__)
 
 
+def _get_wp_handler() -> WordPressHandler:
+    """
+    Factory function to instantiate WordPressHandler for WordPress-only operations.
+    Reads credentials from environment variables.
+    Raises EnvironmentError if any required credential is missing.
+    """
+    wp_url = os.getenv("WORDPRESS_URL")
+    wp_user = os.getenv("WORDPRESS_USER")
+    wp_app_password = os.getenv("WORDPRESS_APP_PASSWORD")
+
+    missing = []
+    if not wp_url:
+        missing.append("WORDPRESS_URL")
+    if not wp_user:
+        missing.append("WORDPRESS_USER")
+    if not wp_app_password:
+        missing.append("WORDPRESS_APP_PASSWORD")
+
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
+
+    db = DBManager()
+    return WordPressHandler(db, wp_url, wp_user, wp_app_password)
+
+
 def _get_publisher() -> Publisher:
     """
     Factory function to instantiate Publisher with all dependencies.
@@ -174,14 +201,14 @@ async def add_to_thread(post_id: str, thread_name: str, sequence: int = None) ->
     try:
         # Instantiate dependencies inside tool function
         db = DBManager()
-        
+
         # Check if thread exists
         cursor = db.exec(
             "SELECT id FROM post_threads WHERE thread_name = ?",
             (thread_name,)
         )
         row = cursor.fetchone()
-        
+
         if row:
             thread_id = row[0]
         else:
@@ -192,7 +219,7 @@ async def add_to_thread(post_id: str, thread_name: str, sequence: int = None) ->
             )
             db.exec("COMMIT")
             thread_id = cursor.lastrowid
-        
+
         # Determine sequence
         if sequence is None:
             cursor = db.exec(
@@ -201,18 +228,114 @@ async def add_to_thread(post_id: str, thread_name: str, sequence: int = None) ->
             )
             row = cursor.fetchone()
             sequence = (row[0] or 0) + 1
-        
+
         # Add post to thread
         db.exec(
             "INSERT OR REPLACE INTO post_thread_members (post_id, thread_id, sequence) VALUES (?, ?, ?)",
             (post_id, thread_id, sequence)
         )
         db.exec("COMMIT")
-        
+
         return {"added": True, "post_id": post_id, "thread": thread_name, "sequence": sequence}
     except Exception as e:
         logger.error("add_to_thread.error", post_id=post_id, thread_name=thread_name, error=str(e))
         return {"error": str(e), "post_id": post_id}
+
+
+async def get_wordpress_posts(
+    status: str = "any",
+    per_page: int = 20,
+    search: str = None
+) -> list[dict]:
+    """
+    List posts on WordPress blog.
+    status: "publish" | "draft" | "any" (default: any)
+    per_page: max results (default: 20)
+    search: optional search term
+    Returns list of {id, title, status, link, date}
+    On error: [{"error": str(e)}]
+    """
+    try:
+        wp_handler = _get_wp_handler()
+        return await wp_handler.get_posts(status=status, per_page=per_page, search=search)
+    except Exception as e:
+        logger.error("get_wordpress_posts.error", error=str(e))
+        return [{"error": str(e)}]
+
+
+async def get_wordpress_post(wp_post_id: int) -> dict:
+    """
+    Fetch full content of a single WordPress post by ID.
+    Returns full post dict including rendered content.
+    On error: {"error": str(e)}
+    """
+    try:
+        wp_handler = _get_wp_handler()
+        return await wp_handler.get_post(wp_post_id)
+    except Exception as e:
+        logger.error("get_wordpress_post.error", wp_post_id=wp_post_id, error=str(e))
+        return {"error": str(e), "wp_post_id": wp_post_id}
+
+
+async def update_wordpress_post(
+    wp_post_id: int,
+    title: str = None,
+    content: str = None,
+    status: str = None,
+    tags: list = None,
+    categories: list = None
+) -> dict:
+    """
+    Update an existing WordPress post.
+    Only fields provided are updated — all parameters optional.
+    Returns {wp_post_id, wp_url, status}
+    On error: {"error": str(e)}
+    Requires explicit approval — do not call without Robert's confirmation.
+    """
+    try:
+        wp_handler = _get_wp_handler()
+
+        # Build update payload with only provided fields
+        fields = {}
+        if title is not None:
+            fields["title"] = title
+        if content is not None:
+            fields["content"] = content
+        if status is not None:
+            fields["status"] = status
+        if tags is not None:
+            fields["tags"] = tags
+        if categories is not None:
+            fields["categories"] = categories
+
+        # Use existing update_post method (needs post_id for logging)
+        # For WordPress-only updates, we don't have the internal post_id
+        # Call the handler's update_post directly with a placeholder
+        result = await wp_handler.update_post(
+            post_id=f"wp-{wp_post_id}",
+            wp_post_id=wp_post_id,
+            fields=fields
+        )
+
+        return {**result, "status": status or "unchanged"}
+    except Exception as e:
+        logger.error("update_wordpress_post.error", wp_post_id=wp_post_id, error=str(e))
+        return {"error": str(e), "wp_post_id": wp_post_id}
+
+
+async def get_wordpress_categories() -> list[dict]:
+    """
+    List all categories on the WordPress blog.
+    Returns list of {id, name, slug, count}
+    Use before publishing to assign correct category IDs.
+    On error: [{"error": str(e)}]
+    """
+    try:
+        wp_handler = _get_wp_handler()
+        return await wp_handler.get_categories()
+    except Exception as e:
+        logger.error("get_wordpress_categories.error", error=str(e))
+        return [{"error": str(e)}]
 
 
 def register_publish_tools(mcp):
@@ -223,3 +346,7 @@ def register_publish_tools(mcp):
     mcp.tool()(update_inventory_status)
     mcp.tool()(list_threads)
     mcp.tool()(add_to_thread)
+    mcp.tool()(get_wordpress_posts)
+    mcp.tool()(get_wordpress_post)
+    mcp.tool()(update_wordpress_post)
+    mcp.tool()(get_wordpress_categories)

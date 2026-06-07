@@ -263,11 +263,99 @@ def test_make_request_retry_on_500(db):
 def test_make_request_no_retry_on_401(db):
     """Test _make_request directly: no retry on 401."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
-    
+
     with patch('httpx.AsyncClient') as mock_client:
         mock_client.return_value.__aenter__.return_value.request.return_value = MagicMock(status_code=401)
-        
+
         with pytest.raises(BlogEngineHTTPError) as exc:
             asyncio.run(handler._make_request("GET", "https://example.com"))
-    
+
     assert exc.value.status_code == 401
+
+
+def test_wp_get_posts_returns_list(db):
+    """Mock GET → 200 list, returns parsed list."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"id": 1, "title": {"rendered": "Post 1"}, "status": "publish", "link": "https://example.com/post-1"},
+        {"id": 2, "title": {"rendered": "Post 2"}, "status": "draft", "link": "https://example.com/post-2"}
+    ]
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
+        result = asyncio.run(handler.get_posts())
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0]["id"] == 1
+    assert result[1]["id"] == 2
+
+
+def test_wp_get_posts_with_status_filter(db):
+    """status param passed as query param."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"id": 1, "title": {"rendered": "Post 1"}, "status": "publish", "link": "https://example.com/post-1"}
+    ]
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response) as mock_req:
+        result = asyncio.run(handler.get_posts(status="publish"))
+
+        assert mock_req.call_args[1]["params"]["status"] == "publish"
+    assert len(result) == 1
+
+
+def test_wp_get_posts_with_search(db):
+    """search param passed as query param."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"id": 1, "title": {"rendered": "Search Result"}, "status": "publish", "link": "https://example.com/post-1"}
+    ]
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response) as mock_req:
+        result = asyncio.run(handler.get_posts(search="test"))
+
+        assert mock_req.call_args[1]["params"]["search"] == "test"
+    assert len(result) == 1
+
+
+def test_wp_get_post_not_found(db):
+    """Mock GET → 404, raises immediately (no retry)."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
+        mock_req.side_effect = BlogEngineHTTPError(404, "Not Found")
+
+        with pytest.raises(BlogEngineHTTPError) as exc:
+            asyncio.run(handler.get_post(999))
+
+        assert exc.value.status_code == 404
+        assert mock_req.call_count == 1
+
+
+def test_wp_get_categories_returns_list(db):
+    """Mock GET → 200 list, returns parsed list."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"id": 1, "name": "Category 1", "slug": "category-1", "count": 5},
+        {"id": 2, "name": "Category 2", "slug": "category-2", "count": 3}
+    ]
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
+        result = asyncio.run(handler.get_categories())
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0]["id"] == 1
+    assert result[1]["id"] == 2

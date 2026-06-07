@@ -220,15 +220,93 @@ def test_publish_to_devto_no_wp_url_returns_error():
     """Test that publish_to_devto returns error when wp_url missing."""
     from blog_engine.tools.publish_tools import publish_to_devto
     from unittest.mock import patch
-    
+
     with patch('blog_engine.tools.publish_tools._get_publisher') as MockPublisher:
         mock_publisher = MagicMock()
         mock_publisher.publish_devto = AsyncMock(
             side_effect=ValueError("WordPress must be published before Dev.to")
         )
         MockPublisher.return_value = mock_publisher
-        
+
         result = asyncio.run(publish_to_devto(post_id="test-001"))
-        
+
         assert "error" in result
         assert "WordPress" in result["error"]
+
+
+def test_get_wordpress_posts_tool():
+    """Test that get_wordpress_posts returns list, mocked handler."""
+    from blog_engine.tools.publish_tools import get_wordpress_posts
+    from unittest.mock import patch
+
+    with patch('blog_engine.tools.publish_tools._get_wp_handler') as MockHandler:
+        mock_handler = MagicMock()
+        mock_handler.get_posts = AsyncMock(return_value=[
+            {"id": 1, "title": {"rendered": "Post 1"}, "status": "publish", "link": "https://example.com/post-1"}
+        ])
+        MockHandler.return_value = mock_handler
+
+        result = asyncio.run(get_wordpress_posts(status="publish"))
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]["id"] == 1
+
+
+def test_get_wordpress_post_tool():
+    """Test that get_wordpress_post returns dict for valid ID."""
+    from blog_engine.tools.publish_tools import get_wordpress_post
+    from unittest.mock import patch
+
+    with patch('blog_engine.tools.publish_tools._get_wp_handler') as MockHandler:
+        mock_handler = MagicMock()
+        mock_handler.get_post = AsyncMock(return_value={
+            "id": 42,
+            "title": {"rendered": "Test Post"},
+            "content": {"rendered": "Test content"}
+        })
+        MockHandler.return_value = mock_handler
+
+        result = asyncio.run(get_wordpress_post(wp_post_id=42))
+
+        assert result["id"] == 42
+        assert result["title"]["rendered"] == "Test Post"
+
+
+def test_update_wordpress_post_tool():
+    """Test that update_wordpress_post mock update returns correct fields."""
+    from blog_engine.tools.publish_tools import update_wordpress_post
+    from unittest.mock import patch
+
+    with patch('blog_engine.tools.publish_tools._get_wp_handler') as MockHandler:
+        mock_handler = MagicMock()
+        mock_handler.update_post = AsyncMock(return_value={
+            "wp_post_id": 42,
+            "wp_url": "https://example.com/post-42"
+        })
+        MockHandler.return_value = mock_handler
+
+        result = asyncio.run(update_wordpress_post(wp_post_id=42, title="Updated"))
+
+        assert result["wp_post_id"] == 42
+        assert result["wp_url"] == "https://example.com/post-42"
+
+
+def test_get_wordpress_categories_tool():
+    """Test that get_wordpress_categories returns list of category dicts."""
+    from blog_engine.tools.publish_tools import get_wordpress_categories
+    from unittest.mock import patch
+
+    with patch('blog_engine.tools.publish_tools._get_wp_handler') as MockHandler:
+        mock_handler = MagicMock()
+        mock_handler.get_categories = AsyncMock(return_value=[
+            {"id": 1, "name": "Category 1", "slug": "category-1", "count": 5}
+        ])
+        MockHandler.return_value = mock_handler
+
+        result = asyncio.run(get_wordpress_categories())
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]["id"] == 1
+        assert result[0]["name"] == "Category 1"

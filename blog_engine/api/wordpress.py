@@ -146,18 +146,75 @@ class WordPressHandler(BaseAPIHandler):
         Returns raw WP API response dict.
         """
         url = f"{self.base_url}/wp-json/wp/v2/posts/{wp_post_id}"
-        
+
         try:
             response = await self._make_request(
                 method="GET",
                 url=url,
                 auth=self.auth
             )
-            
+
             return response.json()
-        
+
         except BlogEngineHTTPError as e:
             self.logger.error("wp_post_get_failed", wp_post_id=wp_post_id, error=e.message)
+            raise
+
+    async def get_posts(
+        self,
+        status: str = "any",
+        per_page: int = 20,
+        page: int = 1,
+        search: str = None
+    ) -> list[dict]:
+        """
+        List WordPress posts.
+        status: "publish" | "draft" | "any"
+        Returns list of {id, title, status, link, date, modified, excerpt}
+        """
+        url = f"{self.base_url}/wp-json/wp/v2/posts"
+        params = {
+            "status": status,
+            "per_page": per_page,
+            "page": page
+        }
+        if search:
+            params["search"] = search
+
+        try:
+            response = await self._make_request(
+                method="GET",
+                url=url,
+                auth=self.auth,
+                params=params
+            )
+
+            return response.json()
+
+        except BlogEngineHTTPError as e:
+            self.logger.error("wp_posts_get_failed", error=e.message)
+            raise
+
+    async def get_categories(self) -> list[dict]:
+        """
+        List all WordPress categories.
+        Returns list of {id, name, slug, count}
+        """
+        url = f"{self.base_url}/wp-json/wp/v2/categories"
+        params = {"per_page": 100}
+
+        try:
+            response = await self._make_request(
+                method="GET",
+                url=url,
+                auth=self.auth,
+                params=params
+            )
+
+            return response.json()
+
+        except BlogEngineHTTPError as e:
+            self.logger.error("wp_categories_get_failed", error=e.message)
             raise
     
     def _check_idempotency(self, post_id: str, platform: str) -> dict | None:
