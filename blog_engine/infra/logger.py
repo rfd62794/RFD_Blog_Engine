@@ -44,9 +44,10 @@ def setup_logging(log_level: str = "INFO") -> None:
     )
     
     # Also configure standard logging for third-party libs
+    # Use stderr to avoid interfering with MCP JSON responses on stdout
     logging.basicConfig(
         format="%(message)s",
-        stream=sys.stdout,
+        stream=sys.stderr,
         level=getattr(logging, log_level.upper(), logging.INFO)
     )
 
