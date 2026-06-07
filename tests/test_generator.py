@@ -14,7 +14,7 @@ def test_generate_calls_model_router(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
+    from blog_engine.infra.model_router import route
     
     # Mock inventory
     inv_manager = MagicMock(spec=InventoryManager)
@@ -32,19 +32,19 @@ def test_generate_calls_model_router(db):
     draft_manager.create_draft.return_value = None
     
     # Mock model router
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = "Generated blog post content here."
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    result = asyncio.run(generator.generate("test-001"))
-    
-    # Verify model router was called
-    model_router.generate.assert_called_once()
-    call_args = model_router.generate.call_args
-    prompt = call_args[0][0]
-    assert len(prompt) > 0
-    assert "Test Post" in prompt
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "Generated blog post content here.", "model_used": "test", "provider": "test"}
+        
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        result = asyncio.run(generator.generate("test-001"))
+        
+        # Verify model router was called
+        mock_route.assert_called_once()
+        call_args = mock_route.call_args
+        prompt = call_args[0][1]
+        assert len(prompt) > 0
+        assert "Test Post" in prompt
 
 
 def test_generate_saves_draft(db):
@@ -52,7 +52,6 @@ def test_generate_saves_draft(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.return_value = {
@@ -67,20 +66,20 @@ def test_generate_saves_draft(db):
     draft_manager = MagicMock(spec=DraftManager)
     draft_manager.create_draft.return_value = None
     
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = "Generated blog post content here."
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    asyncio.run(generator.generate("test-001"))
-    
-    # Verify draft manager was called
-    draft_manager.create_draft.assert_called_once()
-    call_args = draft_manager.create_draft.call_args
-    assert call_args[1]["post_id"] == "test-001"
-    assert call_args[1]["title"] == "Test Post"
-    assert call_args[1]["content"] == "Generated blog post content here."
-    assert call_args[1]["generation_source"] == "internal"
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "Generated blog post content here.", "model_used": "test", "provider": "test"}
+        
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        asyncio.run(generator.generate("test-001"))
+        
+        # Verify draft manager was called
+        draft_manager.create_draft.assert_called_once()
+        call_args = draft_manager.create_draft.call_args
+        assert call_args[1]["post_id"] == "test-001"
+        assert call_args[1]["title"] == "Test Post"
+        assert call_args[1]["content"] == "Generated blog post content here."
+        assert call_args[1]["generation_source"] == "internal"
 
 
 def test_generate_draft_exists_raises(db):
@@ -88,7 +87,6 @@ def test_generate_draft_exists_raises(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.return_value = {
@@ -103,13 +101,13 @@ def test_generate_draft_exists_raises(db):
     draft_manager = MagicMock(spec=DraftManager)
     draft_manager.create_draft.side_effect = ValueError("Draft already exists")
     
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = "Generated content."
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    with pytest.raises(ValueError, match="Draft already exists"):
-        asyncio.run(generator.generate("test-001"))
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "Generated content.", "model_used": "test", "provider": "test"}
+        
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        with pytest.raises(ValueError, match="Draft already exists"):
+            asyncio.run(generator.generate("test-001"))
 
 
 def test_generate_empty_content_raises(db):
@@ -117,7 +115,6 @@ def test_generate_empty_content_raises(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.return_value = {
@@ -131,13 +128,13 @@ def test_generate_empty_content_raises(db):
     
     draft_manager = MagicMock(spec=DraftManager)
     
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = ""
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    with pytest.raises(RuntimeError, match="empty content"):
-        asyncio.run(generator.generate("test-001"))
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "", "model_used": "test", "provider": "test"}
+        
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        with pytest.raises(RuntimeError, match="empty content"):
+            asyncio.run(generator.generate("test-001"))
 
 
 def test_generate_uses_internal_source(db):
@@ -145,7 +142,6 @@ def test_generate_uses_internal_source(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.return_value = {
@@ -160,15 +156,15 @@ def test_generate_uses_internal_source(db):
     draft_manager = MagicMock(spec=DraftManager)
     draft_manager.create_draft.return_value = None
     
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = "Generated content."
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    asyncio.run(generator.generate("test-001"))
-    
-    call_args = draft_manager.create_draft.call_args
-    assert call_args[1]["generation_source"] == "internal"
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "Generated content.", "model_used": "test", "provider": "test"}
+        
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        asyncio.run(generator.generate("test-001"))
+        
+        call_args = draft_manager.create_draft.call_args
+        assert call_args[1]["generation_source"] == "internal"
 
 
 def test_generate_post_not_found_raises(db):
@@ -176,15 +172,13 @@ def test_generate_post_not_found_raises(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.side_effect = KeyError("Post not found")
     
     draft_manager = MagicMock(spec=DraftManager)
-    model_router = MagicMock(spec=ModelRouter)
     
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
+    generator = PostGenerator(db, inv_manager, draft_manager)
     
     with pytest.raises(FileNotFoundError, match="not found in inventory"):
         asyncio.run(generator.generate("test-001"))
@@ -195,13 +189,11 @@ def test_build_prompt_contains_title(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     draft_manager = MagicMock(spec=DraftManager)
-    model_router = MagicMock(spec=ModelRouter)
     
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
+    generator = PostGenerator(db, inv_manager, draft_manager)
     
     inventory_context = {
         "title": "Test Post Title",
@@ -220,13 +212,11 @@ def test_build_prompt_contains_notes(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     draft_manager = MagicMock(spec=DraftManager)
-    model_router = MagicMock(spec=ModelRouter)
     
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
+    generator = PostGenerator(db, inv_manager, draft_manager)
     
     inventory_context = {
         "title": "Test Post",
@@ -245,13 +235,11 @@ def test_build_prompt_with_frame_context(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     draft_manager = MagicMock(spec=DraftManager)
-    model_router = MagicMock(spec=ModelRouter)
     
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
+    generator = PostGenerator(db, inv_manager, draft_manager)
     
     inventory_context = {
         "title": "Test Post",
@@ -282,7 +270,6 @@ def test_generate_model_fallback_logged(db):
     from blog_engine.core.generator import PostGenerator
     from blog_engine.core.inventory import InventoryManager
     from blog_engine.core.draft_manager import DraftManager
-    from blog_engine.infra.model_router import ModelRouter
     
     inv_manager = MagicMock(spec=InventoryManager)
     inv_manager.get_context_for_generation.return_value = {
@@ -297,16 +284,16 @@ def test_generate_model_fallback_logged(db):
     draft_manager = MagicMock(spec=DraftManager)
     draft_manager.create_draft.return_value = None
     
-    model_router = MagicMock(spec=ModelRouter)
-    model_router.generate.return_value = "Generated content."
-    
-    generator = PostGenerator(db, inv_manager, draft_manager, model_router)
-    
-    # Mock logger to capture warning
-    with patch.object(generator.logger, 'warning') as mock_warning:
-        asyncio.run(generator.generate("test-001"))
+    with patch('blog_engine.core.generator.route') as mock_route:
+        mock_route.return_value = {"result": "Generated content.", "model_used": "test", "provider": "test"}
         
-        # Note: This test verifies the logging infrastructure is in place.
-        # Actual fallback behavior depends on ModelRouter implementation.
-        # If ModelRouter logs warnings during fallback, they would be captured here.
-        pass
+        generator = PostGenerator(db, inv_manager, draft_manager)
+        
+        # Mock logger to capture warning
+        with patch.object(generator.logger, 'warning') as mock_warning:
+            asyncio.run(generator.generate("test-001"))
+            
+            # Note: This test verifies the logging infrastructure is in place.
+            # Actual fallback behavior depends on route implementation.
+            # If route logs warnings during fallback, they would be captured here.
+            pass

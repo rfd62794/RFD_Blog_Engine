@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional
 import asyncio
 
-from blog_engine.infra.model_router import ModelRouter
+from blog_engine.infra.model_router import route
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 from blog_engine.core.inventory import InventoryManager
@@ -46,13 +46,11 @@ class PostGenerator:
         self,
         db: DBManager,
         inventory: InventoryManager,
-        draft_manager: DraftManager,
-        model_router: ModelRouter
+        draft_manager: DraftManager
     ):
         self.db = db
         self.inventory = inventory
         self.draft_manager = draft_manager
-        self.router = model_router
         self.logger = get_logger(__name__)
 
     async def generate(
@@ -90,7 +88,8 @@ class PostGenerator:
         
         # Route to model
         try:
-            response = self.router.generate(prompt, model=model)
+            result = route("generation", prompt)
+            response = result["result"]
         except Exception as e:
             self.logger.error("generation.failed", post_id=post_id, error=str(e))
             raise RuntimeError(f"Model generation failed: {e}")
@@ -174,19 +173,21 @@ Frame slots:
         Loads post_context from SQLite for post_id.
         Returns dict of frame slots or None if no context exists.
         """
-        row = self.db.fetchone(
+        cursor = self.db.exec(
             "SELECT frame_moment, frame_surprise, frame_struggle, frame_lesson, frame_next "
             "FROM post_context WHERE post_id = ?",
             (post_id,)
         )
         
+        row = cursor.fetchone()
+        
         if not row:
             return None
         
         return {
-            "frame_moment": row["frame_moment"] or "",
-            "frame_surprise": row["frame_surprise"] or "",
-            "frame_struggle": row["frame_struggle"] or "",
-            "frame_lesson": row["frame_lesson"] or "",
-            "frame_next": row["frame_next"] or ""
+            "frame_moment": row[0] or "",
+            "frame_surprise": row[1] or "",
+            "frame_struggle": row[2] or "",
+            "frame_lesson": row[3] or "",
+            "frame_next": row[4] or ""
         }

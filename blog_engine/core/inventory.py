@@ -55,7 +55,10 @@ class InventoryManager:
         if status not in VALID_STATUSES:
             raise ValueError(f"Invalid status: {status}. Must be one of {VALID_STATUSES}")
         
-        data = self.load()
+        # Load full YAML structure
+        with open(self.inventory_path, "r") as f:
+            data = yaml.safe_load(f)
+        
         posts = data.get("posts", [])
         
         post_found = False
