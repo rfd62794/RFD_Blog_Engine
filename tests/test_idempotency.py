@@ -5,14 +5,14 @@ Tests for idempotency behavior across both handlers.
 """
 
 import pytest
+import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
 from blog_engine.api.wordpress import WordPressHandler
 from blog_engine.api.devto import DevToHandler
 from blog_engine.infra.base_api_handler import BlogEngineHTTPError
 
 
-@pytest.mark.asyncio
-async def test_wp_idempotency_no_duplicate_log(db):
+def test_wp_idempotency_no_duplicate_log(db):
     """Two create_post calls → only one publish_log success row (ON CONFLICT IGNORE)."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -25,18 +25,18 @@ async def test_wp_idempotency_no_duplicate_log(db):
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
         # First call
-        await handler.create_post(
+        asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
         
         # Second call (should hit idempotency)
-        await handler.create_post(
+        asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
     
     # Check only one success row exists
     rows = db.exec(
@@ -47,8 +47,7 @@ async def test_wp_idempotency_no_duplicate_log(db):
     assert rows[0] == 1
 
 
-@pytest.mark.asyncio
-async def test_devto_idempotency_no_duplicate_log(db):
+def test_devto_idempotency_no_duplicate_log(db):
     """Two create_article calls → only one publish_log success row."""
     handler = DevToHandler(db, "test-api-key")
     
@@ -61,20 +60,20 @@ async def test_devto_idempotency_no_duplicate_log(db):
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
         # First call
-        await handler.create_article(
+        asyncio.run(handler.create_article(
             post_id="test-001",
             title="Test Post",
             body_markdown="Test content",
             canonical_url="https://blog.rfditservices.com/test-post"
-        )
+        ))
         
         # Second call (should hit idempotency)
-        await handler.create_article(
+        asyncio.run(handler.create_article(
             post_id="test-001",
             title="Test Post",
             body_markdown="Test content",
             canonical_url="https://blog.rfditservices.com/test-post"
-        )
+        ))
     
     # Check only one success row exists
     rows = db.exec(
@@ -85,8 +84,7 @@ async def test_devto_idempotency_no_duplicate_log(db):
     assert rows[0] == 1
 
 
-@pytest.mark.asyncio
-async def test_idempotency_failed_then_success(db):
+def test_idempotency_failed_then_success(db):
     """Failed log exists → retry succeeds → success row written, failed row preserved."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -109,11 +107,11 @@ async def test_idempotency_failed_then_success(db):
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
         # Retry should succeed
-        await handler.create_post(
+        asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
     
     # Check both rows exist
     failed_rows = db.exec(

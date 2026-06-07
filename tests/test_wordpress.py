@@ -5,13 +5,13 @@ Tests for WordPress API handler.
 """
 
 import pytest
+import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
 from blog_engine.api.wordpress import WordPressHandler
 from blog_engine.infra.base_api_handler import BlogEngineHTTPError
 
 
-@pytest.mark.asyncio
-async def test_wp_create_post_draft(db):
+def test_wp_create_post_draft(db):
     """Mock POST → 201, returns wp_post_id and wp_url, status=draft."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -23,20 +23,19 @@ async def test_wp_create_post_draft(db):
     }
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        result = await handler.create_post(
+        result = asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content",
             status="draft"
-        )
+        ))
     
     assert result["wp_post_id"] == 42
     assert result["wp_url"] == "https://example.com/post-42"
     assert result["status"] == "draft"
 
 
-@pytest.mark.asyncio
-async def test_wp_create_post_publish(db):
+def test_wp_create_post_publish(db):
     """Mock POST with status=publish → returns published status."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -48,32 +47,30 @@ async def test_wp_create_post_publish(db):
     }
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        result = await handler.create_post(
+        result = asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content",
             status="publish"
-        )
+        ))
     
     assert result["status"] == "publish"
 
 
-@pytest.mark.asyncio
-async def test_wp_invalid_status_raises(db):
+def test_wp_invalid_status_raises(db):
     """status="live" raises ValueError."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
     with pytest.raises(ValueError, match="Invalid status"):
-        await handler.create_post(
+        asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content",
             status="live"
-        )
+        ))
 
 
-@pytest.mark.asyncio
-async def test_wp_write_publish_log_on_success(db):
+def test_wp_write_publish_log_on_success(db):
     """publish_log row written with status=success after create."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -85,11 +82,11 @@ async def test_wp_write_publish_log_on_success(db):
     }
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        await handler.create_post(
+        asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
     
     # Check publish_log
     row = db.exec(
@@ -103,8 +100,7 @@ async def test_wp_write_publish_log_on_success(db):
     assert row[2] == "https://example.com/post-42"
 
 
-@pytest.mark.asyncio
-async def test_wp_write_publish_log_on_failure(db):
+def test_wp_write_publish_log_on_failure(db):
     """publish_log row written with status=failed after 4xx."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -112,11 +108,11 @@ async def test_wp_write_publish_log_on_failure(db):
         mock_req.side_effect = BlogEngineHTTPError(401, "Unauthorized")
         
         with pytest.raises(BlogEngineHTTPError):
-            await handler.create_post(
+            asyncio.run(handler.create_post(
                 post_id="test-001",
                 title="Test Post",
                 content="Test content"
-            )
+            ))
     
     # Check publish_log
     row = db.exec(
@@ -129,8 +125,7 @@ async def test_wp_write_publish_log_on_failure(db):
     assert "Unauthorized" in row[1]
 
 
-@pytest.mark.asyncio
-async def test_wp_retry_on_500(db):
+def test_wp_retry_on_500(db):
     """Mock 500 → 500 → 201, succeeds on third attempt."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -141,25 +136,29 @@ async def test_wp_retry_on_500(db):
         "link": "https://example.com/post-42"
     }
     
-    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
-        mock_req.side_effect = [
-            BlogEngineHTTPError(500, "Server Error"),
-            BlogEngineHTTPError(500, "Server Error"),
-            mock_response
-        ]
-        
-        result = await handler.create_post(
+    call_count = [0]
+    
+    async def mock_make_request(*args, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            raise BlogEngineHTTPError(500, "Server Error")
+        elif call_count[0] == 2:
+            raise BlogEngineHTTPError(500, "Server Error")
+        else:
+            return mock_response
+    
+    with patch.object(handler, '_make_request', side_effect=mock_make_request):
+        result = asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
     
     assert result["wp_post_id"] == 42
     assert mock_req.call_count == 3
 
 
-@pytest.mark.asyncio
-async def test_wp_no_retry_on_401(db):
+def test_wp_no_retry_on_401(db):
     """Mock 401, fails immediately, no retries."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -167,17 +166,16 @@ async def test_wp_no_retry_on_401(db):
         mock_req.side_effect = BlogEngineHTTPError(401, "Unauthorized")
         
         with pytest.raises(BlogEngineHTTPError):
-            await handler.create_post(
+            asyncio.run(handler.create_post(
                 post_id="test-001",
                 title="Test Post",
                 content="Test content"
-            )
+            ))
     
     assert mock_req.call_count == 1
 
 
-@pytest.mark.asyncio
-async def test_wp_idempotency_returns_existing(db):
+def test_wp_idempotency_returns_existing(db):
     """publish_log has success row → returns existing URL, no HTTP call."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -192,11 +190,11 @@ async def test_wp_idempotency_returns_existing(db):
     )
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
-        result = await handler.create_post(
+        result = asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
             content="Test content"
-        )
+        ))
     
     # Should not have called the API
     assert mock_req.call_count == 0
@@ -204,8 +202,7 @@ async def test_wp_idempotency_returns_existing(db):
     assert result["wp_url"] == "https://example.com/post-42"
 
 
-@pytest.mark.asyncio
-async def test_wp_update_post(db):
+def test_wp_update_post(db):
     """Mock PATCH → 200, returns updated wp_url."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -217,18 +214,17 @@ async def test_wp_update_post(db):
     }
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        result = await handler.update_post(
+        result = asyncio.run(handler.update_post(
             post_id="test-001",
             wp_post_id=42,
             fields={"title": "Updated Title"}
-        )
+        ))
     
     assert result["wp_post_id"] == 42
     assert result["wp_url"] == "https://example.com/post-42-updated"
 
 
-@pytest.mark.asyncio
-async def test_wp_get_post(db):
+def test_wp_get_post(db):
     """Mock GET → 200, returns raw response dict."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -241,14 +237,13 @@ async def test_wp_get_post(db):
     }
     
     with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        result = await handler.get_post(42)
+        result = asyncio.run(handler.get_post(42))
     
     assert result["id"] == 42
     assert result["title"]["rendered"] == "Test Post"
 
 
-@pytest.mark.asyncio
-async def test_make_request_retry_on_500(db):
+def test_make_request_retry_on_500(db):
     """Test _make_request directly: retry on 500."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -262,13 +257,12 @@ async def test_make_request_retry_on_500(db):
             mock_response
         ]
         
-        result = await handler._make_request("GET", "https://example.com")
+        result = asyncio.run(handler._make_request("GET", "https://example.com"))
     
     assert result.status_code == 200
 
 
-@pytest.mark.asyncio
-async def test_make_request_no_retry_on_401(db):
+def test_make_request_no_retry_on_401(db):
     """Test _make_request directly: no retry on 401."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
@@ -276,6 +270,6 @@ async def test_make_request_no_retry_on_401(db):
         mock_client.return_value.__aenter__.return_value.request.return_value = MagicMock(status_code=401)
         
         with pytest.raises(BlogEngineHTTPError) as exc:
-            await handler._make_request("GET", "https://example.com")
+            asyncio.run(handler._make_request("GET", "https://example.com"))
     
     assert exc.value.status_code == 401
