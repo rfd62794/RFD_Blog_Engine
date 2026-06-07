@@ -6,7 +6,7 @@ Tests for MCP tools.
 
 import pytest
 import asyncio
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 
 
 def test_server_creates_mcp_instance():

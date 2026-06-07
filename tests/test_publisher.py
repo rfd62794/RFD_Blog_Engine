@@ -9,6 +9,8 @@ import asyncio
 from pathlib import Path
 from unittest.mock import Mock, AsyncMock, patch
 import pytest
+import tempfile
+import shutil
 
 from blog_engine.core.publisher import Publisher
 from blog_engine.infra.db_manager import DBManager
@@ -19,18 +21,36 @@ from blog_engine.api.devto import DevToHandler
 
 
 @pytest.fixture
-def db():
-    """In-memory SQLite database."""
-    from blog_engine.infra.db_manager import DBManager
-    db = DBManager(":memory:")
-    db.init_schema()
-    return db
+def temp_dir():
+    """Temporary directory for test files."""
+    temp = Path(tempfile.mkdtemp())
+    yield temp
+    shutil.rmtree(temp, ignore_errors=True)
 
 
 @pytest.fixture
-def temp_dir(tmp_path):
-    """Temporary directory for draft JSON files."""
-    return tmp_path
+def db(temp_dir):
+    """SQLite database with schema initialized in temp directory."""
+    import blog_engine.infra.db_manager as db_module
+    
+    # Override DB path to temp directory
+    original_path = db_module._DB_PATH
+    db_module._DB_PATH = temp_dir / "test.db"
+    
+    # Reset connection
+    db_module._conn = None
+    
+    # Initialize schema
+    from blog_engine.infra.db_manager import db
+    db.initialize_schema()
+    
+    yield db
+    
+    # Cleanup
+    if db_module._conn:
+        db_module._conn.close()
+        db_module._conn = None
+    db_module._DB_PATH = original_path
 
 
 @pytest.fixture
