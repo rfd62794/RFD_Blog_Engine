@@ -176,42 +176,11 @@ async def get_revision_history(post_id: str) -> list:
 
 def register_draft_tools(mcp):
     """Register draft management tools with FastMCP server."""
-    
-    @mcp.tool()
-    async def list_inventory(status: str = "pending", thread: str = None) -> list:
-        return await list_inventory(status, thread)
-    
-    @mcp.tool()
-    async def get_draft(post_id: str) -> dict:
-        return await get_draft(post_id)
-    
-    @mcp.tool()
-    async def create_draft(
-        post_id: str,
-        title: str,
-        content: str,
-        tags: list = [],
-        categories: list = [],
-        tags_source: str = "manual"
-    ) -> dict:
-        return await create_draft(post_id, title, content, tags, categories, tags_source)
-    
-    @mcp.tool()
-    async def update_draft(post_id: str, content: str, saved_by: str = "human") -> dict:
-        return await update_draft(post_id, content, saved_by)
-    
-    @mcp.tool()
-    async def approve_draft(post_id: str, approved_by: str = "human") -> dict:
-        return await approve_draft(post_id, approved_by)
-    
-    @mcp.tool()
-    async def delete_draft(post_id: str) -> dict:
-        return await delete_draft(post_id)
-    
-    @mcp.tool()
-    async def revert_revision(post_id: str, revision_number: int) -> dict:
-        return await revert_revision(post_id, revision_number)
-    
-    @mcp.tool()
-    async def get_revision_history(post_id: str) -> list:
-        return await get_revision_history(post_id)
+    mcp.tool()(list_inventory)
+    mcp.tool()(get_draft)
+    mcp.tool()(create_draft)
+    mcp.tool()(update_draft)
+    mcp.tool()(approve_draft)
+    mcp.tool()(delete_draft)
+    mcp.tool()(revert_revision)
+    mcp.tool()(get_revision_history)
