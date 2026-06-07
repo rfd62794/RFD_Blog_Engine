@@ -10,8 +10,8 @@ import yaml
 
 from blog_engine.infra.logger import get_logger
 
-# Resolve inventory path relative to project root (this file's parent parent)
-INVENTORY_PATH = Path(__file__).parent.parent / "data" / "inventory.yaml"
+# Resolve inventory path relative to project root (this file's parent parent parent)
+INVENTORY_PATH = Path(__file__).parent.parent.parent / "data" / "inventory.yaml"
 VALID_STATUSES = {"pending", "drafted", "approved", "published"}
 
 

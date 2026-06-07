@@ -14,7 +14,8 @@ import os
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 
-DRAFTS_DIR = Path("data/drafts")
+# Resolve drafts path relative to project root (this file's parent parent parent)
+DRAFTS_DIR = Path(__file__).parent.parent.parent / "data" / "drafts"
 VALID_STATUSES = {"draft", "approved", "published"}
 VALID_TAG_SOURCES = {"auto", "manual", "per_post"}
 VALID_GENERATION_SOURCES = {"internal", "external"}
