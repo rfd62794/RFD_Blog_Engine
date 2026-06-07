@@ -78,17 +78,19 @@ def _get_publisher() -> Publisher:
     return Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
 
 
-async def publish_to_wordpress(post_id: str, publish: bool = False) -> dict:
+async def publish_to_wordpress(post_id: str, publish: bool = False, scheduled_date: str = None) -> dict:
     """
     Publish approved draft to WordPress.
     Draft must have status: approved. Calls approval gate.
     publish=False creates WP draft. publish=True publishes immediately.
+    scheduled_date="2026-06-14T09:00:00" schedules for future publish.
+    scheduled_date overrides publish parameter when provided.
     Returns: {post_id, wp_post_id, wp_url, status}
     On error: {"error": str(e), "post_id": post_id}
     """
     try:
         publisher = _get_publisher()
-        return await publisher.publish_wordpress(post_id, publish=publish)
+        return await publisher.publish_wordpress(post_id, publish=publish, scheduled_date=scheduled_date)
     except Exception as e:
         logger.error("publish_to_wordpress.error", post_id=post_id, error=str(e))
         return {"error": str(e), "post_id": post_id}

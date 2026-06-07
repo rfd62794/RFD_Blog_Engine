@@ -37,7 +37,8 @@ class Publisher:
     async def publish_wordpress(
         self,
         post_id: str,
-        publish: bool = False
+        publish: bool = False,
+        scheduled_date: str = None
     ) -> dict:
         """
         Full WordPress publish flow:
@@ -47,17 +48,19 @@ class Publisher:
         4. Update draft JSON with wp_post_id and wp_url
         5. Update inventory status to "published"
         6. Return {post_id, wp_post_id, wp_url, status}
+        scheduled_date: ISO 8601 format "2026-06-14T09:00:00". When provided,
+        post is scheduled for future publish (status="future").
         """
-        self.logger.info("publish_wordpress.start", post_id=post_id, publish=publish)
-        
+        self.logger.info("publish_wordpress.start", post_id=post_id, publish=publish, scheduled_date=scheduled_date)
+
         # Load draft
         draft = self.drafts.get_draft(post_id)
         if draft is None:
             raise ValueError(f"Draft not found for post_id: {post_id}")
-        
+
         # Check approval
         self._check_approved(draft)
-        
+
         # Call WordPress API
         wp_status = "publish" if publish else "draft"
         wp_result = await self.wp.create_post(
@@ -67,7 +70,8 @@ class Publisher:
             excerpt=draft.get("excerpt", ""),
             tags=draft.get("tags", []),
             categories=draft.get("categories", []),
-            status=wp_status
+            status=wp_status,
+            scheduled_date=scheduled_date
         )
         
         # Update draft JSON with WordPress fields

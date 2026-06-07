@@ -27,25 +27,32 @@ class WordPressHandler(BaseAPIHandler):
         excerpt: str = "",
         tags: list[str] = None,
         categories: list[str] = None,
-        status: str = "draft"
+        status: str = "draft",
+        scheduled_date: str = None
     ) -> dict:
         """
         Create a WordPress post.
-        
+
         Returns: {"wp_post_id": int, "wp_url": str, "status": str}
         Idempotency: checks publish_log first. If success record exists,
         returns existing URL without calling API.
+        scheduled_date: ISO 8601 format "2026-06-14T09:00:00". When provided,
+        status is forced to "future" regardless of status parameter.
         """
         if tags is None:
             tags = []
         if categories is None:
             categories = []
-        
-        # Validate status
-        valid_statuses = {"draft", "publish"}
-        if status not in valid_statuses:
-            raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
-        
+
+        # Validate status (unless scheduled_date is provided)
+        if scheduled_date is None:
+            valid_statuses = {"draft", "publish"}
+            if status not in valid_statuses:
+                raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
+        else:
+            # scheduled_date overrides status to "future"
+            status = "future"
+
         # Check idempotency first
         existing = self._check_idempotency(post_id, "wordpress")
         if existing:
@@ -54,7 +61,7 @@ class WordPressHandler(BaseAPIHandler):
                 "wp_url": existing["platform_url"],
                 "status": status
             }
-        
+
         # Prepare request
         url = f"{self.base_url}/wp-json/wp/v2/posts"
         payload = {
@@ -65,6 +72,10 @@ class WordPressHandler(BaseAPIHandler):
             "tags": tags,
             "categories": categories
         }
+
+        # Add date field if scheduled_date provided
+        if scheduled_date is not None:
+            payload["date"] = scheduled_date
         
         try:
             response = await self._make_request(

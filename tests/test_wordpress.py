@@ -381,3 +381,59 @@ def test_wp_get_categories_returns_list(db):
     assert len(result) == 2
     assert result[0]["id"] == 1
     assert result[1]["id"] == 2
+
+
+def test_wp_scheduled_post_uses_future_status(db):
+    """Mock POST with scheduled_date → request body contains status: future and date field."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 201
+    mock_response.json.return_value = {
+        "id": 42,
+        "link": "https://example.com/post-42"
+    }
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response) as mock_req:
+        result = asyncio.run(handler.create_post(
+            post_id="test-001",
+            title="Test Post",
+            content="Test content",
+            status="publish",
+            scheduled_date="2026-06-14T09:00:00"
+        ))
+
+        # Verify request payload contains status: future and date field
+        call_args = mock_req.call_args
+        payload = call_args[1]["json"]
+        assert payload["status"] == "future"
+        assert payload["date"] == "2026-06-14T09:00:00"
+    assert result["wp_post_id"] == 42
+
+
+def test_wp_scheduled_overrides_publish_param(db):
+    """publish=True + scheduled_date → status is still future not publish."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 201
+    mock_response.json.return_value = {
+        "id": 42,
+        "link": "https://example.com/post-42"
+    }
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response) as mock_req:
+        result = asyncio.run(handler.create_post(
+            post_id="test-001",
+            title="Test Post",
+            content="Test content",
+            status="publish",
+            scheduled_date="2026-06-14T09:00:00"
+        ))
+
+        # Verify status is future despite publish=True
+        call_args = mock_req.call_args
+        payload = call_args[1]["json"]
+        assert payload["status"] == "future"
+        assert payload["date"] == "2026-06-14T09:00:00"
+    assert result["wp_post_id"] == 42
