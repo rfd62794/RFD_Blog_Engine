@@ -1,4 +1,4 @@
-phase: 'Phase 5 — MCP Server + Tools'
-certified_floor: 96/0/0
-what_is_next: 'Phase 6 — Publisher Orchestration'
-notes: 'Phase 5 complete: FastMCP server with stdio transport. 16 MCP tools registered (2 generate, 8 draft, 6 publish). Publish tools are stubs (Phase 6). Dependencies instantiated inside tool functions (not module level). Tool errors return {"error": str(e)}. Claude Desktop config documented in docs/claude_desktop_config.json. Test runtime 11.65s.'
+phase: 'Phase 6 — Publisher Orchestration'
+certified_floor: 111/0/0
+what_is_next: 'Phase 7 — Manual Verification'
+notes: 'Phase 6 complete: Publisher orchestration with approval gate. publish_to_wordpress and publish_to_devto stubs replaced with real implementations. Publisher class handles approval check, WordPress publish, Dev.to syndication, inventory updates. Dev.to requires wp_url before publishing (ordering enforced). Dev.to failure does not roll back WordPress URL. Inventory status updates on WordPress success only. _get_publisher() reads credentials from environment (WORDPRESS_URL, WORDPRESS_USER, WORDPRESS_APP_PASSWORD, DEVTO_API_KEY). 15 new publisher tests + 2 tool test replacements. Test runtime 11.57s.'

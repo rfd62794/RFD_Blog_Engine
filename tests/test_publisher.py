@@ -198,9 +198,10 @@ def test_publish_wordpress_requires_approved_not_published(publisher, temp_dir):
     assert "must be approved before publishing" in str(exc.value)
 
 
-def test_publish_wordpress_calls_wp_handler(publisher, approved_draft, wp_handler):
+def test_publish_wordpress_calls_wp_handler(publisher, approved_draft, wp_handler, inventory):
     """WordPressHandler.create_post called with correct args."""
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     wp_handler.create_post.assert_called_once()
     call_args = wp_handler.create_post.call_args
     assert call_args[1]["post_id"] == "test-post"
@@ -208,9 +209,10 @@ def test_publish_wordpress_calls_wp_handler(publisher, approved_draft, wp_handle
     assert call_args[1]["content"] == "Test content"
 
 
-def test_publish_wordpress_updates_draft_wp_fields(publisher, approved_draft, temp_dir):
+def test_publish_wordpress_updates_draft_wp_fields(publisher, approved_draft, temp_dir, inventory):
     """Draft JSON updated with wp_post_id and wp_url."""
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     import json
     draft_path = temp_dir / "test-post.json"
@@ -228,9 +230,10 @@ def test_publish_wordpress_updates_inventory_status(publisher, approved_draft, i
         mock_update.assert_called_once_with("test-post", "published")
 
 
-def test_publish_wordpress_returns_correct_dict(publisher, approved_draft):
+def test_publish_wordpress_returns_correct_dict(publisher, approved_draft, inventory):
     """Returns {post_id, wp_post_id, wp_url, status}."""
-    result = asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        result = asyncio.run(publisher.publish_wordpress("test-post"))
     assert result["post_id"] == "test-post"
     assert result["wp_post_id"] == 123
     assert result["wp_url"] == "https://blog.rfditservices.com/test-post"
@@ -261,10 +264,11 @@ def test_publish_devto_requires_wp_url(publisher, approved_draft):
     assert "WordPress must be published before Dev.to" in str(exc.value)
 
 
-def test_publish_devto_sets_canonical(publisher, approved_draft, temp_dir, devto_handler):
+def test_publish_devto_sets_canonical(publisher, approved_draft, temp_dir, devto_handler, inventory):
     """DevToHandler called with canonical_url=draft.wp_url."""
     # First publish to WordPress to set wp_url
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # Then publish to Dev.to
     asyncio.run(publisher.publish_devto("test-post"))
@@ -274,10 +278,11 @@ def test_publish_devto_sets_canonical(publisher, approved_draft, temp_dir, devto
     assert call_args[1]["canonical_url"] == "https://blog.rfditservices.com/test-post"
 
 
-def test_publish_devto_updates_draft_devto_fields(publisher, approved_draft, temp_dir):
+def test_publish_devto_updates_draft_devto_fields(publisher, approved_draft, temp_dir, inventory):
     """Draft JSON updated with devto_id and devto_url."""
     # First publish to WordPress
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # Then publish to Dev.to
     asyncio.run(publisher.publish_devto("test-post"))
@@ -291,10 +296,11 @@ def test_publish_devto_updates_draft_devto_fields(publisher, approved_draft, tem
     assert updated_draft["devto_url"] == "https://dev.to/user/test-post"
 
 
-def test_publish_devto_no_rollback_on_failure(publisher, approved_draft, temp_dir, devto_handler):
+def test_publish_devto_no_rollback_on_failure(publisher, approved_draft, temp_dir, devto_handler, inventory):
     """WP URL preserved if Dev.to fails."""
     # First publish to WordPress
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # Dev.to fails
     devto_handler.create_article = AsyncMock(side_effect=Exception("Dev.to API error"))
@@ -311,10 +317,11 @@ def test_publish_devto_no_rollback_on_failure(publisher, approved_draft, temp_di
     assert updated_draft["wp_url"] == "https://blog.rfditservices.com/test-post"
 
 
-def test_publish_devto_sets_published_at(publisher, approved_draft, temp_dir):
+def test_publish_devto_sets_published_at(publisher, approved_draft, temp_dir, inventory):
     """published_at set when both wp_url and devto_url present."""
     # Publish to WordPress
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # Publish to Dev.to
     asyncio.run(publisher.publish_devto("test-post"))
@@ -327,26 +334,29 @@ def test_publish_devto_sets_published_at(publisher, approved_draft, temp_dir):
     assert updated_draft["published_at"] is not None
 
 
-def test_publish_wordpress_idempotency(publisher, approved_draft, wp_handler, db):
+def test_publish_wordpress_idempotency(publisher, approved_draft, wp_handler, db, inventory):
     """Second call returns existing URL (from publish_log)."""
     # First publish
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # Reset mock
     wp_handler.create_post.reset_mock()
     
     # Second publish - should not call API due to idempotency in WordPressHandler
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # WordPressHandler should still be called (idempotency check is inside handler)
     # This test verifies the flow doesn't break on second call
     assert True
 
 
-def test_publish_devto_idempotency(publisher, approved_draft, devto_handler, db):
+def test_publish_devto_idempotency(publisher, approved_draft, devto_handler, db, inventory):
     """Second call returns existing URL (from publish_log)."""
     # First publish to WordPress
-    asyncio.run(publisher.publish_wordpress("test-post"))
+    with patch.object(inventory, 'update_status'):
+        asyncio.run(publisher.publish_wordpress("test-post"))
     
     # First publish to Dev.to
     asyncio.run(publisher.publish_devto("test-post"))
