@@ -14,14 +14,15 @@ def test_logger_setup(temp_dir):
     """Test that logging setup creates log file."""
     from blog_engine.infra.logger import setup_logging
     from unittest.mock import patch
-    import __builtins__
+    import builtins
     
     log_file = temp_dir / "test.jsonl"
+    original_open = builtins.open
     
     def mock_open(filename, mode, *args, **kwargs):
         if "jsonl" in str(filename):
-            return __builtins__.open(log_file, mode)
-        return __builtins__.open(filename, mode, *args, **kwargs)
+            return original_open(log_file, mode)
+        return original_open(filename, mode, *args, **kwargs)
     
     with patch('builtins.open', side_effect=mock_open):
         setup_logging("INFO")
@@ -33,7 +34,7 @@ def test_logger_setup(temp_dir):
         # Check log file exists and has content
         assert log_file.exists()
         
-        with __builtins__.open(log_file, "r") as f:
+        with original_open(log_file, "r") as f:
             lines = f.readlines()
         
         assert len(lines) > 0
@@ -50,14 +51,15 @@ def test_logger_levels(temp_dir):
     """Test that different log levels work."""
     from blog_engine.infra.logger import setup_logging
     from unittest.mock import patch
-    import __builtins__
+    import builtins
     
     log_file = temp_dir / "test_levels.jsonl"
+    original_open = builtins.open
     
     def mock_open(filename, mode, *args, **kwargs):
         if "jsonl" in str(filename):
-            return __builtins__.open(log_file, mode)
-        return __builtins__.open(filename, mode, *args, **kwargs)
+            return original_open(log_file, mode)
+        return original_open(filename, mode, *args, **kwargs)
     
     with patch('builtins.open', side_effect=mock_open):
         setup_logging("DEBUG")
@@ -68,7 +70,7 @@ def test_logger_levels(temp_dir):
         logger.warning("warning message")
         logger.error("error message")
         
-        with __builtins__.open(log_file, "r") as f:
+        with original_open(log_file, "r") as f:
             lines = f.readlines()
         
         assert len(lines) == 4
@@ -97,14 +99,15 @@ def test_logger_json_output(temp_dir):
     """Test that log output is valid JSON."""
     from blog_engine.infra.logger import setup_logging
     from unittest.mock import patch
-    import __builtins__
+    import builtins
     
     log_file = temp_dir / "test_json.jsonl"
+    original_open = builtins.open
     
     def mock_open(filename, mode, *args, **kwargs):
         if "jsonl" in str(filename):
-            return __builtins__.open(log_file, mode)
-        return __builtins__.open(filename, mode, *args, **kwargs)
+            return original_open(log_file, mode)
+        return original_open(filename, mode, *args, **kwargs)
     
     with patch('builtins.open', side_effect=mock_open):
         setup_logging("INFO")
@@ -112,7 +115,7 @@ def test_logger_json_output(temp_dir):
         logger = structlog.get_logger("test")
         logger.info("structured test", key1="value1", key2=42)
         
-        with __builtins__.open(log_file, "r") as f:
+        with original_open(log_file, "r") as f:
             line = f.readline()
         
         log_entry = json.loads(line)
