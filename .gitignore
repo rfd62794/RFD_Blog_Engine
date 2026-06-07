@@ -54,4 +54,5 @@ Thumbs.db
 htmlcov/
 
 # Draft files (optional - comment out if you want to track drafts in git)
-# data/drafts/*.json
+data/drafts/*.json
+/data/inventory/*.yaml
