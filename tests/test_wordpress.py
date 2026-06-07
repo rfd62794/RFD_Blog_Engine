@@ -129,25 +129,23 @@ def test_wp_retry_on_500(db):
     """Mock 500 → 500 → 201, succeeds on third attempt."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
     
-    mock_response = MagicMock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {
+    mock_response_500 = MagicMock()
+    mock_response_500.status_code = 500
+    
+    mock_response_201 = MagicMock()
+    mock_response_201.status_code = 201
+    mock_response_201.json.return_value = {
         "id": 42,
         "link": "https://example.com/post-42"
     }
     
-    call_count = [0]
-    
-    async def mock_make_request(*args, **kwargs):
-        call_count[0] += 1
-        if call_count[0] == 1:
-            raise BlogEngineHTTPError(500, "Server Error")
-        elif call_count[0] == 2:
-            raise BlogEngineHTTPError(500, "Server Error")
-        else:
-            return mock_response
-    
-    with patch.object(handler, '_make_request', side_effect=mock_make_request):
+    with patch('httpx.AsyncClient') as mock_client:
+        mock_client.return_value.__aenter__.return_value.request.side_effect = [
+            mock_response_500,
+            mock_response_500,
+            mock_response_201
+        ]
+        
         result = asyncio.run(handler.create_post(
             post_id="test-001",
             title="Test Post",
@@ -155,7 +153,7 @@ def test_wp_retry_on_500(db):
         ))
     
     assert result["wp_post_id"] == 42
-    assert call_count[0] == 3
+    assert mock_client.return_value.__aenter__.return_value.request.call_count == 3
 
 
 def test_wp_no_retry_on_401(db):
