@@ -25,7 +25,7 @@ from blog_engine.tools.publish_tools import register_publish_tools
 db = DBManager()
 db.initialize_schema()
 
-mcp = FastMCP("rfd-blog-engine")
+mcp = FastMCP("rfd-blog-engine", log_level="ERROR")
 
 register_generate_tools(mcp)
 register_draft_tools(mcp)
