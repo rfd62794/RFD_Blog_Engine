@@ -8,6 +8,8 @@ Exposes all tools to Claude Desktop via stdio transport.
 import os
 # Suppress FastMCP startup banner to avoid polluting MCP JSON stream
 os.environ["FASTMCP_LOG_LEVEL"] = "ERROR"
+os.environ["FASTMCP_QUIET"] = "1"
+os.environ["FASTMCP_NO_BANNER"] = "1"
 
 from pathlib import Path
 from dotenv import load_dotenv
