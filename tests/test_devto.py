@@ -156,13 +156,18 @@ def test_devto_retry_on_500(db):
         "url": "https://dev.to/user/test-post"
     }
     
-    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
-        mock_req.side_effect = [
-            BlogEngineHTTPError(500, "Server Error"),
-            BlogEngineHTTPError(500, "Server Error"),
-            mock_response
-        ]
-        
+    call_count = [0]
+    
+    async def mock_make_request(*args, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            raise BlogEngineHTTPError(500, "Server Error")
+        elif call_count[0] == 2:
+            raise BlogEngineHTTPError(500, "Server Error")
+        else:
+            return mock_response
+    
+    with patch.object(handler, '_make_request', side_effect=mock_make_request):
         result = asyncio.run(handler.create_article(
             post_id="test-001",
             title="Test Post",
@@ -171,7 +176,7 @@ def test_devto_retry_on_500(db):
         ))
     
     assert result["devto_id"] == 123
-    assert mock_req.call_count == 3
+    assert call_count[0] == 3
 
 
 def test_devto_no_retry_on_401(db):

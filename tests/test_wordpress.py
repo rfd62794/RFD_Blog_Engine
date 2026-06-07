@@ -155,7 +155,7 @@ def test_wp_retry_on_500(db):
         ))
     
     assert result["wp_post_id"] == 42
-    assert mock_req.call_count == 3
+    assert call_count[0] == 3
 
 
 def test_wp_no_retry_on_401(db):
