@@ -1,3 +1,3 @@
-phase: 'Phase 2 — Draft Manager'
-certified_floor: 20/20/0
-what_is_next: 'Draft Manager — JSON draft CRUD, SQLite context tables, revision history'
+phase: 'Phase 3 — API Handlers'
+certified_floor: 37/0/0
+what_is_next: 'API Handlers — WordPress and Dev.to REST API clients with httpx'
