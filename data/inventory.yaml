@@ -17,9 +17,25 @@ posts:
   - voiddrift
   - origin
   created_at: '2026-06-07T11:00:00'
+- post_id: dev-006
+  title: The Agent Told Me It Was Done. The Tests Said Otherwise.
+  status: published
+  category: ai-methodology
+  notes: "Coding agent fabrication and the proof standard. pytest floor discipline.\n\
+    Frame slots: MOMENT (agent reports passing, terminal says otherwise), SURPRISE\
+    \ (agents predict summaries, not read truth), STRUGGLE (trusting summaries across\
+    \ sessions), LESSON (raw terminal output only \xE2\u20AC\u201D summary is a prediction),\
+    \ NEXT (stop rules and SDD directive structure).\n"
+  tags:
+  - ai
+  - coding-agents
+  - testing
+  - spec-driven-development
+  - windsurf
+  created_at: '2026-06-07T23:00:00'
 - post_id: dev-002
   title: Why I stopped optimizing for engagement
-  status: pending
+  status: published
   category: content-strategy
   notes: 'The YouTube metrics trap. Views don''t equal impact.
 
@@ -37,7 +53,7 @@ posts:
   created_at: '2026-06-07T11:00:00'
 - post_id: dev-003
   title: 'The PrivyBot architecture: why MCP matters'
-  status: pending
+  status: published
   category: technical
   notes: 'Model Context Protocol as the future of agent-tool integration.
 
@@ -55,7 +71,7 @@ posts:
   created_at: '2026-06-07T11:00:00'
 - post_id: dev-004
   title: Spec-Driven Development saved my project
-  status: pending
+  status: published
   category: methodology
   notes: 'Writing the SDD before code. The floor metric discipline.
 
@@ -73,7 +89,7 @@ posts:
   created_at: '2026-06-07T11:00:00'
 - post_id: dev-005
   title: Borrowing code vs. reinventing the wheel
-  status: pending
+  status: published
   category: technical
   notes: 'The PrivyBot infra files copied to rfd-blog-engine.
 
@@ -89,3 +105,24 @@ posts:
   - code-reuse
   - privybot
   created_at: '2026-06-07T11:00:00'
+- post_id: dev-007
+  title: I Processed 671,000 Records in 6 Minutes and 32 Seconds
+  status: published
+  category: data-engineering
+  notes: 'Brownbook ETL pipeline. 12-step lead data processing at scale.
+
+    Frame slots: MOMENT (BOM file breaks column parsing at 9am), SURPRISE (EF BB BF
+    three invisible bytes in the header), STRUGGLE (one-off tools accumulating without
+    a contract), LESSON (Golden Columns as canonical schema converts tools to stages),
+    NEXT (the pipeline is the design, not the improvisation).
+
+    '
+  tags:
+  - data-engineering
+  - python
+  - etl
+  - automation
+  - lead-data
+  - performance
+  - pipeline
+  created_at: '2026-06-07T23:20:00'

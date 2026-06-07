@@ -1,0 +1,22 @@
+{
+  "post_id": "dev-005",
+  "title": "The grammar of what's possible",
+  "status": "approved",
+  "content": "There's a Yu-Gi-Oh game on PS1 where you can fuse two cards together. The result isn't random. There are rules. But you don't know the rules yet \u2014 you just know that two inputs produce a third thing that neither input was, and that the third thing surprises you even when it shouldn't.\n\nThat's the hook. Not the surprise alone. The realization underneath the surprise that the system has depth. That there's a grammar to what's possible, and you can learn it.\n\nI've been building toward that feeling ever since.\n\nJade Cocoon does the same thing with monsters \u2014 merge two creatures, watch the result carry both parents in its design. Dragon Quest Monsters runs on fusion too. Yu-Gi-Oh Forbidden Memories taught me that combination-as-discovery is its own mechanic, separate from any theme it wears. Everything Is Crab is the roguelike version: you absorb what you fight, you become it, you discover what you're becoming one encounter at a time. No Man's Sky showed me that procedural generation has finally caught up to what those PS1 games were reaching toward \u2014 creatures that feel like they emerged from a system rather than a designer's hand.\n\nThe mechanic isn't genetics. Genetics is just the implementation I keep reaching for. What I'm actually trying to build is a machine that produces controlled emergence \u2014 outcomes that surprise you within a system deep enough to eventually master.\n\nPure RNG is a slot machine. You can't get better at it. Pure determinism is a calculator. You can solve it and put it down. The games I keep returning to live between those poles: consistent enough to reward learning, deep enough to keep producing novelty.\n\nTurboShells was an attempt at this. Turtles whose bodies expressed their genomes at render time \u2014 shell radius, leg length, color emerging from a sequence. The faster ones bred. Over generations you watched the population drift. The system had rules. The outcomes still surprised you.\n\nSlimeGarden chose basic shapes deliberately. If the creature is simple enough, even small variation reads as meaningful. The shape IS the information. You can see the grammar in the design.\n\nThe version I haven't built yet is closer to Jade Cocoon meets Dragon Quest Monsters \u2014 creatures with traceable visual lineage, combination mechanics with real strategic depth, the initial surprise and the eventual mastery running in parallel. Everything Is Crab proves the roguelike format can carry it. NMS proves the procedural layer is tractable.\n\nI'm still building toward it. Every system I've made in this space has been a step closer to understanding the grammar well enough to write it myself.\n\nThe hook was a PS1 card game in the late nineties. The project is still open.",
+  "excerpt": "",
+  "tags": [],
+  "categories": [],
+  "tags_source": "manual",
+  "categories_source": "manual",
+  "created_at": "2026-06-07T18:07:09.982809+00:00",
+  "updated_at": "2026-06-07T20:43:17.038668+00:00",
+  "approved_at": "2026-06-07T18:07:16.994964+00:00",
+  "approved_by": "robert",
+  "wp_post_id": 97,
+  "wp_url": "https://blog.rfditservices.com/?p=97",
+  "devto_id": null,
+  "devto_url": null,
+  "published_at": null,
+  "revision_count": 1,
+  "generation_source": "external"
+}

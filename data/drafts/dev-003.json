@@ -1,0 +1,22 @@
+{
+  "post_id": "dev-003",
+  "title": "The PrivyBot architecture: why MCP matters",
+  "status": "approved",
+  "content": "I keep trying to explain a Convoso MCP server to my boss.\n\nHe's the IT Lead. Smart, technical enough to follow the architecture, not uninterested. I describe the purpose. I sketch the structure. He listens. And then the blank stare \u2014 \"I can tell this sounds important. I just don't see the need.\"\n\nHe's not wrong. He doesn't see the need because he doesn't feel the friction.\n\nI do.\n\nThe moment it clicked for me wasn't PrivyBot. It was RFD_Sheets_MCP \u2014 a small server I built to put our Google Sheets call center data behind an MCP interface. I connected it to Windsurf, my coding IDE, and for the first time I could do data analysis on live campaign metrics at scale, inside the editor, without exporting anything. Windsurf called a tool. The tool returned data. The analysis happened.\n\nThat's not impressive on its face. What was impressive was what I realized immediately after: the same server would work identically in Claude Desktop. Nothing changes on the server. Nothing changes in the data. The agent changes, and it just works.\n\nOne build. Two consumers. Same pattern I'd already seen in PrivyBot \u2014 my personal AI assistant running on my home tower, where 131 MCP tools let it interact with my calendar, inbox, repos, and game analytics. Every tool added makes every agent more capable, because the vocabulary grows without the agents changing. I just hadn't applied that pattern at work yet.\n\nWith a raw API, every consumer manages its own auth, its own error handling, its own understanding of the endpoint structure. With an MCP server, every consumer calls a tool with a name and a description. The agent doesn't read documentation. It reads the tool. get_campaign_metrics(campaign_id). list_active_lists(server_id). execute_swap(campaign_id, remove_id, add_id). The complexity lives in the server. The agent gets a vocabulary.\n\nThat's what I'm trying to build for Convoso. A vocabulary.\n\nRight now, if I want to know how a campaign is performing, I log into Telesero, pull a report, and reason about it manually. If Brad wants to know, same thing. If I want Windsurf to help me analyze it, I write a script to hit the Convoso API, manage the auth, parse the response, and hope the schema hasn't changed. Every time.\n\nWith a Convoso MCP server: Claude asks. The server answers. Brad's instance, my Windsurf \u2014 same tool, same data, different consumers. And the agent can reason about the data rather than just fetch it.\n\nI can describe this. I can sketch it. But Brad doesn't feel the friction that makes it matter. He's not the one building four integrations that each need Convoso data separately. He manages IT. The integration pain lives entirely on my side of the work.\n\nInfrastructure is invisible until it fails, or until you've built the same thing four times and you're starting the fifth.\n\nThat's not a Brad problem. That's just where the value lives \u2014 inside the friction, which is invisible to anyone not generating it.\n\nThe Convoso server will be another vocabulary word. They compound. Every new tool makes every agent more capable, because the vocabulary grows without the individual agents changing.\n\nBrad will see it when it's done. Infrastructure has to be shown, not explained.",
+  "excerpt": "",
+  "tags": [],
+  "categories": [],
+  "tags_source": "manual",
+  "categories_source": "manual",
+  "created_at": "2026-06-07T18:07:03.994851+00:00",
+  "updated_at": "2026-06-07T20:26:43.162678+00:00",
+  "approved_at": "2026-06-07T18:07:12.998384+00:00",
+  "approved_by": "robert",
+  "wp_post_id": 96,
+  "wp_url": "https://blog.rfditservices.com/?p=96",
+  "devto_id": null,
+  "devto_url": null,
+  "published_at": null,
+  "revision_count": 1,
+  "generation_source": "external"
+}
