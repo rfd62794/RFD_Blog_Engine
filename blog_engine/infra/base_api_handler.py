@@ -168,6 +168,7 @@ async def _make_request(
     headers: dict = None,
     auth: tuple = None,
     json: dict = None,
+    params: dict = None,
     max_attempts: int = 4,
     backoff_base: float = 2.0
 ) -> httpx.Response:
@@ -179,9 +180,9 @@ async def _make_request(
     """
     if headers is None:
         headers = {}
-    
+
     no_retry_codes = {400, 401, 403, 404}
-    
+
     for attempt in range(1, max_attempts + 1):
         try:
             async with httpx.AsyncClient() as client:
@@ -191,6 +192,7 @@ async def _make_request(
                     headers=headers,
                     auth=auth,
                     json=json,
+                    params=params,
                     timeout=30.0
                 )
             
