@@ -341,6 +341,28 @@ def test_wp_get_post_not_found(db):
         assert mock_req.call_count == 1
 
 
+def test_wp_get_post_returns_dict(db):
+    """Mock GET single post → 200, returns dict."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "id": 42,
+        "title": {"rendered": "Test Post"},
+        "content": {"rendered": "Test content"},
+        "status": "publish",
+        "link": "https://example.com/post-42"
+    }
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
+        result = asyncio.run(handler.get_post(42))
+
+    assert isinstance(result, dict)
+    assert result["id"] == 42
+    assert result["status"] == "publish"
+
+
 def test_wp_get_categories_returns_list(db):
     """Mock GET → 200 list, returns parsed list."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
