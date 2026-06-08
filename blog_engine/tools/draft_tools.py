@@ -109,6 +109,7 @@ async def create_draft(
     post_id: str,
     title: str,
     content: str,
+    excerpt: str = "",
     tags: list = [],
     categories: list = [],
     tags_source: str = "manual"
@@ -124,6 +125,7 @@ async def create_draft(
             post_id=post_id,
             title=title,
             content=content,
+            excerpt=excerpt,
             tags=tags,
             categories=categories,
             tags_source=tags_source,
