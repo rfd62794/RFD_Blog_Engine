@@ -127,6 +127,10 @@ class Publisher:
         5. Update draft JSON with devto_id and devto_url
         6. Return {post_id, devto_id, devto_url, canonical_url, status}
         """
+        api_key = os.getenv("DEVTO_API_KEY", "")
+        if not api_key:
+            return {"error": "DEVTO_API_KEY not configured", "post_id": post_id}
+
         self.logger.info("publish_devto.start", post_id=post_id, published=published)
         
         # Load draft

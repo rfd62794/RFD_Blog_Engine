@@ -370,3 +370,53 @@ def test_publish_devto_idempotency(publisher, approved_draft, devto_handler, db,
     # DevToHandler should still be called (idempotency check is inside handler)
     # This test verifies the flow doesn't break on second call
     assert True
+
+
+def test_publish_devto_missing_key(publisher, approved_draft):
+    """DEVTO_API_KEY not set → returns error dict, no HTTP call made."""
+    with patch.dict("os.environ", {}, clear=False):
+        import os
+        os.environ.pop("DEVTO_API_KEY", None)
+        result = asyncio.run(publisher.publish_devto("test-post"))
+
+    assert "error" in result
+    assert result["error"] == "DEVTO_API_KEY not configured"
+    assert result["post_id"] == "test-post"
+
+
+def test_publish_devto_requires_approved_draft(publisher, db, temp_dir):
+    """Draft with status != approved → error before any API call."""
+    import json
+    from datetime import datetime
+
+    draft_data = {
+        "post_id": "unapproved-post",
+        "title": "Unapproved",
+        "status": "draft",
+        "content": "Content",
+        "excerpt": "",
+        "tags": [],
+        "categories": [],
+        "tags_source": "manual",
+        "categories_source": "manual",
+        "created_at": datetime.now().isoformat(),
+        "updated_at": datetime.now().isoformat(),
+        "approved_at": None,
+        "approved_by": None,
+        "wp_post_id": None,
+        "wp_url": "https://example.com/post",
+        "devto_id": None,
+        "devto_url": None,
+        "published_at": None,
+        "revision_count": 0,
+        "generation_source": "external"
+    }
+
+    drafts_dir = publisher.drafts.drafts_dir
+    draft_path = drafts_dir / "unapproved-post.json"
+    with open(draft_path, "w") as f:
+        json.dump(draft_data, f)
+
+    with patch.dict("os.environ", {"DEVTO_API_KEY": "test-key"}):
+        with pytest.raises(ValueError, match="must be approved"):
+            asyncio.run(publisher.publish_devto("unapproved-post"))
