@@ -62,4 +62,4 @@ data/drafts/*.json
 /data/posts/*.mdx
 /data/tags/*.yaml
 /data/categories/*.yaml
-/data/drafts/
+/data/drafts/*.json
