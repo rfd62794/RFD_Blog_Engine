@@ -56,3 +56,10 @@ htmlcov/
 # Draft files (optional - comment out if you want to track drafts in git)
 data/drafts/*.json
 /data/inventory/*.yaml
+/data/posts/*.json
+/data/posts/*.md
+/data/posts/*.html
+/data/posts/*.mdx
+/data/tags/*.yaml
+/data/categories/*.yaml
+/data/drafts/
