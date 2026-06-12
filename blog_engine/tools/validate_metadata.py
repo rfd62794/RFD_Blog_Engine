@@ -95,6 +95,7 @@ async def validate_post_metadata(post_id: str) -> dict:
         "excerpt_present": False,
         "excerpt_non_empty": False,
         "has_categories": False,
+        "has_meaningful_category": False,
         "has_minimum_tags": False,
         "has_featured_image": False,
         "slug_not_query_fallback": False,
@@ -130,9 +131,10 @@ async def validate_post_metadata(post_id: str) -> dict:
         result["excerpt_present"] = bool(excerpt)
         result["excerpt_non_empty"] = bool(excerpt and excerpt.strip())
         
-        # Check categories
+        # Check categories — [1] is Uncategorized (default only, not meaningful)
         categories = wp_data.get("categories", [])
         result["has_categories"] = len(categories) > 0
+        result["has_meaningful_category"] = any(c != 1 for c in categories)
         
         # Check tags
         tags = wp_data.get("tags", [])
@@ -142,13 +144,19 @@ async def validate_post_metadata(post_id: str) -> dict:
         featured_media = wp_data.get("featured_media", 0)
         result["has_featured_image"] = featured_media > 0
         
-        # Check slug format (not ?p=ID fallback)
+        # Check slug format
+        # For published posts: check link field is pretty permalink.
+        # For future/scheduled posts: WordPress serves ?p= links until publish;
+        # instead validate that the slug field is non-empty and not numeric-only.
         link = wp_data.get("link", "")
         slug = wp_data.get("slug", "")
-        result["slug_not_query_fallback"] = not ("?p=" in link or "?page_id=" in link)
+        status = wp_data.get("status", "")
+        if status == "future":
+            result["slug_not_query_fallback"] = bool(slug) and not slug.isdigit()
+        else:
+            result["slug_not_query_fallback"] = not ("?p=" in link or "?page_id=" in link)
         
         # Check schedule (if post is scheduled for future)
-        status = wp_data.get("status", "")
         date_str = wp_data.get("date", "")
         if status == "future" and date_str:
             try:
