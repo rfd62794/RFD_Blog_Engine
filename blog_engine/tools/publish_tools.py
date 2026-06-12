@@ -296,11 +296,13 @@ async def update_wordpress_post(
     content: str = None,
     status: str = None,
     tags: list = None,
-    categories: list = None
+    categories: list = None,
+    date: str = None
 ) -> dict:
     """
     Update an existing WordPress post.
     Only fields provided are updated — all parameters optional.
+    date: ISO 8601 string e.g. "2026-08-09T09:00:00" to reschedule a post.
     Returns {wp_post_id, wp_url, status}
     On error: {"error": str(e)}
     Requires explicit approval — do not call without Robert's confirmation.
@@ -320,6 +322,8 @@ async def update_wordpress_post(
             fields["tags"] = tags
         if categories is not None:
             fields["categories"] = categories
+        if date is not None:
+            fields["date"] = date
 
         # Use existing update_post method (needs post_id for logging)
         # For WordPress-only updates, we don't have the internal post_id
