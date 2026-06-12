@@ -22,6 +22,7 @@ from blog_engine.infra.db_manager import DBManager
 from blog_engine.tools.generate_tools import register_generate_tools
 from blog_engine.tools.draft_tools import register_draft_tools
 from blog_engine.tools.publish_tools import register_publish_tools
+from blog_engine.tools.validate_metadata import register_validate_metadata_tools
 
 db = DBManager()
 db.initialize_schema()
@@ -31,6 +32,7 @@ mcp = FastMCP("rfd-blog-engine")
 register_generate_tools(mcp)
 register_draft_tools(mcp)
 register_publish_tools(mcp)
+register_validate_metadata_tools(mcp)
 
 if __name__ == "__main__":
     mcp.run()
