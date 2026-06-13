@@ -75,6 +75,10 @@ def test_get_by_slug_returns_post():
     assert result["title"] == "Zero Wasn't Zero"
     assert result["status"] == "future"
 
+    # Confirm status=any is sent so scheduled posts are visible
+    _, kwargs = mock_wp._make_request.call_args
+    assert kwargs["params"]["status"] == "any"
+
 
 # ---------------------------------------------------------------------------
 # Test 2 — get_by_slug empty list raises ValueError

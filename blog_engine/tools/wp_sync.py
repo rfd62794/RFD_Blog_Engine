@@ -46,7 +46,7 @@ async def get_wordpress_post_by_slug(slug: str) -> dict:
     """
     wp = _get_wp_handler()
     url = f"{wp.base_url}/wp-json/wp/v2/posts"
-    params = {"slug": slug, "_fields": "id,date,status,title,slug", "per_page": 1}
+    params = {"slug": slug, "status": "any", "_fields": "id,date,status,title,slug", "per_page": 1}
 
     response = await wp._make_request(
         method="GET",
