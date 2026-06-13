@@ -73,6 +73,7 @@ _SAMPLE_TAGS = [
 _SAMPLE_CATEGORIES = [
     {"id": 3, "name": "Data Engineering", "slug": "data-engineering", "count": 4},
     {"id": 4, "name": "Dev Identity", "slug": "dev-identity", "count": 7},
+    {"id": 27, "name": "AI &amp; Automation", "slug": "ai-automation", "count": 3},
 ]
 
 
@@ -101,7 +102,7 @@ def test_list_categories_returns_list():
     with patch("blog_engine.tools.taxonomy._get_wp_handler", return_value=mock_wp):
         result = asyncio.run(list_wordpress_categories())
 
-    assert len(result) == 2
+    assert len(result) == 3
     assert result[0] == {"id": 3, "name": "Data Engineering", "slug": "data-engineering", "count": 4}
     assert all("truncated" not in r for r in result)
 
@@ -179,6 +180,28 @@ def test_get_or_create_category_existing():
         result = asyncio.run(get_or_create_category("data engineering"))
 
     assert result["id"] == 3
+    assert result["created"] is False
+    assert not post_called
+
+
+def test_get_or_create_category_html_entity_match():
+    """Category with &amp; in WP name matches 'AI & Automation' — no duplicate POST."""
+    post_called = []
+
+    async def _make_request(method, url, auth, params=None, json=None):
+        if method == "POST":
+            post_called.append(True)
+        return _mock_response(_SAMPLE_CATEGORIES)
+
+    mock_wp = MagicMock()
+    mock_wp.base_url = "https://blog.example.com"
+    mock_wp.auth = ("user", "pass")
+    mock_wp._make_request = AsyncMock(side_effect=_make_request)
+
+    with patch("blog_engine.tools.taxonomy._get_wp_handler", return_value=mock_wp):
+        result = asyncio.run(get_or_create_category("AI & Automation"))
+
+    assert result["id"] == 27
     assert result["created"] is False
     assert not post_called
 

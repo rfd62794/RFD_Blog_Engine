@@ -7,6 +7,7 @@ Provides tag/category listing, get-or-create, and full taxonomy assignment
 on a post (resolves names → IDs, updates WordPress + inventory YAML).
 """
 
+import html
 import os
 import yaml
 
@@ -97,7 +98,7 @@ async def get_or_create_tag(name: str) -> dict:
     name_lower = name.lower()
 
     for tag in tags:
-        if isinstance(tag.get("id"), int) and tag["name"].lower() == name_lower:
+        if isinstance(tag.get("id"), int) and html.unescape(tag["name"]).lower() == name_lower:
             return {"id": tag["id"], "name": tag["name"], "slug": tag["slug"], "created": False}
 
     wp = _get_wp_handler()
@@ -124,7 +125,7 @@ async def get_or_create_category(name: str, parent: int = 0) -> dict:
     name_lower = name.lower()
 
     for cat in categories:
-        if isinstance(cat.get("id"), int) and cat["name"].lower() == name_lower:
+        if isinstance(cat.get("id"), int) and html.unescape(cat["name"]).lower() == name_lower:
             return {"id": cat["id"], "name": cat["name"], "slug": cat["slug"], "created": False}
 
     wp = _get_wp_handler()
