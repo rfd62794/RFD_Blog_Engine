@@ -97,7 +97,18 @@ class Publisher:
         
         # Update inventory status to "published"
         self.inventory.update_status(post_id, "published")
-        
+
+        # Backfill wp_post_id into inventory YAML — non-fatal if it fails (post is already live)
+        try:
+            self._backfill_inventory_wp_post_id(post_id, wp_result["wp_post_id"])
+        except Exception as e:
+            self.logger.error(
+                "publish_wordpress.inventory_backfill_failed",
+                post_id=post_id,
+                wp_post_id=wp_result["wp_post_id"],
+                error=str(e)
+            )
+
         self.logger.info(
             "publish_wordpress.success",
             post_id=post_id,
@@ -230,6 +241,25 @@ class Publisher:
         self._atomic_write(draft_path, draft)
         
         self.logger.debug("draft_publish_fields_updated", post_id=post_id)
+
+    def _backfill_inventory_wp_post_id(self, post_id: str, wp_post_id: int) -> None:
+        """
+        Write wp_post_id into the inventory YAML for post_id.
+        Atomic write via tmp file. Called after successful WordPress publish.
+        Non-fatal caller — any exception is caught and logged by publish_wordpress.
+        """
+        import yaml
+        path = self.inventory.inventory_dir / f"{post_id}.yaml"
+        if not path.exists():
+            return
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        data["wp_post_id"] = wp_post_id
+        tmp_path = path.with_suffix(".yaml.tmp")
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            yaml.safe_dump(data, f, sort_keys=False, allow_unicode=True)
+        tmp_path.replace(path)
+        self.logger.info("inventory.wp_post_id_backfilled", post_id=post_id, wp_post_id=wp_post_id)
 
     def _atomic_write(self, path: Path, data: dict) -> None:
         """

@@ -420,3 +420,42 @@ def test_publish_devto_requires_approved_draft(publisher, db, temp_dir):
     with patch.dict("os.environ", {"DEVTO_API_KEY": "test-key"}):
         with pytest.raises(ValueError, match="must be approved"):
             asyncio.run(publisher.publish_devto("unapproved-post"))
+
+
+def test_publish_to_wordpress_writes_wp_post_id_to_yaml(db, draft_manager, wp_handler, devto_handler, approved_draft, temp_dir):
+    """After successful WP publish, wp_post_id is backfilled into inventory YAML."""
+    import yaml
+
+    inv_dir = temp_dir / "inv"
+    inv_dir.mkdir()
+    inv_yaml = inv_dir / "test-post.yaml"
+    inv_yaml.write_text(
+        "post_id: test-post\ntitle: Test Post\nstatus: approved\ncategory: test\nnotes: ''\ntags: []\n"
+    )
+
+    inventory = InventoryManager(inventory_dir=inv_dir)
+    publisher = Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
+
+    with patch.object(inventory, "update_status"):
+        asyncio.run(publisher.publish_wordpress("test-post"))
+
+    with open(inv_yaml, "r") as f:
+        saved = yaml.safe_load(f)
+
+    assert saved["wp_post_id"] == 123
+
+
+def test_publish_to_wordpress_yaml_write_failure_logs_but_does_not_raise(db, draft_manager, wp_handler, devto_handler, approved_draft, temp_dir):
+    """YAML backfill failure is logged but does not raise — post is already live."""
+    inv_dir = temp_dir / "inv"
+    inv_dir.mkdir()
+
+    inventory = InventoryManager(inventory_dir=inv_dir)
+    publisher = Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
+
+    with patch.object(inventory, "update_status"):
+        with patch.object(publisher, "_backfill_inventory_wp_post_id", side_effect=OSError("disk full")):
+            result = asyncio.run(publisher.publish_wordpress("test-post"))
+
+    assert result["wp_post_id"] == 123
+    assert result["status"] == "published"
