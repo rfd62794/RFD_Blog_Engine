@@ -26,6 +26,7 @@ from blog_engine.tools.validate_metadata import register_validate_metadata_tools
 from blog_engine.tools.calendar import register_calendar_tools
 from blog_engine.tools.wp_sync import register_wp_sync_tools
 from blog_engine.tools.taxonomy import register_taxonomy_tools
+from blog_engine.tools.reconcile import register_reconcile_tools
 from blog_engine.devto_sync import devto_sync_dry_run
 
 db = DBManager()
@@ -40,6 +41,7 @@ register_validate_metadata_tools(mcp)
 register_calendar_tools(mcp)
 register_wp_sync_tools(mcp)
 register_taxonomy_tools(mcp)
+register_reconcile_tools(mcp)
 mcp.tool()(devto_sync_dry_run)
 
 if __name__ == "__main__":
