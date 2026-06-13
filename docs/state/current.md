@@ -1,4 +1,4 @@
-phase: 'Calendar Tools + Dev.to Sync + Audit Validator Fixes'
-certified_floor: 158/0/0
-what_is_next: 'Next: tag/category propagation to WordPress on publish; featured-image upload support'
+phase: 'WordPress Sync Tools'
+certified_floor: 168/0/0
+what_is_next: 'Next: sync_inventory_from_wordpress() — pull all scheduled WP posts, match by slug, reconcile inventory fields automatically. Then: tag/category propagation + featured-image upload.'
 notes: 'Floors: 132 (devto key guard) → 139 (validate_metadata audit tools) → 148 (devto_sync idempotent job, update_wordpress_post date param, validator slug/category fixes) → 156 (calendar tools). Added reschedule_post(post_id, new_date): atomic WP + YAML update, raises on partial write. Added get_full_calendar(status_filter): inventory-only, sorted ascending, nulls last. Both registered as MCP tools. 8 new tests. devto_sync: idempotent daily sync job with --dry-run, DEVTO_SYNC_START_DATE window, canonical verification before write, devto_sync_log table. Validator: has_meaningful_category (excludes ID 1 Uncategorized), slug check status-aware (future posts check slug field not link field). Systemic audit finding: zero tags, zero featured images, no meaningful categories across entire blog — next engine phase scoped by measurement.'
