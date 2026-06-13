@@ -79,9 +79,7 @@ async def list_wordpress_posts(status: str = None, per_page: int = 100) -> list:
     """
     wp = _get_wp_handler()
     url = f"{wp.base_url}/wp-json/wp/v2/posts"
-    params: dict = {"per_page": per_page, "_fields": "id,date,status,title,slug"}
-    if status is not None:
-        params["status"] = status
+    params: dict = {"per_page": per_page, "status": status if status is not None else "any", "_fields": "id,date,status,title,slug"}
 
     response = await wp._make_request(
         method="GET",

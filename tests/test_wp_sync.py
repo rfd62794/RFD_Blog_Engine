@@ -111,6 +111,10 @@ def test_list_posts_no_filter():
     assert all("truncated" not in r for r in result)
     assert result[0]["id"] == 1
 
+    # Default must include status=any so scheduled posts are visible
+    _, kwargs = mock_wp._make_request.call_args
+    assert kwargs["params"]["status"] == "any"
+
 
 # ---------------------------------------------------------------------------
 # Test 4 — list_posts with status filter passes status to WP query
