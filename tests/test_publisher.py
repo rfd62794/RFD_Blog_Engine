@@ -84,6 +84,10 @@ def devto_handler(db):
         "devto_id": 456,
         "devto_url": "https://dev.to/user/test-post"
     })
+    handler.update_article = AsyncMock(return_value={
+        "devto_id": 456,
+        "devto_url": "https://dev.to/user/test-post"
+    })
     return handler
 
 
@@ -459,3 +463,47 @@ def test_publish_to_wordpress_yaml_write_failure_logs_but_does_not_raise(db, dra
 
     assert result["wp_post_id"] == 123
     assert result["status"] == "published"
+
+
+def test_publish_devto_calls_update_article_when_devto_id_exists(db, draft_manager, inventory, wp_handler, devto_handler, temp_dir):
+    """When draft already has devto_id, publish_devto calls update_article not create_article."""
+    import json
+    draft_data = {
+        "post_id": "repub-post",
+        "title": "Re-publish Post",
+        "status": "approved",
+        "content": "Updated content",
+        "excerpt": "",
+        "tags": ["test"],
+        "categories": [],
+        "tags_source": "manual",
+        "categories_source": "manual",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z",
+        "approved_at": "2024-01-01T00:00:00Z",
+        "approved_by": "human",
+        "wp_post_id": 123,
+        "wp_url": "https://blog.rfditservices.com/repub-post/",
+        "devto_id": 999,
+        "devto_url": "https://dev.to/user/repub-post",
+        "published_at": None,
+        "revision_count": 0,
+        "generation_source": "external"
+    }
+    draft_path = draft_manager.drafts_dir / "repub-post.json"
+    with open(draft_path, "w") as f:
+        json.dump(draft_data, f)
+
+    devto_handler.update_article = AsyncMock(return_value={
+        "devto_id": 999,
+        "devto_url": "https://dev.to/user/repub-post"
+    })
+
+    publisher = Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
+
+    with patch.dict("os.environ", {"DEVTO_API_KEY": "test-key"}):
+        result = asyncio.run(publisher.publish_devto("repub-post"))
+
+    devto_handler.update_article.assert_called_once()
+    devto_handler.create_article.assert_not_called()
+    assert result["devto_id"] == 999

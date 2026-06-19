@@ -159,15 +159,29 @@ class Publisher:
                 "Call publish_to_wordpress first."
             )
         
-        # Call Dev.to API
-        devto_result = await self.devto.create_article(
-            post_id=post_id,
-            title=draft["title"],
-            body_markdown=draft["content"],
-            canonical_url=draft["wp_url"],
-            tags=draft.get("tags", []),
-            published=published
-        )
+        # Call Dev.to API — update if article already exists, create otherwise
+        existing_devto_id = draft.get("devto_id")
+        if existing_devto_id:
+            devto_result = await self.devto.update_article(
+                post_id=post_id,
+                devto_id=existing_devto_id,
+                fields={
+                    "title": draft["title"],
+                    "body_markdown": draft["content"],
+                    "canonical_url": draft["wp_url"],
+                    "tags": draft.get("tags", []),
+                    "published": published,
+                }
+            )
+        else:
+            devto_result = await self.devto.create_article(
+                post_id=post_id,
+                title=draft["title"],
+                body_markdown=draft["content"],
+                canonical_url=draft["wp_url"],
+                tags=draft.get("tags", []),
+                published=published
+            )
         
         # Update draft JSON with Dev.to fields
         self._update_draft_publish_fields(
