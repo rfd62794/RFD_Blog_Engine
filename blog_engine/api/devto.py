@@ -86,7 +86,7 @@ class DevToHandler(BaseAPIHandler):
             )
             
             data = response.json()
-            self.logger.info("devto.create_article.response", post_id=post_id, response_keys=list(data.keys()) if isinstance(data, dict) else type(data).__name__, status_code=response.status_code)
+            self.logger.info("devto.create_article.response", post_id=post_id, response_keys=list(data.keys()) if isinstance(data, dict) else type(data).__name__, status_code=response.status_code, raw_body=data)
             if "id" not in data:
                 self._write_publish_log(post_id=post_id, platform="devto", status="failed", error_message=f"Unexpected response: {data}")
                 return {"error": f"Unexpected Dev.to response: {data}", "post_id": post_id}

@@ -183,6 +183,11 @@ class Publisher:
                 published=published
             )
         
+        # Propagate API error before touching keys
+        if "error" in devto_result:
+            self.logger.error("publish_devto.api_error", post_id=post_id, error=devto_result["error"])
+            return devto_result
+
         # Update draft JSON with Dev.to fields
         self._update_draft_publish_fields(
             post_id=post_id,
