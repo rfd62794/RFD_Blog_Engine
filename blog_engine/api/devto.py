@@ -42,6 +42,9 @@ class DevToHandler(BaseAPIHandler):
         if not canonical_url:
             raise ValueError("canonical_url is required and cannot be None or empty")
         
+        # Normalize tags — Dev.to only allows alphanumeric characters
+        tags = [t.replace("-", "").replace("_", "") for t in tags if isinstance(t, str)]
+
         # Truncate tags to max 4
         if len(tags) > 4:
             self.logger.warning(
