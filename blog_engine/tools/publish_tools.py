@@ -123,6 +123,66 @@ async def publish_to_devto(post_id: str, published: bool = False) -> dict:
         return {"error": str(e), "post_id": post_id}
 
 
+async def update_devto_post(
+    devto_id: int,
+    body_markdown: str = None,
+    title: str = None,
+    published: bool = None,
+    tags: list = None
+) -> dict:
+    """
+    Update an existing Dev.to article via PATCH endpoint.
+
+    Only fields provided are updated. Returns {devto_id, devto_url, status} on success.
+    Returns {error, devto_id} on failure.
+    """
+    try:
+        api_key = os.getenv("DEVTO_API_KEY", "")
+        if not api_key:
+            return {"error": "DEVTO_API_KEY not configured", "devto_id": devto_id}
+
+        url = f"https://dev.to/api/articles/{devto_id}"
+        headers = {
+            "api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        fields = {}
+        if body_markdown is not None:
+            fields["body_markdown"] = body_markdown
+        if title is not None:
+            fields["title"] = title
+        if published is not None:
+            fields["published"] = published
+        if tags is not None:
+            fields["tags"] = tags
+
+        db = DBManager()
+        devto_handler = DevToHandler(db, api_key)
+
+        response = await devto_handler._make_request(
+            method="PATCH",
+            url=url,
+            headers=headers,
+            json={"article": fields}
+        )
+
+        data = response.json()
+        devto_url = data.get("url", "")
+
+        logger.info("update_devto_post.success", devto_id=devto_id)
+
+        return {
+            "devto_id": devto_id,
+            "devto_url": devto_url,
+            "status": "updated"
+        }
+
+    except Exception as e:
+        logger.error("update_devto_post.error", devto_id=devto_id, error=str(e))
+        return {"error": str(e), "devto_id": devto_id}
+
+
 async def get_publish_status(post_id: str) -> dict:
     """
     Get publish status for a post across all platforms.
@@ -359,6 +419,7 @@ def register_publish_tools(mcp):
     """Register publishing tools with FastMCP server."""
     mcp.tool()(publish_to_wordpress)
     mcp.tool()(publish_to_devto)
+    mcp.tool()(update_devto_post)
     mcp.tool()(get_publish_status)
     mcp.tool()(update_inventory_status)
     mcp.tool()(list_threads)
