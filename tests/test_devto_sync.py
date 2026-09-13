@@ -322,3 +322,14 @@ def test_update_wordpress_post_accepts_date(db):
 
     assert captured_fields.get("date") == "2026-08-09T09:00:00"
     assert result["wp_post_id"] == 115
+
+
+def test_sync_waits_until_post_is_old_enough(db):
+    recent = _make_wp_post(501, pub_date="2026-09-10T09:00:00")
+    old = _make_wp_post(502, pub_date="2026-08-20T09:00:00",
+                        link="https://blog.example.com/2026/08/20/old-post/")
+    with patch("blog_engine.devto_sync._verify_canonical", new=AsyncMock(return_value=True)):
+        plan = asyncio.run(_build_action_plan([recent, old], db, date(2026, 6, 11),
+                                              today=date(2026, 9, 13), min_age_days=10))
+    actions = {e["wp_post_id"]: e["action"] for e in plan}
+    assert actions == {501: "skip_too_new", 502: "would_syndicate"}

@@ -12,6 +12,8 @@ Rules (locked design):
 - Backfill is a separate explicit mode, never automatic.
 - Idempotent: posts with an existing devto_id record are skipped.
 - Validation gate: excerpt and canonical checks before syndication.
+- Minimum age: posts younger than DEVTO_MIN_AGE_DAYS (default 10) are skipped until a later
+  run, so Google indexes the blog original before the dev.to copy exists.
 - --dry-run: prints action plan, no writes.
 """
 
@@ -35,12 +37,19 @@ logger = get_logger(__name__)
 # Config
 DEVTO_SYNC_START_DATE_ENV = "DEVTO_SYNC_START_DATE"
 DEFAULT_START_DATE = "2026-06-11"  # date this module was committed
+DEVTO_MIN_AGE_DAYS_ENV = "DEVTO_MIN_AGE_DAYS"
+DEFAULT_MIN_AGE_DAYS = 10  # let Google index the blog original before the dev.to copy exists
 
 
 def _get_start_date() -> date:
     """Read DEVTO_SYNC_START_DATE from env, fall back to DEFAULT_START_DATE."""
     raw = os.getenv(DEVTO_SYNC_START_DATE_ENV, DEFAULT_START_DATE)
     return date.fromisoformat(raw)
+
+
+def _get_min_age_days() -> int:
+    """Read DEVTO_MIN_AGE_DAYS from env, fall back to DEFAULT_MIN_AGE_DAYS."""
+    return int(os.getenv(DEVTO_MIN_AGE_DAYS_ENV, str(DEFAULT_MIN_AGE_DAYS)))
 
 
 def _get_wp_handler() -> WordPressHandler:
@@ -143,12 +152,14 @@ async def _build_action_plan(
     wp_posts: list[dict],
     db: DBManager,
     start_date: date,
+    today: Optional[date] = None,
+    min_age_days: int = 0,
 ) -> list[dict]:
     """
     For each WP post, determine the action without executing it.
     Returns list of action dicts:
       {wp_post_id, title, link, publish_date, action, reason}
-    action: 'would_syndicate' | 'skip_existing' | 'skip_window' | 'refuse_canonical' | 'refuse_validation'
+    action: 'would_syndicate' | 'skip_existing' | 'skip_window' | 'skip_too_new' | 'refuse_canonical' | 'refuse_validation'
     """
     plan = []
 
@@ -178,6 +189,14 @@ async def _build_action_plan(
         if post_date is None or post_date < start_date:
             entry["action"] = "skip_window"
             entry["reason"] = f"publish_date {post_date} before start_date {start_date}"
+            plan.append(entry)
+            continue
+
+        # Wait until the original has been live long enough to be indexed first
+        today_date = today or datetime.now(timezone.utc).date()
+        if min_age_days and (today_date - post_date).days < min_age_days:
+            entry["action"] = "skip_too_new"
+            entry["reason"] = f"published {post_date}; waiting {min_age_days} days before syndicating"
             plan.append(entry)
             continue
 
@@ -240,7 +259,7 @@ async def run_sync(dry_run: bool = False) -> dict:
     # Enumerate published posts from live WP listing (not publish_log)
     wp_posts = await wp.get_posts(status="publish", per_page=100)
 
-    plan = await _build_action_plan(wp_posts, db, start_date)
+    plan = await _build_action_plan(wp_posts, db, start_date, min_age_days=_get_min_age_days())
 
     summary = {
         "dry_run": dry_run,
@@ -249,6 +268,7 @@ async def run_sync(dry_run: bool = False) -> dict:
         "created": 0,
         "skipped_existing": 0,
         "skipped_window": 0,
+        "skipped_too_new": 0,
         "refused": 0,
         "posts": plan,
     }
@@ -268,6 +288,9 @@ async def run_sync(dry_run: bool = False) -> dict:
 
         elif action == "skip_window":
             summary["skipped_window"] += 1
+
+        elif action == "skip_too_new":
+            summary["skipped_too_new"] += 1
 
         elif action == "would_syndicate":
             if dry_run:
@@ -350,6 +373,7 @@ def _print_plan(summary: dict) -> None:
     print(f"would_syndicate: {summary['created']}")
     print(f"skip_existing:   {summary['skipped_existing']}")
     print(f"skip_window:     {summary['skipped_window']}")
+    print(f"skip_too_new:    {summary.get('skipped_too_new', 0)}")
     print(f"refused:         {summary['refused']}")
     print()
     for p in summary["posts"]:
