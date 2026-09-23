@@ -36,6 +36,9 @@ zero-images state in the audit cannot recur.
 Checked 2026-09-23 16:10: `pyproject.toml` `[project].dependencies` lists `"pillow>=10"` (Pillow
 12.3.0 in `uv.lock`) and the environment carries it. Do not run `uv sync`, `uv add` or `pip`; if
 `import PIL` fails in the worktree, stop and write that in the Status row. No network access at all.
+Never run `python -c ...` to check it either — bare `python` is not an allowed shape, its
+confirmation prompt kills the run (this already happened once at 16:13). The test suite imports
+PIL itself; that is the only verification needed.
 
 ## Sandbox needs
 
