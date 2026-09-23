@@ -8,6 +8,28 @@ from blog_engine.infra.base_api_handler import BaseAPIHandler, BlogEngineHTTPErr
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 
+# The engine's WordPress user has the Contributor role: it can create drafts
+# and submit them for review, but only Robert ever publishes or schedules.
+ROBERT_ONLY_PUBLISH_MESSAGE = (
+    "publishing is Robert's: the engine only creates WordPress drafts; "
+    "publish or schedule it in WordPress"
+)
+
+# Statuses the engine is allowed to set on a WordPress post.
+WRITABLE_WP_STATUSES = {"draft", "pending"}
+
+
+def validate_writable_status(status: str) -> None:
+    """
+    Raise ValueError unless status is one the engine may send to WordPress.
+    "publish" and "future" get the Robert-only refusal; anything else is
+    a plain invalid status.
+    """
+    if status in ("publish", "future"):
+        raise ValueError(ROBERT_ONLY_PUBLISH_MESSAGE)
+    if status not in WRITABLE_WP_STATUSES:
+        raise ValueError(f"Invalid status: {status}. Must be one of {WRITABLE_WP_STATUSES}")
+
 
 class WordPressHandler(BaseAPIHandler):
     CACHE_PREFIX = "wordpress"
@@ -27,8 +49,7 @@ class WordPressHandler(BaseAPIHandler):
         excerpt: str = "",
         tags: list[str] = None,
         categories: list[str] = None,
-        status: str = "draft",
-        scheduled_date: str = None
+        status: str = "draft"
     ) -> dict:
         """
         Create a WordPress post.
@@ -36,22 +57,15 @@ class WordPressHandler(BaseAPIHandler):
         Returns: {"wp_post_id": int, "wp_url": str, "status": str}
         Idempotency: checks publish_log first. If success record exists,
         returns existing URL without calling API.
-        scheduled_date: ISO 8601 format "2026-06-14T09:00:00". When provided,
-        status is forced to "future" regardless of status parameter.
+        status: "draft" or "pending" only — the engine never publishes or
+        schedules; Robert does that in WordPress.
         """
         if tags is None:
             tags = []
         if categories is None:
             categories = []
 
-        # Validate status (unless scheduled_date is provided)
-        if scheduled_date is None:
-            valid_statuses = {"draft", "publish"}
-            if status not in valid_statuses:
-                raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
-        else:
-            # scheduled_date overrides status to "future"
-            status = "future"
+        validate_writable_status(status)
 
         # Check idempotency first
         existing = self._check_idempotency(post_id, "wordpress")
@@ -73,10 +87,6 @@ class WordPressHandler(BaseAPIHandler):
             "categories": categories
         }
 
-        # Add date field if scheduled_date provided
-        if scheduled_date is not None:
-            payload["date"] = scheduled_date
-        
         try:
             response = await self._make_request(
                 method="POST",
@@ -124,9 +134,16 @@ class WordPressHandler(BaseAPIHandler):
     ) -> dict:
         """
         Update an existing WordPress post by wp_post_id.
-        
+
+        If fields contains a "status" key it must be "draft" or "pending" —
+        the engine never publishes or schedules; Robert does that in WordPress.
+
         Returns: {"wp_post_id": int, "wp_url": str}
         """
+        status = fields.get("status")
+        if status is not None:
+            validate_writable_status(status)
+
         url = f"{self.base_url}/wp-json/wp/v2/posts/{wp_post_id}"
         
         try:

@@ -55,7 +55,11 @@ def _mock_wp_update(return_wp_url="https://blog.example.com/post/"):
 # ---------------------------------------------------------------------------
 
 def test_reschedule_updates_wordpress_date(tmp_path):
-    """Mock WP update_post — verify correct date and status=future sent."""
+    """Mock WP update_post — verify correct date and status=pending sent.
+
+    The engine never schedules a post for publication (status "future");
+    the post stays pending and Robert schedules it in WordPress.
+    """
     inv_dir = _make_inventory(tmp_path, [
         _base_post("dev-020", "Test Post", wp_post_id=119, scheduled_date="2026-09-01T09:00:00"),
     ])
@@ -78,7 +82,7 @@ def test_reschedule_updates_wordpress_date(tmp_path):
 
     assert captured["wp_post_id"] == 119
     assert captured["fields"]["date"] == "2026-10-29T09:00:00"
-    assert captured["fields"]["status"] == "future"
+    assert captured["fields"]["status"] == "pending"
 
 
 # ---------------------------------------------------------------------------

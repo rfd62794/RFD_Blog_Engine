@@ -156,7 +156,10 @@ async def update_draft(post_id: str, content: str, title: str = None, saved_by: 
 
 async def approve_draft(post_id: str, approved_by: str = "human") -> dict:
     """
-    Approve a draft for publishing.
+    Approve a draft. Approval marks a draft ready to push to WordPress as a
+    pending post for Robert's review — it does not publish anything.
+    Only Robert publishes, in WordPress.
+    approved_by is recorded as given.
     Returns updated draft dict.
     """
     try:

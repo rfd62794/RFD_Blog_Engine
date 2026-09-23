@@ -73,6 +73,12 @@ def wp_handler(db):
         "wp_post_id": 123,
         "wp_url": "https://blog.rfditservices.com/test-post"
     })
+    # Dev.to syndication only follows a live WordPress post
+    handler.get_post = AsyncMock(return_value={
+        "id": 123,
+        "status": "publish",
+        "link": "https://blog.rfditservices.com/test-post"
+    })
     return handler
 
 
@@ -99,15 +105,15 @@ def publisher(db, draft_manager, inventory, wp_handler, devto_handler):
 
 @pytest.fixture
 def approved_draft(temp_dir):
-    """Create an approved draft JSON file."""
+    """Create an approved draft JSON file (clean: excerpt + categories present)."""
     draft = {
         "post_id": "test-post",
         "title": "Test Post",
         "status": "approved",
         "content": "Test content",
-        "excerpt": "",
+        "excerpt": "Test excerpt",
         "tags": ["test"],
-        "categories": [],
+        "categories": [1],
         "tags_source": "manual",
         "categories_source": "manual",
         "created_at": "2024-01-01T00:00:00Z",
@@ -228,20 +234,21 @@ def test_publish_wordpress_updates_draft_wp_fields(publisher, approved_draft, te
 
 
 def test_publish_wordpress_updates_inventory_status(publisher, approved_draft, inventory):
-    """Inventory status set to "published" after WP success."""
+    """Inventory status stays "approved" — the WP post is pending, not published."""
     with patch.object(inventory, "update_status") as mock_update:
         asyncio.run(publisher.publish_wordpress("test-post"))
-        mock_update.assert_called_once_with("test-post", "published")
+        mock_update.assert_called_once_with("test-post", "approved")
 
 
 def test_publish_wordpress_returns_correct_dict(publisher, approved_draft, inventory):
-    """Returns {post_id, wp_post_id, wp_url, status}."""
+    """Returns {post_id, wp_post_id, wp_url, status: pending, note}."""
     with patch.object(inventory, 'update_status'):
         result = asyncio.run(publisher.publish_wordpress("test-post"))
     assert result["post_id"] == "test-post"
     assert result["wp_post_id"] == 123
     assert result["wp_url"] == "https://blog.rfditservices.com/test-post"
-    assert result["status"] == "published"
+    assert result["status"] == "pending"
+    assert result["note"] == "Robert publishes in WordPress"
 
 
 def test_publish_wordpress_wp_failure_no_devto(publisher, approved_draft, wp_handler, devto_handler):
@@ -462,7 +469,7 @@ def test_publish_to_wordpress_yaml_write_failure_logs_but_does_not_raise(db, dra
             result = asyncio.run(publisher.publish_wordpress("test-post"))
 
     assert result["wp_post_id"] == 123
-    assert result["status"] == "published"
+    assert result["status"] == "pending"
 
 
 def test_publish_devto_calls_update_article_when_devto_id_exists(db, draft_manager, inventory, wp_handler, devto_handler, temp_dir):

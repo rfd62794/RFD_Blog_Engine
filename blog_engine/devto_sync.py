@@ -111,7 +111,8 @@ def _record_sync_action(
 ) -> None:
     """
     Write a devto_sync_log entry.
-    action: 'created' | 'skipped_existing' | 'refused_validation' | 'refused_canonical' | 'skipped_window'
+    action: 'created' | 'skipped_existing' | 'refused_validation' | 'refused_canonical'
+            | 'refused_not_live' | 'skipped_window'
     """
     db.exec(
         """
@@ -314,6 +315,19 @@ async def run_sync(dry_run: bool = False) -> dict:
 
                 # Fetch full post for content
                 wp_full = await wp.get_post(entry["wp_post_id"])
+
+                # Never syndicate a post that isn't actually live on WordPress.
+                # The engine only ever creates pending posts — Robert publishes.
+                if wp_full.get("status") != "publish":
+                    entry["action"] = "refused_not_live"
+                    entry["reason"] = (
+                        f"WordPress post status is {wp_full.get('status')!r}, not live — "
+                        f"Robert publishes in WordPress"
+                    )
+                    summary["refused"] += 1
+                    _record_sync_action(db, entry["wp_post_id"], "refused_not_live", entry["reason"])
+                    continue
+
                 content = wp_full.get("content", {}).get("rendered", "") if isinstance(wp_full.get("content"), dict) else ""
                 title = wp_full.get("title", {}).get("rendered", "") if isinstance(wp_full.get("title"), dict) else ""
                 tags_raw = wp_full.get("tags", [])

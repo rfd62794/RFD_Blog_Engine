@@ -35,26 +35,20 @@ def test_wp_create_post_draft(db):
     assert result["status"] == "draft"
 
 
-def test_wp_create_post_publish(db):
-    """Mock POST with status=publish → returns published status."""
+def test_wp_create_post_publish_refused(db):
+    """status="publish" is refused — publishing is Robert's, no WP call made."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
-    
-    mock_response = MagicMock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {
-        "id": 42,
-        "link": "https://example.com/post-42"
-    }
-    
-    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response):
-        result = asyncio.run(handler.create_post(
-            post_id="test-001",
-            title="Test Post",
-            content="Test content",
-            status="publish"
-        ))
-    
-    assert result["status"] == "publish"
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
+        with pytest.raises(ValueError, match="publishing is Robert's"):
+            asyncio.run(handler.create_post(
+                post_id="test-001",
+                title="Test Post",
+                content="Test content",
+                status="publish"
+            ))
+
+    mock_req.assert_not_called()
 
 
 def test_wp_invalid_status_raises(db):
@@ -383,8 +377,41 @@ def test_wp_get_categories_returns_list(db):
     assert result[1]["id"] == 2
 
 
-def test_wp_scheduled_post_uses_future_status(db):
-    """Mock POST with scheduled_date → request body contains status: future and date field."""
+def test_wp_create_post_future_status_refused(db):
+    """status="future" (scheduling) is refused — Robert schedules in WordPress."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
+        with pytest.raises(ValueError, match="publishing is Robert's"):
+            asyncio.run(handler.create_post(
+                post_id="test-001",
+                title="Test Post",
+                content="Test content",
+                status="future"
+            ))
+
+    mock_req.assert_not_called()
+
+
+def test_wp_create_post_has_no_scheduled_date_param(db):
+    """scheduled_date was removed — passing it raises TypeError, no WP call."""
+    handler = WordPressHandler(db, "https://example.com", "user", "pass")
+
+    with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
+        with pytest.raises(TypeError):
+            asyncio.run(handler.create_post(
+                post_id="test-001",
+                title="Test Post",
+                content="Test content",
+                status="pending",
+                scheduled_date="2026-06-14T09:00:00"
+            ))
+
+    mock_req.assert_not_called()
+
+
+def test_wp_create_post_pending(db):
+    """status="pending" (submit for review) is allowed and sent to WP."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
 
     mock_response = MagicMock()
@@ -399,41 +426,24 @@ def test_wp_scheduled_post_uses_future_status(db):
             post_id="test-001",
             title="Test Post",
             content="Test content",
-            status="publish",
-            scheduled_date="2026-06-14T09:00:00"
+            status="pending"
         ))
 
-        # Verify request payload contains status: future and date field
-        call_args = mock_req.call_args
-        payload = call_args[1]["json"]
-        assert payload["status"] == "future"
-        assert payload["date"] == "2026-06-14T09:00:00"
-    assert result["wp_post_id"] == 42
+    payload = mock_req.call_args[1]["json"]
+    assert payload["status"] == "pending"
+    assert result["status"] == "pending"
 
 
-def test_wp_scheduled_overrides_publish_param(db):
-    """publish=True + scheduled_date → status is still future not publish."""
+def test_wp_update_post_refuses_publish_status(db):
+    """update_post refuses fields status publish/future — no WP call."""
     handler = WordPressHandler(db, "https://example.com", "user", "pass")
 
-    mock_response = MagicMock()
-    mock_response.status_code = 201
-    mock_response.json.return_value = {
-        "id": 42,
-        "link": "https://example.com/post-42"
-    }
-
-    with patch.object(handler, '_make_request', new_callable=AsyncMock, return_value=mock_response) as mock_req:
-        result = asyncio.run(handler.create_post(
-            post_id="test-001",
-            title="Test Post",
-            content="Test content",
-            status="publish",
-            scheduled_date="2026-06-14T09:00:00"
-        ))
-
-        # Verify status is future despite publish=True
-        call_args = mock_req.call_args
-        payload = call_args[1]["json"]
-        assert payload["status"] == "future"
-        assert payload["date"] == "2026-06-14T09:00:00"
-    assert result["wp_post_id"] == 42
+    for bad_status in ("publish", "future"):
+        with patch.object(handler, '_make_request', new_callable=AsyncMock) as mock_req:
+            with pytest.raises(ValueError, match="publishing is Robert's"):
+                asyncio.run(handler.update_post(
+                    post_id="test-001",
+                    wp_post_id=42,
+                    fields={"status": bad_status}
+                ))
+        mock_req.assert_not_called()

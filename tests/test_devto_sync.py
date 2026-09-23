@@ -316,7 +316,7 @@ def test_update_wordpress_post_accepts_date(db):
             handler.update_post(
                 post_id="dev-008",
                 wp_post_id=115,
-                fields={"date": "2026-08-09T09:00:00", "status": "future"},
+                fields={"date": "2026-08-09T09:00:00", "status": "pending"},
             )
         )
 
