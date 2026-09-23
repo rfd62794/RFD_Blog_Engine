@@ -88,6 +88,8 @@ Record the test count before and after. `uv run pytest -q` is this repo's runner
   the run ends mid-task. Do not install, download or fetch anything. Do not read outside this working
   directory, and do not use a search, memory or web tool.
 - Python is 3.12 via uv; always `uv run`, never bare `python`.
+- Never run `uv run python -c ...` (refused; run 1 died on it). To check a library version, read
+  `uv.lock` or `pyproject.toml`; to try code, write a test and run `uv run pytest -q <file>`.
 - Never use `git -C` or `git -c`; run git from the worktree. One command per call: no `;` chains,
   no `2>$null`.
 - Work only on your `directive/<slug>` branch and push that branch when done. **Never commit to
