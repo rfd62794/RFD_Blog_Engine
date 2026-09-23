@@ -1,7 +1,6 @@
 # RFD_Blog_Engine - Roadmap
 
-*Drafted 2026-09-22 by laptop Claude at Robert's request ("I trust you to build a strong roadmap").
-Awaiting Robert's direction answers (`agentflow direction ask`) and approval.*
+*Drafted 2026-09-22 by laptop Claude at Robert's request; approved by Robert 2026-09-23 ("All approved").*
 
 ## Where it stands (measured 2026-09-22)
 
@@ -30,8 +29,8 @@ measured; M4 turns real shipped work into drafts so the blog stops falling behin
 blog up with the website's SEO/GEO work. Nothing here deletes a post: "Do not remove anything yet."
 
 ```yaml roadmap
-status: draft
-approved: ''
+status: approved
+approved: 2026-09-23 robert-claude
 reviewed: '2026-09-22'
 replan_after_days: 14
 stop_if: Robert retires the blog or folds the engine into a successor (the README's PrivyBot note).
