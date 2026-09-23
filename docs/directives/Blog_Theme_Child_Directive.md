@@ -244,12 +244,14 @@ State: files created (paths), `theme/build.py` output including which fonts it r
 
 | Field | Value |
 |---|---|
-| Status | Approved |
+| Status | In progress |
 | Assigned to | devin-laptop |
-| Branch | - |
+| Branch | directive/rfd-blog-engine-blog-theme-child-directive |
 | Base branch | - |
+| Base commit | 6ed92c1e5ff3dde4c9d4dae812cfb9c8a2accd31 |
 
 **Status log**
 - 2026-09-23 16:08 · robert-claude-laptop · none → Queued — Blog redesign phase 1 (plan merged to main); Robert deferred design decisions to Claude 2026-09-23
 - 2026-09-23 16:09 · robert-claude-laptop · Queued → Approved
+- 2026-09-23 16:09 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-theme-child-directive; base origin/main (local main differs)
 <!-- queue:end -->
