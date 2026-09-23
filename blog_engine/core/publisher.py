@@ -14,7 +14,8 @@ from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 from blog_engine.core.draft_manager import DraftManager
 from blog_engine.core.inventory import InventoryManager
-from blog_engine.api.wordpress import WordPressHandler
+from blog_engine.core import content_guard
+from blog_engine.api.wordpress import WordPressHandler, ROBERT_ONLY_PUBLISH_MESSAGE
 from blog_engine.api.devto import DevToHandler
 
 
@@ -41,17 +42,25 @@ class Publisher:
         scheduled_date: str = None
     ) -> dict:
         """
-        Full WordPress publish flow:
-        1. Load draft — raise ValueError if not found
-        2. Check approval — raise ValueError if status != "approved"
-        3. Call WordPressHandler.create_post
-        4. Update draft JSON with wp_post_id and wp_url
-        5. Update inventory status to "published"
-        6. Return {post_id, wp_post_id, wp_url, status}
-        scheduled_date: ISO 8601 format "2026-06-14T09:00:00". When provided,
-        post is scheduled for future publish (status="future").
+        Push an approved draft to WordPress for Robert's review.
+
+        The engine never publishes: the WordPress post is created with
+        status "pending" and Robert publishes (or schedules) it in WordPress.
+        publish=True or a scheduled_date are refused — those belong to Robert.
+
+        1. Refuse publish=True / scheduled_date — ValueError, no WP call
+        2. Load draft — raise ValueError if not found
+        3. Check approval — raise ValueError if status != "approved"
+        4. Content guard — raise ValueError listing every problem found
+        5. Call WordPressHandler.create_post with status="pending"
+        6. Update draft JSON with wp_post_id and wp_url
+        7. Return {post_id, wp_post_id, wp_url, status: "pending", note}
         """
         self.logger.info("publish_wordpress.start", post_id=post_id, publish=publish, scheduled_date=scheduled_date)
+
+        # Publishing and scheduling are Robert's — refuse before any WP call.
+        if publish or scheduled_date is not None:
+            raise ValueError(ROBERT_ONLY_PUBLISH_MESSAGE)
 
         # Load draft
         draft = self.drafts.get_draft(post_id)
@@ -61,8 +70,12 @@ class Publisher:
         # Check approval
         self._check_approved(draft)
 
-        # Call WordPress API
-        wp_status = "publish" if publish else "draft"
+        # Content guard — placeholders and unfinished markers never leave the engine
+        problems = content_guard.check(draft)
+        if problems:
+            raise ValueError(
+                f"draft {post_id} failed content checks: " + "; ".join(problems)
+            )
 
         # Only include tags/categories if they are integer IDs (WordPress expects IDs, not strings)
         tags = draft.get("tags", [])
@@ -84,8 +97,7 @@ class Publisher:
             excerpt=draft.get("excerpt", ""),
             tags=tags_to_send,
             categories=categories_to_send,
-            status=wp_status,
-            scheduled_date=scheduled_date
+            status="pending"
         )
         
         # Update draft JSON with WordPress fields
@@ -95,10 +107,11 @@ class Publisher:
             wp_url=wp_result["wp_url"]
         )
         
-        # Update inventory status to "published"
-        self.inventory.update_status(post_id, "published")
+        # Inventory mirrors the draft's status: still "approved" — nothing is
+        # "published" until Robert publishes it in WordPress.
+        self.inventory.update_status(post_id, "approved")
 
-        # Backfill wp_post_id into inventory YAML — non-fatal if it fails (post is already live)
+        # Backfill wp_post_id into inventory YAML — non-fatal if it fails (post is already in WP)
         try:
             self._backfill_inventory_wp_post_id(post_id, wp_result["wp_post_id"])
         except Exception as e:
@@ -120,7 +133,8 @@ class Publisher:
             "post_id": post_id,
             "wp_post_id": wp_result["wp_post_id"],
             "wp_url": wp_result["wp_url"],
-            "status": "published"
+            "status": "pending",
+            "note": "Robert publishes in WordPress"
         }
 
     async def publish_devto(
@@ -134,9 +148,11 @@ class Publisher:
         2. Check approval — raise ValueError if status != "approved"
         3. Check wp_url exists on draft — raise ValueError if None
            (WordPress must be published first)
-        4. Call DevToHandler.create_article with canonical_url=draft.wp_url
-        5. Update draft JSON with devto_id and devto_url
-        6. Return {post_id, devto_id, devto_url, canonical_url, status}
+        4. Verify the WordPress post is actually live — GET it by wp_post_id
+           and refuse unless its status is "publish"
+        5. Call DevToHandler.create_article with canonical_url=draft.wp_url
+        6. Update draft JSON with devto_id and devto_url
+        7. Return {post_id, devto_id, devto_url, canonical_url, status}
         """
         api_key = os.getenv("DEVTO_API_KEY", "")
         if not api_key:
@@ -158,7 +174,24 @@ class Publisher:
                 "WordPress must be published before Dev.to. "
                 "Call publish_to_wordpress first."
             )
-        
+
+        # Dev.to only follows a post that is actually live on WordPress —
+        # verify by fetching the post and checking its status is "publish".
+        wp_post_id = draft.get("wp_post_id")
+        if not wp_post_id:
+            raise ValueError(
+                "Cannot verify WordPress status for this post: no wp_post_id "
+                "on draft. Push to WordPress first."
+            )
+        wp_post = await self.wp.get_post(int(wp_post_id))
+        wp_status = wp_post.get("status") if isinstance(wp_post, dict) else None
+        if wp_status != "publish":
+            raise ValueError(
+                f"Dev.to syndication requires a live WordPress post; "
+                f"wp_post_id {wp_post_id} has status '{wp_status}'. "
+                f"Robert publishes in WordPress."
+            )
+
         # Call Dev.to API — update if article already exists, create otherwise
         existing_devto_id = draft.get("devto_id")
         if existing_devto_id:

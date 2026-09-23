@@ -35,6 +35,8 @@ async def reschedule_post(post_id: str, new_date: str) -> dict:
     - If WordPress call fails, inventory YAML is not touched.
     - If YAML write fails after successful WP update, logs inconsistency and raises.
     - Raises ValueError if post_id not found or wp_post_id missing from inventory.
+    - The WordPress status is kept at "pending": the engine never schedules a
+      post for publication — Robert publishes (or schedules) it in WordPress.
 
     Returns: {post_id, wp_post_id, old_date, new_date, status: 'rescheduled'}
     """
@@ -54,7 +56,7 @@ async def reschedule_post(post_id: str, new_date: str) -> dict:
     await wp.update_post(
         post_id=post_id,
         wp_post_id=int(wp_post_id),
-        fields={"date": new_date, "status": "future"},
+        fields={"date": new_date, "status": "pending"},
     )
 
     # Step 2: YAML update (atomic write via tmp file)

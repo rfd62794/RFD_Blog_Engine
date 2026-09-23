@@ -10,7 +10,11 @@ from blog_engine.infra.logger import get_logger
 from blog_engine.core.inventory import InventoryManager
 from blog_engine.core.draft_manager import DraftManager
 from blog_engine.core.publisher import Publisher
-from blog_engine.api.wordpress import WordPressHandler
+from blog_engine.api.wordpress import (
+    WordPressHandler,
+    ROBERT_ONLY_PUBLISH_MESSAGE,
+    validate_writable_status,
+)
 from blog_engine.api.devto import DevToHandler
 
 logger = get_logger(__name__)
@@ -80,28 +84,20 @@ def _get_publisher() -> Publisher:
 
 async def publish_to_wordpress(post_id: str, publish: bool = False, scheduled_date: str = None) -> dict:
     """
-    Publish approved draft to WordPress.
-    Draft must have status: approved. Calls approval gate.
-    publish=False creates WP draft. publish=True publishes immediately.
-    scheduled_date="2026-06-14T09:00:00" schedules for future publish.
-    If scheduled_date not provided, falls back to scheduled_date from inventory YAML.
-    scheduled_date overrides publish parameter when provided.
-    Returns: {post_id, wp_post_id, wp_url, status}
+    Push an approved draft to WordPress for Robert's review.
+    Draft must have status: approved. The WordPress post is created with
+    status "pending" — the engine never publishes; Robert publishes (or
+    schedules) it in WordPress.
+    publish=True or a scheduled_date are refused: publishing is Robert's.
+    Returns: {post_id, wp_post_id, wp_url, status: "pending", note}
     On error: {"error": str(e), "post_id": post_id}
     """
     try:
-        # Fallback: read scheduled_date from inventory if not explicitly passed
-        if scheduled_date is None:
-            try:
-                inventory = InventoryManager()
-                post = inventory.get_post(post_id)
-                if post:
-                    scheduled_date = post.get("scheduled_date")
-            except Exception:
-                pass  # Fallback gracefully — inventory lookup failure is non-fatal
+        if publish or scheduled_date is not None:
+            raise ValueError(ROBERT_ONLY_PUBLISH_MESSAGE)
 
         publisher = _get_publisher()
-        return await publisher.publish_wordpress(post_id, publish=publish, scheduled_date=scheduled_date)
+        return await publisher.publish_wordpress(post_id)
     except Exception as e:
         logger.error("publish_to_wordpress.error", post_id=post_id, error=str(e))
         return {"error": str(e), "post_id": post_id}
@@ -110,7 +106,9 @@ async def publish_to_wordpress(post_id: str, publish: bool = False, scheduled_da
 async def publish_to_devto(post_id: str, published: bool = False) -> dict:
     """
     Syndicate approved draft to Dev.to.
-    WordPress must be published first (wp_url required on draft).
+    Only follows a live WordPress post: the WP post is fetched by wp_post_id
+    and must have status "publish" — the engine never publishes it itself;
+    Robert publishes in WordPress.
     canonical_url set automatically to wp_url.
     Returns: {post_id, devto_id, devto_url, canonical_url}
     On error: {"error": str(e), "post_id": post_id}
@@ -135,8 +133,17 @@ async def update_devto_post(
 
     Only fields provided are updated. Returns {devto_id, devto_url, status} on success.
     Returns {error, devto_id} on failure.
+    published=True is refused: Dev.to articles go live only through
+    publish_to_devto, which verifies the WordPress post is live first.
     """
     try:
+        if published:
+            return {
+                "error": "Dev.to publishing is gated on a live WordPress post — "
+                         "use publish_to_devto so the engine can verify it",
+                "devto_id": devto_id,
+            }
+
         api_key = os.getenv("DEVTO_API_KEY", "")
         if not api_key:
             return {"error": "DEVTO_API_KEY not configured", "devto_id": devto_id}
@@ -362,12 +369,17 @@ async def update_wordpress_post(
     """
     Update an existing WordPress post.
     Only fields provided are updated — all parameters optional.
+    status may only be "draft" or "pending" — the engine never publishes or
+    schedules; Robert does that in WordPress.
     date: ISO 8601 string e.g. "2026-08-09T09:00:00" to reschedule a post.
     Returns {wp_post_id, wp_url, status}
     On error: {"error": str(e)}
     Requires explicit approval — do not call without Robert's confirmation.
     """
     try:
+        if status is not None:
+            validate_writable_status(status)
+
         wp_handler = _get_wp_handler()
 
         # Build update payload with only provided fields

@@ -49,6 +49,23 @@ Add to `claude_desktop_config.json`:
 }
 ```
 
+## Publishing
+
+The engine drafts; Robert publishes. `publish_to_wordpress` pushes an approved
+draft to WordPress with status `pending` (submit for review) — Robert reviews
+and publishes (or schedules) it in WordPress itself. Passing `publish=True` or
+a `scheduled_date` is refused, and a content guard blocks drafts that still
+contain `[ROBERT: ...]` placeholders, `[TODO`/`TBD`/`lorem ipsum` markers, an
+empty excerpt, or no categories.
+
+For the guarantee to hold even if the engine is told to do the wrong thing, the
+engine's WordPress user should have the **Contributor** role — WordPress then
+rejects anything beyond drafts and pending-review submissions.
+
+Dev.to syndication (`publish_to_devto`, `devto_sync`) only follows a post that
+is already live on WordPress; it verifies the post's status via the REST API
+before creating anything on Dev.to.
+
 ## Development
 
 ### Running tests

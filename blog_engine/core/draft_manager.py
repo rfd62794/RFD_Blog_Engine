@@ -145,7 +145,12 @@ class DraftManager:
         approved_by: str = "human"
     ) -> dict:
         """
-        Approve a draft for publishing.
+        Approve a draft.
+
+        Approval marks a draft ready to push to WordPress as a pending post
+        for Robert's review — it does not publish anything. Only Robert
+        publishes, in WordPress.
+        approved_by is recorded as given.
         Raises ValueError if draft status is not "draft".
         """
         draft = self.get_draft(post_id)
