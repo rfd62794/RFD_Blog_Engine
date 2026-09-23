@@ -190,6 +190,34 @@ async def validate_post_metadata(post_id: str) -> dict:
     return result
 
 
+def check_draft_gate(draft: dict) -> list[str]:
+    """
+    Hard gate checked before any WordPress push. Operates on the local draft
+    dict, not on data fetched from WordPress — the post does not exist on
+    WordPress yet at this point in the publish flow. Returns the names of the
+    failing checks (empty list = passes):
+      - "has_featured_image": draft.get("featured_media_id") is falsy
+      - "has_meaningful_category": draft has no categories, or every one is
+        the literal string "Uncategorized" (case-insensitive)
+      - "has_minimum_tags": fewer than 3 entries in draft.get("tags", [])
+    """
+    failures = []
+
+    if not draft.get("featured_media_id"):
+        failures.append("has_featured_image")
+
+    categories = draft.get("categories") or []
+    if not categories or all(
+        str(c).strip().lower() == "uncategorized" for c in categories
+    ):
+        failures.append("has_meaningful_category")
+
+    if len(draft.get("tags") or []) < 3:
+        failures.append("has_minimum_tags")
+
+    return failures
+
+
 async def audit_all_posts() -> list[dict]:
     """
     Run validator against all posts with publish_log entries.

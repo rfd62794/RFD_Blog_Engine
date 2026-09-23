@@ -9,12 +9,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 import json
 import os
+import tempfile
 
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 from blog_engine.core.draft_manager import DraftManager
 from blog_engine.core.inventory import InventoryManager
-from blog_engine.core import content_guard
+from blog_engine.core import content_guard, lanes, featured_image
+from blog_engine.tools import validate_metadata
 from blog_engine.api.wordpress import WordPressHandler, ROBERT_ONLY_PUBLISH_MESSAGE
 from blog_engine.api.devto import DevToHandler
 
@@ -52,9 +54,12 @@ class Publisher:
         2. Load draft — raise ValueError if not found
         3. Check approval — raise ValueError if status != "approved"
         4. Content guard — raise ValueError listing every problem found
-        5. Call WordPressHandler.create_post with status="pending"
-        6. Update draft JSON with wp_post_id and wp_url
-        7. Return {post_id, wp_post_id, wp_url, status: "pending", note}
+        5. Metadata gate — render+upload a featured image when the draft has
+           none, then raise ValueError if the draft still lacks a featured
+           image, a meaningful category, or at least three tags
+        6. Call WordPressHandler.create_post with status="pending"
+        7. Update draft JSON with wp_post_id and wp_url
+        8. Return {post_id, wp_post_id, wp_url, status: "pending", note}
         """
         self.logger.info("publish_wordpress.start", post_id=post_id, publish=publish, scheduled_date=scheduled_date)
 
@@ -77,6 +82,35 @@ class Publisher:
                 f"draft {post_id} failed content checks: " + "; ".join(problems)
             )
 
+        # Metadata gate prep: derive the lane and make sure the draft carries
+        # a featured image — render and upload one when it doesn't.
+        lane = lanes.lane_for(draft.get("categories", []))
+
+        if not draft.get("featured_media_id"):
+            fd, tmp_path = tempfile.mkstemp(suffix=".png")
+            os.close(fd)
+            try:
+                featured_image.render(
+                    title=draft["title"],
+                    category=draft["categories"][0] if draft.get("categories") else "",
+                    lane=lane,
+                    out_path=tmp_path,
+                )
+                media_id = await self.wp.upload_media(path=tmp_path, alt=draft["title"])
+            finally:
+                Path(tmp_path).unlink(missing_ok=True)
+
+            self._update_draft_publish_fields(post_id=post_id, featured_media_id=media_id)
+            draft["featured_media_id"] = media_id
+
+        # Hard metadata gate — a draft without a featured image, a meaningful
+        # category, or at least three tags never reaches WordPress.
+        gate_problems = validate_metadata.check_draft_gate(draft)
+        if gate_problems:
+            raise ValueError(
+                f"draft {post_id} failed the metadata gate: " + ", ".join(gate_problems)
+            )
+
         # Only include tags/categories if they are integer IDs (WordPress expects IDs, not strings)
         tags = draft.get("tags", [])
         if tags and all(isinstance(t, int) for t in tags):
@@ -97,7 +131,8 @@ class Publisher:
             excerpt=draft.get("excerpt", ""),
             tags=tags_to_send,
             categories=categories_to_send,
-            status="pending"
+            status="pending",
+            featured_media=draft["featured_media_id"]
         )
         
         # Update draft JSON with WordPress fields
@@ -261,7 +296,8 @@ class Publisher:
         wp_post_id: int = None,
         wp_url: str = None,
         devto_id: int = None,
-        devto_url: str = None
+        devto_url: str = None,
+        featured_media_id: int = None
     ) -> None:
         """
         Updates draft JSON with publish result fields.
@@ -281,6 +317,8 @@ class Publisher:
             draft["devto_id"] = devto_id
         if devto_url is not None:
             draft["devto_url"] = devto_url
+        if featured_media_id is not None:
+            draft["featured_media_id"] = featured_media_id
         
         # Set published_at if both URLs are now present
         if draft.get("wp_url") and draft.get("devto_url") and not draft.get("published_at"):
