@@ -114,7 +114,7 @@ messages.
 
 | Field | Value |
 |---|---|
-| Status | In progress |
+| Status | Blocked |
 | Assigned to | devin-laptop |
 | Branch | directive/rfd-blog-engine-robert-only-publish-directive |
 | Base branch | - |
@@ -128,4 +128,5 @@ messages.
 - 2026-09-23 12:48 · robert-claude · Blocked → Queued
 - 2026-09-23 12:48 · robert-claude · Queued → Approved
 - 2026-09-23 12:48 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-robert-only-publish-directive
+- 2026-09-23 13:09 · devin-overseer · In progress → Blocked — Work complete and committed on branch (e4842d7; 214 tests pass, 0 fail) but push refused: `git push origin directive/rfd-blog-engine-robert-only-publish-directive` — Robert needs to push the branch or grant push permission
 <!-- queue:end -->
