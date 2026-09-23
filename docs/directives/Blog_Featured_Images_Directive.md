@@ -40,12 +40,12 @@ configuration, not a general internet fetch.
 
 ## Sandbox needs
 
-- `Exec(uv sync)`
-- `Exec(uv run pytest -q tests/test_lanes.py)`
-- `Exec(uv run pytest -q tests/test_featured_image.py)`
-- `Exec(uv run pytest -q tests/test_wordpress_media.py)`
-- `Exec(uv run pytest -q tests/test_publisher.py)`
-- `Exec(uv run pytest -q)`
+- Exec(uv sync)
+- Exec(uv run pytest -q tests/test_lanes.py)
+- Exec(uv run pytest -q tests/test_featured_image.py)
+- Exec(uv run pytest -q tests/test_wordpress_media.py)
+- Exec(uv run pytest -q tests/test_publisher.py)
+- Exec(uv run pytest -q)
 
 ## 3. The work
 

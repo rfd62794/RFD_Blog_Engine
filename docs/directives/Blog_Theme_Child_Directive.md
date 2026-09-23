@@ -36,9 +36,9 @@ arcade (`RFD_IT_Services_Site/static/css/arcade.css`) for the one card pattern t
 
 ## Sandbox needs
 
-- `Exec(uv run pytest -q tests/test_theme_build.py)`
-- `Exec(uv run pytest -q)`
-- `Exec(uv run python theme/build.py)`
+- Exec(uv run pytest -q tests/test_theme_build.py)
+- Exec(uv run pytest -q)
+- Exec(uv run python theme/build.py)
 
 ## 3. The work
 
