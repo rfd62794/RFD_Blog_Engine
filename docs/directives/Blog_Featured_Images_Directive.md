@@ -40,7 +40,8 @@ configuration, not a general internet fetch.
 
 ## Sandbox needs
 
-- Exec(uv sync)
+Pillow is already a dependency on main (added 2026-09-23 with `uv add "pillow>=10"`; the worktree's environment carries it). Do not run `uv sync` or `uv add`; if `import PIL` fails, stop and write that in the Status row.
+
 - Exec(uv run pytest -q tests/test_lanes.py)
 - Exec(uv run pytest -q tests/test_featured_image.py)
 - Exec(uv run pytest -q tests/test_wordpress_media.py)
