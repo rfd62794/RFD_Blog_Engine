@@ -106,3 +106,17 @@ Record the test count before and after. `uv run pytest -q` is this repo's runner
 
 Test counts before and after; every file where a publishing status was removed; the exact refusal
 messages.
+
+<!-- queue:start -->
+## Queue
+
+| Field | Value |
+|---|---|
+| Status | Queued |
+| Assigned to | devin-laptop |
+| Branch | - |
+| Base branch | - |
+
+**Status log**
+- 2026-09-23 12:44 · robert-claude · none → Queued — Robert 2026-09-23: enforce 'never publish without Robert' in the tool
+<!-- queue:end -->
