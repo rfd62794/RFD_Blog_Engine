@@ -240,12 +240,14 @@ State: files created/edited (paths), the Pillow version imported, and the final 
 
 | Field | Value |
 |---|---|
-| Status | Approved |
+| Status | In progress |
 | Assigned to | devin-laptop |
-| Branch | - |
+| Branch | directive/rfd-blog-engine-blog-featured-images-directive |
 | Base branch | - |
+| Base commit | f01d4282dc2f15309de0468b803d88a29526b89d |
 
 **Status log**
 - 2026-09-23 16:08 · robert-claude-laptop · none → Queued — Blog redesign phase 3; Pillow added via uv sync grant; engine stays Contributor, no publish
 - 2026-09-23 16:09 · robert-claude-laptop · Queued → Approved
+- 2026-09-23 16:10 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-featured-images-directive
 <!-- queue:end -->
