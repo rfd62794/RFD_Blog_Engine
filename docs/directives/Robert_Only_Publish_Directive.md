@@ -114,7 +114,7 @@ messages.
 
 | Field | Value |
 |---|---|
-| Status | Blocked |
+| Status | Queued |
 | Assigned to | devin-laptop |
 | Branch | directive/rfd-blog-engine-robert-only-publish-directive |
 | Base branch | - |
@@ -125,4 +125,5 @@ messages.
 - 2026-09-23 12:44 · robert-claude · Queued → Approved
 - 2026-09-23 12:44 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-robert-only-publish-directive; base origin/main (local main differs)
 - 2026-09-23 12:48 · robert-claude · In progress → Blocked — run 1 died on refused `uv run python -c` before any commit; directive now forbids it
+- 2026-09-23 12:48 · robert-claude · Blocked → Queued
 <!-- queue:end -->
