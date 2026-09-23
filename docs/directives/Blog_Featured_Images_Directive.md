@@ -236,3 +236,17 @@ tool call is blocked, stop and write why in the Status row.
 
 State: files created/edited (paths), whether Pillow was already a dependency (it was not, as of
 2026-09-23), the `uv sync` result, and the final `uv run pytest -q` line.
+
+<!-- queue:start -->
+## Queue
+
+| Field | Value |
+|---|---|
+| Status | Queued |
+| Assigned to | devin-laptop |
+| Branch | - |
+| Base branch | - |
+
+**Status log**
+- 2026-09-23 16:08 · robert-claude-laptop · none → Queued — Blog redesign phase 3; Pillow added via uv sync grant; engine stays Contributor, no publish
+<!-- queue:end -->
