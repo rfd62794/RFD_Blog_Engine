@@ -244,11 +244,12 @@ State: files created (paths), `theme/build.py` output including which fonts it r
 
 | Field | Value |
 |---|---|
-| Status | Queued |
+| Status | Approved |
 | Assigned to | devin-laptop |
 | Branch | - |
 | Base branch | - |
 
 **Status log**
 - 2026-09-23 16:08 · robert-claude-laptop · none → Queued — Blog redesign phase 1 (plan merged to main); Robert deferred design decisions to Claude 2026-09-23
+- 2026-09-23 16:09 · robert-claude-laptop · Queued → Approved
 <!-- queue:end -->
