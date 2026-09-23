@@ -21,7 +21,7 @@ cp .env.example .env
 ```
 
 Required credentials:
-- WordPress: `WP_URL`, `WP_USER`, `WP_APP_PASSWORD`
+- WordPress: `WORDPRESS_URL`, `WORDPRESS_USER`, `WORDPRESS_APP_PASSWORD`
 - Dev.to: `DEVTO_API_KEY`
 - Model router: `GROQ_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`, `OLLAMA_MODEL`
 
@@ -71,7 +71,7 @@ before creating anything on Dev.to.
 ### Running tests
 
 ```bash
-uv run pytest tests/ -v
+uv run pytest -q
 ```
 
 ### Project structure

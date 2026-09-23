@@ -23,9 +23,9 @@ def test_env_example_has_required_keys():
     load_dotenv(env_example)
     
     required_keys = [
-        "WP_URL",
-        "WP_USER",
-        "WP_APP_PASSWORD",
+        "WORDPRESS_URL",
+        "WORDPRESS_USER",
+        "WORDPRESS_APP_PASSWORD",
         "DEVTO_API_KEY",
         "GROQ_API_KEY",
         "GEMINI_API_KEY",
