@@ -33,3 +33,17 @@ errors (`No module named 'structlog'`): pytest is only in `[project.optional-dep
   `git log`, `git show`, `git add`, `git commit`, `ls`, `cat`, `head`, `tail`, `wc`, `grep`, `mkdir`.
 - Work only on your `directive/<slug>` branch. **Never commit to main, never push, never deploy.**
 - If a tool call is genuinely blocked, stop and write why in the Status row.
+
+<!-- queue:start -->
+## Queue
+
+| Field | Value |
+|---|---|
+| Status | Queued |
+| Assigned to | devin |
+| Branch | - |
+| Base branch | - |
+
+**Status log**
+- 2026-09-23 07:50 · robert-claude · none → Queued — Fix first (work order): fresh-checkout test command broken. Robert: keep projects moving.
+<!-- queue:end -->
