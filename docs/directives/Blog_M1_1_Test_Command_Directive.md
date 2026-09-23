@@ -20,7 +20,7 @@ errors (`No module named 'structlog'`): pytest is only in `[project.optional-dep
 
 ## 3. Completion criteria
 
-- [ ] `uv run pytest -q` passes with 188 tests (or more), 0 failed, 0 skipped.
+- [x] `uv run pytest -q` passes with 188 tests (or more), 0 failed, 0 skipped.
 
 ## 4. Rules for this run
 
