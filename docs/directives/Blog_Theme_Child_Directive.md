@@ -238,3 +238,17 @@ call is blocked, stop and write why in the Status row.
 
 State: files created (paths), `theme/build.py` output including which fonts it reported missing,
 `uv run pytest -q` final line, and confirmation that no WordPress runtime was invoked at any point.
+
+<!-- queue:start -->
+## Queue
+
+| Field | Value |
+|---|---|
+| Status | Queued |
+| Assigned to | devin-laptop |
+| Branch | - |
+| Base branch | - |
+
+**Status log**
+- 2026-09-23 16:08 · robert-claude-laptop · none → Queued — Blog redesign phase 1 (plan merged to main); Robert deferred design decisions to Claude 2026-09-23
+<!-- queue:end -->
