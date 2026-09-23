@@ -112,12 +112,14 @@ messages.
 
 | Field | Value |
 |---|---|
-| Status | Approved |
+| Status | In progress |
 | Assigned to | devin-laptop |
-| Branch | - |
+| Branch | directive/rfd-blog-engine-robert-only-publish-directive |
 | Base branch | - |
+| Base commit | 6b5edd7ddc9fba100c182b7d8789b432e62ca419 |
 
 **Status log**
 - 2026-09-23 12:44 · robert-claude · none → Queued — Robert 2026-09-23: enforce 'never publish without Robert' in the tool
 - 2026-09-23 12:44 · robert-claude · Queued → Approved
+- 2026-09-23 12:44 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-robert-only-publish-directive; base origin/main (local main differs)
 <!-- queue:end -->
