@@ -112,11 +112,12 @@ messages.
 
 | Field | Value |
 |---|---|
-| Status | Queued |
+| Status | Approved |
 | Assigned to | devin-laptop |
 | Branch | - |
 | Base branch | - |
 
 **Status log**
 - 2026-09-23 12:44 · robert-claude · none → Queued — Robert 2026-09-23: enforce 'never publish without Robert' in the tool
+- 2026-09-23 12:44 · robert-claude · Queued → Approved
 <!-- queue:end -->
