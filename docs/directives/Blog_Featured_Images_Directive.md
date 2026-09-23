@@ -240,7 +240,7 @@ State: files created/edited (paths), the Pillow version imported, and the final 
 
 | Field | Value |
 |---|---|
-| Status | Blocked |
+| Status | Queued |
 | Assigned to | devin-laptop |
 | Branch | directive/rfd-blog-engine-blog-featured-images-directive |
 | Base branch | - |
@@ -251,4 +251,5 @@ State: files created/edited (paths), the Pillow version imported, and the final 
 - 2026-09-23 16:09 · robert-claude-laptop · Queued → Approved
 - 2026-09-23 16:10 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-featured-images-directive
 - 2026-09-23 16:26 · agentflow-tick · In progress → Blocked — process gone while the directive still reads In progress; the worktree holds uncommitted files; resume cap reached (2/2)
+- 2026-09-23 17:00 · robert-claude-laptop · Blocked → Queued
 <!-- queue:end -->
