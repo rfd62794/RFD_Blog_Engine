@@ -39,7 +39,7 @@ errors (`No module named 'structlog'`): pytest is only in `[project.optional-dep
 
 | Field | Value |
 |---|---|
-| Status | In progress |
+| Status | Blocked |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-m1-1-test-command-directive |
 | Base branch | - |
@@ -49,4 +49,5 @@ errors (`No module named 'structlog'`): pytest is only in `[project.optional-dep
 - 2026-09-23 07:50 · robert-claude · none → Queued — Fix first (work order): fresh-checkout test command broken. Robert: keep projects moving.
 - 2026-09-23 12:22 · robert-claude · Queued → Approved
 - 2026-09-23 12:22 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-m1-1-test-command-directive; base origin/main (local main differs)
+- 2026-09-23 12:25 · robert-claude · In progress → Blocked — run died 12:2x on a refused call while editing README (188 tests were green); requeue to finish from the worktree
 <!-- queue:end -->
