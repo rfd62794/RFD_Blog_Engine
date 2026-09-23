@@ -33,10 +33,9 @@ zero-images state in the audit cannot recur.
 
 ## Pillow
 
-Checked 2026-09-23: `pyproject.toml` `[project].dependencies` does **not** list Pillow. Add
-`"pillow>=10"` to that list, then `uv sync` is a required Sandbox need before any test using it can
-run. No other network access is permitted — `uv sync` only, resolving from the existing lock/index
-configuration, not a general internet fetch.
+Checked 2026-09-23 16:10: `pyproject.toml` `[project].dependencies` lists `"pillow>=10"` (Pillow
+12.3.0 in `uv.lock`) and the environment carries it. Do not run `uv sync`, `uv add` or `pip`; if
+`import PIL` fails in the worktree, stop and write that in the Status row. No network access at all.
 
 ## Sandbox needs
 
@@ -167,8 +166,8 @@ as part of wiring the gate even though the file is not separately listed above.
 - The engine's WordPress user stays Contributor. Nothing in this directive may set WordPress status
   to `publish` or `future` — `validate_writable_status` and `WRITABLE_WP_STATUSES` are untouched.
 - Do not backfill existing posts with generated images — that is a separate, later directive.
-- No network access beyond `uv sync` (dependency resolution only) — no live WordPress calls, no
-  font downloads. All new tests mock HTTP.
+- No network access — no `uv sync`, no live WordPress calls, no font downloads. All new tests
+  mock HTTP.
 - No changes to `content_guard.py` — the metadata gate is new and separate from it; both run.
 - No Playwright, no visual/screenshot testing.
 
@@ -184,7 +183,6 @@ $ uv run pytest -q
 
 After the changes:
 ```
-uv sync
 uv run pytest -q tests/test_lanes.py
 uv run pytest -q tests/test_featured_image.py
 uv run pytest -q tests/test_wordpress_media.py
@@ -215,7 +213,7 @@ adds, all passing, zero failed, zero errored.
 ## 6. Rules for this run
 
 The run is NON-INTERACTIVE and any tool call needing confirmation ends it. Never install, download,
-or fetch beyond the one permitted `uv sync`. Never read outside the worktree. Do not search, glob,
+or fetch. Never read outside the worktree. Do not search, glob,
 or hunt — stop and write it in the Status row if something named here is missing. Never commit to
 main, never push, never deploy; work stays on
 `directive/rfd-blog-engine-blog-featured-images-directive`. Free models only, no model config is
@@ -230,13 +228,12 @@ tool call is blocked, stop and write why in the Status row.
 - [ ] `validate_metadata.py` has `check_draft_gate`.
 - [ ] `Publisher.publish_wordpress` renders/uploads a featured image when missing, runs the gate
       before any WordPress push, and passes `featured_media` through to `create_post`.
-- [ ] `pyproject.toml` lists `pillow>=10`; `uv sync` succeeds.
+- [ ] `import PIL` works in the worktree (Pillow is already on main).
 - [ ] All five new/extended test files pass; `uv run pytest -q` is all-green with no regressions.
 
 ## 8. Report
 
-State: files created/edited (paths), whether Pillow was already a dependency (it was not, as of
-2026-09-23), the `uv sync` result, and the final `uv run pytest -q` line.
+State: files created/edited (paths), the Pillow version imported, and the final `uv run pytest -q` line.
 
 <!-- queue:start -->
 ## Queue
