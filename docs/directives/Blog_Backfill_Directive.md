@@ -593,7 +593,7 @@ behaviour for this run, not a bug to work around:
 
 | Field | Value |
 |---|---|
-| Status | Queued |
+| Status | Approved |
 | Assigned to | devin |
 | Branch | - |
 | Base branch | - |
@@ -601,4 +601,5 @@ behaviour for this run, not a bug to work around:
 
 **Status log**
 - 2026-09-23 20:07 · robert-claude-laptop · none → Queued — Phase 4 of the blog redesign; Robert approved the design 2026-09-23 ("full push"). Depends on Blog_Featured_Images; live --apply is gated on an Editor-capable credential (section 10), Robert's call.
+- 2026-09-23 20:08 · robert-claude-laptop · Queued → Approved — approved; held for: Blog_Featured_Images_Directive.md is Approved
 <!-- queue:end -->
