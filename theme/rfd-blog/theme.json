@@ -5,16 +5,16 @@
 		"appearanceTools": true,
 		"color": {
 			"palette": [
-				{ "slug": "bg", "name": "Background", "color": "#ffffff" },
-				{ "slug": "surface", "name": "Surface", "color": "#f8fafc" },
-				{ "slug": "text", "name": "Text", "color": "#0f172a" },
-				{ "slug": "muted", "name": "Muted", "color": "#475569" },
-				{ "slug": "line", "name": "Line", "color": "#e2e8f0" },
-				{ "slug": "accent", "name": "Accent", "color": "#1e3a8a" },
-				{ "slug": "accent-soft", "name": "Accent Soft", "color": "#eef2ff" },
-				{ "slug": "result", "name": "Result", "color": "#0f766e" },
-				{ "slug": "lane-consulting", "name": "Lane: Consulting", "color": "#1e3a8a" },
-				{ "slug": "lane-building", "name": "Lane: Building", "color": "#0e7490" }
+				{ "slug": "bg", "name": "Background", "color": "#0b1326" },
+				{ "slug": "surface", "name": "Surface", "color": "#171f33" },
+				{ "slug": "text", "name": "Text", "color": "#dbe2fd" },
+				{ "slug": "muted", "name": "Muted", "color": "#bdc8d1" },
+				{ "slug": "line", "name": "Line", "color": "#3e484f" },
+				{ "slug": "accent", "name": "Accent", "color": "#8ed5ff" },
+				{ "slug": "accent-soft", "name": "Accent Soft", "color": "rgba(142, 213, 255, 0.12)" },
+				{ "slug": "result", "name": "Result", "color": "#4edea3" },
+				{ "slug": "lane-consulting", "name": "Lane: Consulting", "color": "#bccbff" },
+				{ "slug": "lane-building", "name": "Lane: Building", "color": "#8ed5ff" }
 			]
 		},
 		"layout": {
@@ -24,30 +24,30 @@
 		"typography": {
 			"fontFamilies": [
 				{
-					"slug": "inter",
-					"name": "Inter",
-					"fontFamily": "Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+					"slug": "sora",
+					"name": "Sora",
+					"fontFamily": "Sora, system-ui, sans-serif",
 					"fontFace": [
 						{
-							"fontFamily": "Inter",
+							"fontFamily": "Sora",
+							"fontWeight": "700",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/sora-latin-700-normal.woff2" ]
+						}
+					]
+				},
+				{
+					"slug": "hanken-grotesk",
+					"name": "Hanken Grotesk",
+					"fontFamily": "\"Hanken Grotesk\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "400",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
-							"src": [ "file:./assets/fonts/inter-latin-400-normal.woff2" ]
-						},
-						{
-							"fontFamily": "Inter",
-							"fontWeight": "600",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [ "file:./assets/fonts/inter-latin-600-normal.woff2" ]
-						},
-						{
-							"fontFamily": "Inter",
-							"fontWeight": "800",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [ "file:./assets/fonts/inter-latin-800-normal.woff2" ]
+							"src": [ "file:./assets/fonts/hanken-grotesk-latin-400-normal.woff2" ]
 						}
 					]
 				},
@@ -70,12 +70,12 @@
 	},
 	"styles": {
 		"typography": {
-			"fontFamily": "var(--wp--preset--font-family--inter)"
+			"fontFamily": "var(--wp--preset--font-family--hanken-grotesk)"
 		},
 		"elements": {
 			"heading": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--inter)"
+					"fontFamily": "var(--wp--preset--font-family--sora)"
 				}
 			},
 			"code": {
