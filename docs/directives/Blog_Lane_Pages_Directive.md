@@ -223,7 +223,7 @@ Include this 10-line install note for Robert, verbatim:
 
 | Field | Value |
 |---|---|
-| Status | In progress |
+| Status | Review |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-lane-pages-directive |
 | Base branch | - |
@@ -234,4 +234,5 @@ Include this 10-line install note for Robert, verbatim:
 - 2026-09-23 21:31 · robert-claude-laptop · none → Queued — Phase 5b, approved by Robert 2026-09-23 ("Approved" to two lane pages, no categories page). Gated on Blog_Backfill so every post carries a lane first.
 - 2026-09-23 21:32 · robert-claude-laptop · Queued → Approved — approved; held for: Blog_Backfill_Directive.md is Approved
 - 2026-09-23 22:14 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-lane-pages-directive; lane=strong
+- 2026-09-23 22:17 · devin · In progress → Review
 <!-- queue:end -->
