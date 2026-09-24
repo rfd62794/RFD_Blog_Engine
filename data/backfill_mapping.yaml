@@ -1,0 +1,286 @@
+# data/backfill_mapping.yaml
+# Drafted by Claude 2026-09-23 from the live post titles/slugs at
+# https://blog.rfditservices.com/wp-json/wp/v2/posts. Robert approves the
+# category/lane call per post as a pending revision in WordPress; nothing
+# here is final until he does.
+posts:
+  - slug: automating-60-of-my-job-data-pipeline-lead-enrichment-lessons
+    wp_id: 17
+    category: "Dialer Ops"
+    tags: [dialer-automation, lead-enrichment, data-pipeline]
+    excerpt: keep
+  - slug: building-rpgcore-cross-language-architecture-for-multi-genre-games
+    wp_id: 18
+    category: "Games"
+    tags: [rpgcore, game-architecture, rust]
+    excerpt: keep
+  - slug: solana-arbitrage-what-i-learned-from-400-trades-and-4-in-losses
+    wp_id: 19
+    category: "Sessions"
+    tags: [solana, arbitrage, trading-bot]
+    excerpt: keep
+  - slug: teaching-pong-to-play-itself-my-first-neural-network-experiment
+    wp_id: 64
+    category: "Agents & Automation"
+    tags: [neural-network, pong, machine-learning]
+    excerpt: keep
+  - slug: why-i-put-a-genetic-system-in-a-turtle-racing-game
+    wp_id: 66
+    category: "Games"
+    tags: [genetic-algorithm, turtle-racing, game-design]
+    excerpt: keep
+  - slug: from-genetics-to-tactics-how-a-breeding-system-became-a-squad-game
+    wp_id: 65
+    category: "Games"
+    tags: [breeding-system, squad-game, genetics]
+    excerpt: keep
+  - slug: the-insight-lens-visualizing-the-dialer-blindspot
+    wp_id: 57
+    category: "Contact Center"
+    tags: [chrome-extension, contact-center, dialer-visibility]
+    excerpt: keep
+  - slug: the-hybrid-engine-rust-performance-python-agility
+    wp_id: 58
+    category: "Dev Notes"
+    tags: [rust, python, game-engine]
+    excerpt: keep
+  - slug: the-engine-legacy-from-asteroids-to-rpgcore
+    wp_id: 59
+    category: "Games"
+    tags: [rpgcore, game-history, engine-design]
+    excerpt: keep
+  - slug: what-ants-taught-me-about-systems-design
+    wp_id: 63
+    category: "Dev Notes"
+    tags: [systems-design, emergence, software-architecture]
+    excerpt: keep
+  - slug: building-a-mobile-idle-game-in-rust-bevy-without-a-game-engine-background
+    wp_id: 62
+    category: "Games"
+    tags: [bevy, rust, idle-game]
+    excerpt: keep
+  - slug: i-built-a-cli-to-replace-expensive-ai-directive-generation
+    wp_id: 61
+    category: "Agents & Automation"
+    tags: [cli-tools, ai-agents, automation]
+    excerpt: keep
+  - slug: from-pong-ai-to-play-store-how-a-childhood-hobby-became-a-rust-game-engine
+    wp_id: 16
+    category: "Games"
+    tags: [rust, game-engine, pong-ai]
+    excerpt: keep
+  - slug: i-built-the-same-game-for-20-years-without-knowing-it
+    wp_id: 92
+    category: "Sessions"
+    tags: [game-design, career-reflection, patterns]
+    excerpt: keep
+  - slug: the-spec-is-load-bearing
+    wp_id: 94
+    category: "Sessions"
+    tags: [specs, ai-agents, software-process]
+    excerpt: keep
+  - slug: the-verification-phase-nobody-builds
+    wp_id: 107
+    category: "Sessions"
+    tags: [verification, testing, ai-agents]
+    excerpt: keep
+  - slug: a-side-effect-of-a-side-effect
+    wp_id: 95
+    category: "Sessions"
+    tags: [debugging, systems-thinking, session-log]
+    excerpt: keep
+  - slug: how-to-automate-dnc-removal-requests-in-convoso
+    wp_id: 146
+    category: "Convoso"
+    tags: [convoso, dnc-compliance, automation]
+    excerpt: keep
+  - slug: zero-wasnt-zero
+    wp_id: 118
+    category: "Sessions"
+    tags: [debugging, data-integrity, session-log]
+    excerpt: keep
+  - slug: how-to-monitor-dialer-list-health-in-convoso
+    wp_id: 147
+    category: "Convoso"
+    tags: [convoso, dialer-ops, list-health]
+    excerpt: keep
+  - slug: borrowing-code-vs-reinventing-the-wheel
+    wp_id: 97
+    category: "Dev Notes"
+    tags: [code-reuse, software-design, engineering]
+    excerpt: keep
+  - slug: how-to-forecast-end-of-day-call-center-performance
+    wp_id: 148
+    category: "Contact Center"
+    tags: [forecasting, contact-center, kpi]
+    excerpt: keep
+  - slug: eight-shorts-same-timeslot-the-engine-found-them
+    wp_id: 190
+    category: "Agents & Automation"
+    tags: [content-automation, youtube-shorts, pipeline]
+    excerpt: keep
+  - slug: i-didnt-plan-a-curriculum-i-just-kept-solving-problems
+    wp_id: 191
+    category: "Sessions"
+    tags: [learning, problem-solving, career]
+    excerpt: keep
+  - slug: the-agent-told-me-it-was-done-the-tests-said-otherwise
+    wp_id: 100
+    category: "Agents & Automation"
+    tags: [ai-agents, testing, verification]
+    excerpt: keep
+  - slug: how-to-automate-call-log-extraction-from-convoso
+    wp_id: 152
+    category: "Convoso"
+    tags: [convoso, call-logs, automation]
+    excerpt: keep
+  - slug: i-processed-671000-records-in-6-minutes-and-32-seconds
+    wp_id: 101
+    category: "Agents & Automation"
+    tags: [data-pipeline, performance, python]
+    excerpt: keep
+  - slug: how-much-should-dnc-compliance-automation-cost-to-run
+    wp_id: 193
+    category: "DNC & Compliance"
+    tags: [dnc-compliance, cost-analysis, automation]
+    excerpt: keep
+  - slug: a-120-bill-for-a-service-that-runs-sixty-seconds-a-day
+    wp_id: 194
+    category: "DNC & Compliance"
+    tags: [cloud-costs, dnc-compliance, infrastructure]
+    excerpt: keep
+  - slug: how-to-build-a-contact-center-performance-dashboard-in-google-sheets
+    wp_id: 153
+    category: "Sheets Automation"
+    tags: [google-sheets, contact-center, dashboard]
+    excerpt: keep
+  - slug: building-in-the-margins
+    wp_id: 102
+    category: "Sessions"
+    tags: [side-projects, time-management, session-log]
+    excerpt: keep
+  - slug: the-bug-that-looked-like-slow-and-was-actually-broken
+    wp_id: 195
+    category: "Dev Notes"
+    tags: [debugging, performance, root-cause]
+    excerpt: keep
+  - slug: how-to-automate-list-management-in-telesero-vicidial
+    wp_id: 154
+    category: "Dialer Ops"
+    tags: [vicidial, list-management, dialer-ops]
+    excerpt: keep
+  - slug: i-shipped-my-second-demo-tonight-and-the-relief-was-out-of-proportion
+    wp_id: 214
+    category: "Sessions"
+    tags: [game-dev, shipping, session-log]
+    excerpt: keep
+  - slug: the-pipeline-that-runs-while-i-sleep
+    wp_id: 103
+    category: "Agents & Automation"
+    tags: [automation, pipeline, scheduling]
+    excerpt: keep
+  - slug: two-forecasting-systems-and-only-one-of-them-was-real
+    wp_id: 196
+    category: "Contact Center"
+    tags: [forecasting, contact-center, data-validation]
+    excerpt: keep
+  - slug: i-shipped-a-game-to-android-and-the-web-from-the-same-codebase
+    wp_id: 104
+    category: "Games"
+    tags: [cross-platform, android, game-dev]
+    excerpt: keep
+  - slug: the-number-was-wrong-by-2x-and-i-found-it-by-predicting-the-wrong-number-in-advance
+    wp_id: 197
+    category: "Dev Notes"
+    tags: [debugging, forecasting, data-validation]
+    excerpt: keep
+  - slug: how-to-integrate-convoso-with-zoom-contact-center
+    wp_id: 158
+    category: "Convoso"
+    tags: [convoso, zoom, contact-center]
+    excerpt: keep
+  - slug: weekend-warrior-mode
+    wp_id: 105
+    category: "Sessions"
+    tags: [side-projects, work-life-balance, session-log]
+    excerpt: keep
+  - slug: the-rule-said-0-25-the-math-said-it-was-actually-enforcing-0-056
+    wp_id: 198
+    category: "DNC & Compliance"
+    tags: [compliance, dnc, math-bug]
+    excerpt: keep
+  - slug: how-to-automate-lead-list-import-in-convoso
+    wp_id: 159
+    category: "Convoso"
+    tags: [convoso, lead-lists, automation]
+    excerpt: keep
+  - slug: i-lost-the-plot-on-my-own-project
+    wp_id: 106
+    category: "Sessions"
+    tags: [project-management, reflection, session-log]
+    excerpt: keep
+  - slug: every-room-looked-different-and-thats-exactly-what-told-me-they-were-all-the-same-bug
+    wp_id: 199
+    category: "Games"
+    tags: [game-dev, debugging, level-design]
+    excerpt: keep
+  - slug: how-to-build-a-tcpa-compliance-audit-trail-for-your-contact-center
+    wp_id: 160
+    category: "DNC & Compliance"
+    tags: [tcpa, compliance, audit-trail]
+    excerpt: keep
+  - slug: i-didnt-build-the-pipeline-i-planned-i-built-the-one-that-worked
+    wp_id: 109
+    category: "Sessions"
+    tags: [pipeline, iteration, session-log]
+    excerpt: keep
+  - slug: two-numbers-that-looked-close-enough-to-share-a-formula-until-i-checked
+    wp_id: 200
+    category: "Dev Notes"
+    tags: [debugging, data-validation, formulas]
+    excerpt: keep
+  - slug: how-to-handle-reassigned-phone-numbers-in-outbound-calling
+    wp_id: 161
+    category: "DNC & Compliance"
+    tags: [tcpa, phone-numbers, compliance]
+    excerpt: keep
+  - slug: a-year-in-i-realized-i-had-automated-my-job-away
+    wp_id: 111
+    category: "Sessions"
+    tags: [automation, career, reflection]
+    excerpt: keep
+  - slug: the-boring-layer-that-made-the-other-two-work
+    wp_id: 201
+    category: "Dev Notes"
+    tags: [infrastructure, architecture, engineering]
+    excerpt: keep
+  - slug: how-to-manage-ai-coding-agents-without-losing-control
+    wp_id: 166
+    category: "Agents & Automation"
+    tags: [ai-agents, directive-format, engineering-process]
+    excerpt: keep
+  - slug: the-dnc-request-that-used-to-take-15-minutes-now-takes-3-seconds
+    wp_id: 112
+    category: "DNC & Compliance"
+    tags: [dnc-compliance, automation, contact-center]
+    excerpt: keep
+  - slug: how-to-automate-youtube-shorts-with-python-and-ffmpeg
+    wp_id: 167
+    category: "Agents & Automation"
+    tags: [youtube-automation, ffmpeg, python]
+    excerpt: keep
+  - slug: i-stopped-watching-the-dialer-and-built-something-to-watch-it-for-me
+    wp_id: 113
+    category: "Dialer Ops"
+    tags: [dialer-ops, monitoring, automation]
+    excerpt: keep
+  - slug: how-to-build-an-idle-game-in-rust-with-bevy
+    wp_id: 168
+    category: "Games"
+    tags: [bevy, rust, idle-game]
+    excerpt: keep
+  - slug: by-4pm-i-know-exactly-where-well-close-at-6pm
+    wp_id: 114
+    category: "Contact Center"
+    tags: [forecasting, contact-center, kpi]
+    excerpt: keep
