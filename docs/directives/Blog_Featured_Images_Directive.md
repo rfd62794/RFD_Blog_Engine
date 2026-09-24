@@ -243,7 +243,7 @@ State: files created/edited (paths), the Pillow version imported, and the final 
 
 | Field | Value |
 |---|---|
-| Status | In progress |
+| Status | Review |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-featured-images-directive |
 | Base branch | - |
@@ -257,4 +257,5 @@ State: files created/edited (paths), the Pillow version imported, and the final 
 - 2026-09-23 17:00 · robert-claude-laptop · Blocked → Queued
 - 2026-09-23 17:00 · robert-claude-laptop · Queued → Approved
 - 2026-09-23 20:33 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-featured-images-directive; lane=strong
+- 2026-09-23 20:42 · devin-overseer · In progress → Review — Resumed WIP commit 9feb8dd; fixed regressions: upload_media mock + 3-tag draft in test_robert_only_publish, DEVTO_API_KEY autouse fixture in test_publisher. uv run pytest -q: 239 passed, 2 warnings.
 <!-- queue:end -->
