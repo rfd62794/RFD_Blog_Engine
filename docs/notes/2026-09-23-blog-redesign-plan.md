@@ -178,10 +178,12 @@ Robert installs and approves.
 | 3 | Engine: `featured_image.py` generates the 1200x630 card per lane (Pillow, Inter bundled), uploads via the media endpoint, sets `featured_media` on create and update. `validate_metadata.py` becomes a hard gate: no featured image, no meaningful category, fewer than three tags means no push. Lane derived from category in one mapping file. | Devin | 0 |
 | 4 | Backfill: the engine walks every existing post, assigns lane and category from a mapping Claude drafts and Robert approves, generates the featured image, writes excerpts where empty, and submits each as a pending revision. | Devin builds the walker, Claude drafts the mapping, Robert approves in WordPress | 60 min across a week |
 | 5 | Sister-site alignment in RFD_IT_Services_Site: arcade footer "Writing" becomes "Blog"; office nav gains "Blog" next to "Games"; both footers get the same three-list structure as the blog. | Devin | 0, merge is Robert's |
+| 5b | Lane pages: a Consulting page and a Building page, each a curated archive on a `lane` page template in the child theme: standfirst for who it is for, the lane's categories as pills, the post grid filtered to the lane, the lane CTA at the bottom. Deep-link targets for the office, the arcade and search visitors; the home stays the mixed feed. | Devin | 10 min: publish the two pages |
 | 6 | QA: Lighthouse on home and one post per lane, both modes, phone width; check OG images on LinkedIn and Dev.to; check every cross-link resolves; check RSS validates. Results as a note in the theme repo. | Claude via a Haiku agent | 0 |
 
 Phases 1, 3 and 5 are independent and can run in parallel. Phase 2 waits on
-1; phase 4 on 2 and 3; phase 6 on 4.
+1; phase 4 on 2 and 3; phase 5b on 4 (every post must carry a lane first);
+phase 6 on 4 and 5b.
 
 ## 7. What is deliberately left out
 
@@ -213,3 +215,20 @@ Phases 1, 3 and 5 are independent and can run in parallel. Phase 2 waits on
 2. The two lane names and the category list in section 4.1.
 3. Whether the office's nav should gain "Blog" (phase 5) or keep the
    footer-only link.
+
+## 10. Decisions taken 2026-09-23 (Robert, evening)
+
+- Design approved as drafted ("I approve your design choices, full push"): self-hosted WP,
+  child theme, lanes consulting/building, Blog in the office nav. Theme look approved from a
+  static render; phases 1, 3 and 5 merged the same evening, 5 deployed.
+- No categories sub-page: the pill row is the index and WordPress archives cover each
+  category. Two lane pages instead (phase 5b above). No blog About, no series page, no search
+  for now.
+- Core shared nav across office, arcade and blog: one row, identical core in this order:
+  Consulting · Blog · Arcade · About · Contact (button). Each site's own items are appended at
+  the END of the same row, chosen by the site's base URL: office adds Work · Writing · Résumé,
+  arcade adds Studio, the blog adds nothing. Source of truth is `data/nav.yaml` in
+  RFD_IT_Services_Site (Shared_Nav directive); the blog theme header stays hard-coded and a
+  test there catches drift. The office home is the main door and shows the three homes as cards.
+- Phase 4 live apply needs a credential with `edit_published_posts` (Robert's call, see
+  Blog_Backfill_Directive section 10); the Contributor credential cannot edit published posts.
