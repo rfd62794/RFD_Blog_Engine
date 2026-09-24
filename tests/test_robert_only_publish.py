@@ -85,6 +85,7 @@ def wp_handler():
         "wp_post_id": 123,
         "wp_url": "https://blog.example.com/test-post"
     })
+    handler.upload_media = AsyncMock(return_value=77)
     # Dev.to syndication only follows a live WordPress post
     handler.get_post = AsyncMock(return_value={
         "id": 123,
@@ -121,7 +122,7 @@ def _approved_draft(drafts_dir: Path, post_id: str = "test-post", **overrides) -
         "status": "approved",
         "content": "Test content",
         "excerpt": "Test excerpt",
-        "tags": ["test"],
+        "tags": ["test", "fixture", "post"],
         "categories": [1],
         "created_at": "2026-01-01T00:00:00Z",
         "updated_at": "2026-01-01T00:00:00Z",

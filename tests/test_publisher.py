@@ -104,6 +104,12 @@ def publisher(db, draft_manager, inventory, wp_handler, devto_handler):
     return Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
 
 
+@pytest.fixture(autouse=True)
+def devto_api_key(monkeypatch):
+    """publish_devto refuses without DEVTO_API_KEY — give every test a fake one."""
+    monkeypatch.setenv("DEVTO_API_KEY", "test-key")
+
+
 @pytest.fixture
 def approved_draft(temp_dir):
     """Create an approved draft JSON file (clean: excerpt + categories present)."""
