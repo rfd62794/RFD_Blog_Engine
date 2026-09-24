@@ -227,6 +227,7 @@ Include this 10-line install note for Robert, verbatim:
 | Assigned to | devin |
 | Branch | - |
 | Base branch | - |
+| Depends on | Blog_Backfill_Directive.md |
 
 **Status log**
 - 2026-09-23 21:31 · robert-claude-laptop · none → Queued — Phase 5b, approved by Robert 2026-09-23 ("Approved" to two lane pages, no categories page). Gated on Blog_Backfill so every post carries a lane first.
