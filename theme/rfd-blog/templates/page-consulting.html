@@ -5,21 +5,35 @@
 	<!-- wp:group {"layout":{"type":"constrained","contentSize":"720px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:heading {"level":1} -->
-		<h1 class="wp-block-heading">Notes</h1>
+		<h1 class="wp-block-heading">Consulting</h1>
 		<!-- /wp:heading -->
 		<!-- wp:paragraph {"className":"standfirst"} -->
-		<p class="standfirst">Notes from a contact-center automation engineer who also ships games.</p>
+		<p class="standfirst">For contact-center operators and small businesses who want automation that pays for itself.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:categories {"showPostCounts":false,"displayAsDropdown":false,"className":"pill-row"} /-->
+	<!-- wp:list {"className":"pill-row"} -->
+	<ul class="pill-row">
+		<!-- wp:list-item -->
+		<li><a href="/category/contact-center/">Contact Center</a></li>
+		<!-- /wp:list-item -->
+		<!-- wp:list-item -->
+		<li><a href="/category/convoso/">Convoso</a></li>
+		<!-- /wp:list-item -->
+		<!-- wp:list-item -->
+		<li><a href="/category/dnc-compliance/">DNC &amp; Compliance</a></li>
+		<!-- /wp:list-item -->
+		<!-- wp:list-item -->
+		<li><a href="/category/dialer-ops/">Dialer Ops</a></li>
+		<!-- /wp:list-item -->
+		<!-- wp:list-item -->
+		<li><a href="/category/sheets-automation/">Sheets Automation</a></li>
+		<!-- /wp:list-item -->
+	</ul>
+	<!-- /wp:list -->
 
-	<!-- wp:paragraph -->
-	<p><a href="/consulting/">Consulting notes</a> &nbsp; <a href="/building/">Building notes</a></p>
-	<!-- /wp:paragraph -->
-
-	<!-- wp:query {"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true},"className":"card-grid three","layout":{"type":"default"}} -->
+	<!-- wp:query {"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false,"lane":"consulting","taxQuery":{"category":["consulting"]}},"className":"card-grid three","layout":{"type":"default"}} -->
 	<div class="wp-block-query card-grid three">
 		<!-- wp:post-template {"className":"card-grid-inner"} -->
 			<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
@@ -36,11 +50,13 @@
 
 		<!-- wp:query-no-results -->
 			<!-- wp:paragraph -->
-			<p>No posts yet.</p>
+			<p>Nothing in this lane yet.</p>
 			<!-- /wp:paragraph -->
 		<!-- /wp:query-no-results -->
 	</div>
 	<!-- /wp:query -->
+
+	<!-- wp:pattern {"slug":"rfd-blog/lane-cta-consulting"} /-->
 </main>
 <!-- /wp:group -->
 
