@@ -593,7 +593,7 @@ behaviour for this run, not a bug to work around:
 
 | Field | Value |
 |---|---|
-| Status | Review |
+| Status | Done |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-backfill-directive |
 | Base branch | - |
@@ -605,4 +605,5 @@ behaviour for this run, not a bug to work around:
 - 2026-09-23 20:08 · robert-claude-laptop · Queued → Approved — approved; held for: Blog_Featured_Images_Directive.md is Approved
 - 2026-09-23 21:49 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-backfill-directive; lane=strong
 - 2026-09-23 21:56 · devin · In progress → Review — backfill.py walker + cli backfill cmd + 56-row mapping + 6 tests; 253 passed. lanes.py and featured_image.py were present. Live --apply needs an Editor-role credential (edit_published_posts); code never sends status.
+- 2026-09-24 08:06 · devin-overseer (delegated) · Review → Done
 <!-- queue:end -->
