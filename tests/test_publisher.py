@@ -73,6 +73,7 @@ def wp_handler(db):
         "wp_post_id": 123,
         "wp_url": "https://blog.rfditservices.com/test-post"
     })
+    handler.upload_media = AsyncMock(return_value=77)
     # Dev.to syndication only follows a live WordPress post
     handler.get_post = AsyncMock(return_value={
         "id": 123,
@@ -103,6 +104,12 @@ def publisher(db, draft_manager, inventory, wp_handler, devto_handler):
     return Publisher(db, draft_manager, inventory, wp_handler, devto_handler)
 
 
+@pytest.fixture(autouse=True)
+def devto_api_key(monkeypatch):
+    """publish_devto refuses without DEVTO_API_KEY — give every test a fake one."""
+    monkeypatch.setenv("DEVTO_API_KEY", "test-key")
+
+
 @pytest.fixture
 def approved_draft(temp_dir):
     """Create an approved draft JSON file (clean: excerpt + categories present)."""
@@ -112,7 +119,7 @@ def approved_draft(temp_dir):
         "status": "approved",
         "content": "Test content",
         "excerpt": "Test excerpt",
-        "tags": ["test"],
+        "tags": ["test", "fixture", "post"],
         "categories": [1],
         "tags_source": "manual",
         "categories_source": "manual",
@@ -514,3 +521,92 @@ def test_publish_devto_calls_update_article_when_devto_id_exists(db, draft_manag
     devto_handler.update_article.assert_called_once()
     devto_handler.create_article.assert_not_called()
     assert result["devto_id"] == 999
+
+
+def test_publish_wordpress_metadata_gate_blocks_push(publisher, wp_handler, temp_dir, inventory):
+    """Draft failing the metadata gate raises before wp.create_post is ever called."""
+    import json
+    draft = {
+        "post_id": "gate-post",
+        "title": "Gate Post",
+        "status": "approved",
+        "content": "Real content",
+        "excerpt": "Real excerpt",
+        "tags": ["only-one"],
+        "categories": ["Uncategorized"],
+        "tags_source": "manual",
+        "categories_source": "manual",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z",
+        "approved_at": "2024-01-01T00:00:00Z",
+        "approved_by": "human",
+        "wp_post_id": None,
+        "wp_url": None,
+        "devto_id": None,
+        "devto_url": None,
+        "published_at": None,
+        "revision_count": 0,
+        "generation_source": "external"
+    }
+    draft_path = temp_dir / "gate-post.json"
+    with open(draft_path, "w") as f:
+        json.dump(draft, f)
+
+    with patch.object(inventory, "update_status"):
+        with pytest.raises(ValueError, match="failed the metadata gate"):
+            asyncio.run(publisher.publish_wordpress("gate-post"))
+
+    wp_handler.create_post.assert_not_called()
+
+
+def test_publish_wordpress_generates_featured_image_when_missing(publisher, approved_draft, wp_handler, inventory):
+    """Complete draft without featured_media_id: render and upload_media run
+    once each and create_post receives the resulting featured_media."""
+    with patch.object(inventory, "update_status"):
+        with patch("blog_engine.core.featured_image.render") as mock_render:
+            asyncio.run(publisher.publish_wordpress("test-post"))
+
+    mock_render.assert_called_once()
+    assert mock_render.call_args[1]["title"] == "Test Post"
+    wp_handler.upload_media.assert_called_once()
+    assert wp_handler.create_post.call_args[1]["featured_media"] == 77
+
+
+def test_publish_wordpress_skips_render_when_featured_media_set(publisher, draft_manager, wp_handler, temp_dir, inventory):
+    """Draft that already has featured_media_id: no render, no upload —
+    create_post still gets the existing id."""
+    import json
+    draft = {
+        "post_id": "has-image",
+        "title": "Has Image",
+        "status": "approved",
+        "content": "Real content",
+        "excerpt": "Real excerpt",
+        "tags": ["one", "two", "three"],
+        "categories": ["Dev Notes"],
+        "tags_source": "manual",
+        "categories_source": "manual",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z",
+        "approved_at": "2024-01-01T00:00:00Z",
+        "approved_by": "human",
+        "wp_post_id": None,
+        "wp_url": None,
+        "featured_media_id": 55,
+        "devto_id": None,
+        "devto_url": None,
+        "published_at": None,
+        "revision_count": 0,
+        "generation_source": "external"
+    }
+    draft_path = temp_dir / "has-image.json"
+    with open(draft_path, "w") as f:
+        json.dump(draft, f)
+
+    with patch.object(inventory, "update_status"):
+        with patch("blog_engine.core.featured_image.render") as mock_render:
+            asyncio.run(publisher.publish_wordpress("has-image"))
+
+    mock_render.assert_not_called()
+    wp_handler.upload_media.assert_not_called()
+    assert wp_handler.create_post.call_args[1]["featured_media"] == 55

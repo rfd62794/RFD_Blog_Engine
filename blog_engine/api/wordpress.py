@@ -4,6 +4,9 @@ blog_engine/api/wordpress.py
 WordPress REST API handler for rfd-blog-engine.
 """
 
+from pathlib import Path
+import httpx
+
 from blog_engine.infra.base_api_handler import BaseAPIHandler, BlogEngineHTTPError
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
@@ -49,7 +52,8 @@ class WordPressHandler(BaseAPIHandler):
         excerpt: str = "",
         tags: list[str] = None,
         categories: list[str] = None,
-        status: str = "draft"
+        status: str = "draft",
+        featured_media: int = None
     ) -> dict:
         """
         Create a WordPress post.
@@ -86,6 +90,8 @@ class WordPressHandler(BaseAPIHandler):
             "tags": tags,
             "categories": categories
         }
+        if featured_media is not None:
+            payload["featured_media"] = featured_media
 
         try:
             response = await self._make_request(
@@ -126,6 +132,38 @@ class WordPressHandler(BaseAPIHandler):
             )
             raise
     
+    async def upload_media(self, path: str, alt: str) -> int:
+        """
+        Upload an image file to the WordPress media library and set its alt
+        text. Returns the media ID.
+
+        The media endpoint is multipart, which _make_request does not
+        support, so the upload POST is built with httpx.AsyncClient
+        directly; the alt_text update is an ordinary JSON call that reuses
+        _make_request's retry/backoff path.
+        """
+        data = Path(path).read_bytes()
+        url = f"{self.base_url}/wp-json/wp/v2/media"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                auth=self.auth,
+                files={"file": (Path(path).name, data, "image/png")}
+            )
+
+        media_id = response.json()["id"]
+
+        await self._make_request(
+            "POST",
+            f"{self.base_url}/wp-json/wp/v2/media/{media_id}",
+            auth=self.auth,
+            json={"alt_text": alt}
+        )
+
+        self.logger.info("wp_media_uploaded", media_id=media_id)
+        return int(media_id)
+
     async def update_post(
         self,
         post_id: str,

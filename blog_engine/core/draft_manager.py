@@ -83,6 +83,7 @@ class DraftManager:
             "approved_by": None,
             "wp_post_id": None,
             "wp_url": None,
+            "featured_media_id": None,
             "devto_id": None,
             "devto_url": None,
             "published_at": None,
