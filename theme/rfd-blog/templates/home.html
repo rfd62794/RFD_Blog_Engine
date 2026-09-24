@@ -1,0 +1,43 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained","wideSize":"1080px","contentSize":"1080px"}} -->
+<main class="wp-block-group">
+	<!-- wp:group {"layout":{"type":"constrained","contentSize":"720px"}} -->
+	<div class="wp-block-group">
+		<!-- wp:heading {"level":1} -->
+		<h1 class="wp-block-heading">Notes</h1>
+		<!-- /wp:heading -->
+		<!-- wp:paragraph {"className":"standfirst"} -->
+		<p class="standfirst">Notes from a contact-center automation engineer who also ships games.</p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:categories {"showPostCounts":false,"displayAsDropdown":false,"className":"pill-row"} /-->
+
+	<!-- wp:query {"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true},"className":"card-grid three","layout":{"type":"default"}} -->
+	<div class="wp-block-query card-grid three">
+		<!-- wp:post-template {"className":"card-grid-inner"} -->
+			<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+			<!-- wp:post-terms {"term":"category","className":"chip"} /-->
+			<!-- wp:post-title {"isLink":true,"level":2} /-->
+			<!-- wp:post-excerpt {"moreText":"","excerptLength":24} /-->
+			<!-- wp:post-date {"isLink":false} /-->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+			<!-- wp:paragraph -->
+			<p>No posts yet.</p>
+			<!-- /wp:paragraph -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -1,0 +1,88 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"color": {
+			"palette": [
+				{ "slug": "bg", "name": "Background", "color": "#ffffff" },
+				{ "slug": "surface", "name": "Surface", "color": "#f8fafc" },
+				{ "slug": "text", "name": "Text", "color": "#0f172a" },
+				{ "slug": "muted", "name": "Muted", "color": "#475569" },
+				{ "slug": "line", "name": "Line", "color": "#e2e8f0" },
+				{ "slug": "accent", "name": "Accent", "color": "#1e3a8a" },
+				{ "slug": "accent-soft", "name": "Accent Soft", "color": "#eef2ff" },
+				{ "slug": "result", "name": "Result", "color": "#0f766e" },
+				{ "slug": "lane-consulting", "name": "Lane: Consulting", "color": "#1e3a8a" },
+				{ "slug": "lane-building", "name": "Lane: Building", "color": "#0e7490" }
+			]
+		},
+		"layout": {
+			"contentSize": "720px",
+			"wideSize": "1080px"
+		},
+		"typography": {
+			"fontFamilies": [
+				{
+					"slug": "inter",
+					"name": "Inter",
+					"fontFamily": "Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-latin-400-normal.woff2" ]
+						},
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "600",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-latin-600-normal.woff2" ]
+						},
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "800",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-latin-800-normal.woff2" ]
+						}
+					]
+				},
+				{
+					"slug": "jetbrains-mono",
+					"name": "JetBrains Mono",
+					"fontFamily": "\"JetBrains Mono\", ui-monospace, Consolas, monospace",
+					"fontFace": [
+						{
+							"fontFamily": "JetBrains Mono",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/jetbrains-mono-latin-400-normal.woff2" ]
+						}
+					]
+				}
+			]
+		}
+	},
+	"styles": {
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--inter)"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--inter)"
+				}
+			},
+			"code": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--jetbrains-mono)"
+				}
+			}
+		}
+	}
+}

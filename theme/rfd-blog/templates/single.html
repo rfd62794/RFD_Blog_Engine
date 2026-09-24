@@ -1,0 +1,50 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained","contentSize":"720px"}} -->
+<main class="wp-block-group">
+	<!-- wp:post-terms {"term":"category","className":"chip"} /-->
+
+	<!-- wp:post-title {"level":1} /-->
+
+	<!-- wp:post-excerpt {"moreText":"","className":"dek"} /-->
+
+	<!-- wp:group {"className":"byline","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+	<div class="wp-block-group byline">
+		<!-- wp:avatar {"size":40,"isLink":false,"className":"photo","style":{"border":{"radius":"999px"},"width":"40px","height":"40px"}} /-->
+		<!-- wp:post-author-name {"isLink":false} /-->
+		<!-- wp:post-date /-->
+		<!-- wp:post-time-to-read /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:post-featured-image {"aspectRatio":"16/9","width":"100%"} /-->
+
+	<!-- wp:post-content {"layout":{"type":"constrained","contentSize":"720px"}} /-->
+
+	<!-- wp:group {"className":"lane-cta lane-cta-consulting"} -->
+	<div class="wp-block-group lane-cta lane-cta-consulting">
+		<!-- wp:pattern {"slug":"rfd-blog/lane-cta-consulting"} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"lane-cta lane-cta-building"} -->
+	<div class="wp-block-group lane-cta lane-cta-building">
+		<!-- wp:pattern {"slug":"rfd-blog/lane-cta-building"} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"author-box","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"top"}} -->
+	<div class="wp-block-group author-box">
+		<!-- wp:avatar {"size":64,"isLink":false,"style":{"border":{"radius":"999px"}}} /-->
+		<!-- wp:group {"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
+			<!-- wp:post-author-name {"isLink":false,"level":3} /-->
+			<!-- wp:post-author-biography /-->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
