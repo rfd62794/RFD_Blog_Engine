@@ -135,12 +135,14 @@ nothing new under `data/`.
 
 | Field | Value |
 |---|---|
-| Status | Queued |
-| Assigned to | - |
+| Status | Blocked |
+| Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-daily-draft-source-directive |
 | Base branch | spec/daily-draft-loop |
-| Base commit | - |
 
 **Status log**
 - 2026-09-27 09:30 · robert-claude · none → Queued — written alongside the daily-draft-loop spec; not yet approved or dispatched
+- 2026-09-28 19:27 · devin-overseer (delegated) · assignee none -> devin
+- 2026-09-28 19:28 · devin-overseer (delegated) · Queued → Approved
+- 2026-10-01 16:47 · dispatcher · Approved → Blocked — preflight: needs: Read(C:/Github/AgentFlow/**)
 <!-- queue:end -->

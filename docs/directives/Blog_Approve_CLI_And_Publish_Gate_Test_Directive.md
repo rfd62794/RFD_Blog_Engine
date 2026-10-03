@@ -110,12 +110,13 @@ so).
 
 | Field | Value |
 |---|---|
-| Status | Queued |
-| Assigned to | - |
+| Status | Approved |
+| Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive |
 | Base branch | spec/daily-draft-loop |
-| Base commit | - |
 
 **Status log**
 - 2026-09-27 09:30 · robert-claude · none → Queued — written alongside the daily-draft-loop spec; not yet approved or dispatched
+- 2026-09-28 19:27 · devin-overseer (delegated) · assignee none -> devin
+- 2026-09-28 19:27 · devin-overseer (delegated) · Queued → Approved
 <!-- queue:end -->
