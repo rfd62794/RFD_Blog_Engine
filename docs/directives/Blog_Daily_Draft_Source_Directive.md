@@ -130,6 +130,11 @@ Test counts before and after; the exact free-tier model slugs chosen (flagged fo
 verification); the full path of every new/changed file; confirmation that `git status` shows
 nothing new under `data/`.
 
+## Sandbox needs
+
+- Read(C:/Github/AgentFlow/**)
+- Exec(uv run pytest)
+
 <!-- queue:start -->
 ## Queue
 
