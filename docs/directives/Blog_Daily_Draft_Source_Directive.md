@@ -13,7 +13,7 @@ generation model router's free-lane fallback quietly includes a paid model.
 - `blog_engine/infra/model_router.py` (the `generation` role's candidate list only)
 - `blog_engine/core/generator.py` (`RFD_CONTENT_FRAME_PROMPT` only — add one instruction, do not
   restructure the frame)
-- New `blog_engine/core/source_scan.py`
+- New file `source_scan.py` under `blog_engine/core/`
 - New `blog_engine/cli.py` command `generate-daily`
 - Tests under `tests/`
 
@@ -22,7 +22,7 @@ generation model router's free-lane fallback quietly includes a paid model.
 1. **Fix the paid-model leak.** In `model_router.py`, `role_models["generation"]`'s OpenRouter
    entry is `("openrouter", "anthropic/claude-3-haiku")` — a paid model. Replace it with a
    free-tier OpenRouter slug (an id ending `:free`, matching the convention in
-   `docs/superpowers/specs/2026-09-24-free-lane.md`; pick any currently-free general-purpose
+   `C:/Github/AgentFlow/docs/superpowers/specs/2026-09-24-free-lane.md`; pick any currently-free general-purpose
    instruct model, e.g. a Llama or Gemma `:free` variant — check what's actually listed free at
    https://openrouter.ai/api/v1/models is out of scope for this offline run, so pick a
    well-known `:free`-suffixed slug and leave a one-line comment naming it explicitly as free-tier
@@ -88,9 +88,9 @@ generation model router's free-lane fallback quietly includes a paid model.
 ```
 uv run pytest -q
 ```
-Record the exact pass/fail count before your changes and after. All existing tests must still
+Record the exact count of passing and failing tests before your changes and after. All existing tests must still
 pass; add new tests for: the paid-model assertion (item 1), the prompt sentence (item 2),
-`scan_recent_activity` on a fixture git repo with mocked/temp commits (use `tmp_path` + real `git
+`scan_recent_activity` on a fixture git repo with temporary commits (use `tmp_path` + real `git
 init`/`git commit` inside the test, not a mock of `subprocess` — this is a case where testing
 against a real throwaway repo is more honest than mocking git), `register_candidates` idempotency
 (running it twice registers nothing the second time), and `generate-daily --dry-run` printing
