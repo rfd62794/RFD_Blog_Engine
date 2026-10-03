@@ -37,7 +37,7 @@ generation model router's free-lane fallback quietly includes a paid model.
    `[ROBERT: fill in — <what's missing>]` instead of inventing it. Never state a fact you were not
    given."* Do not otherwise change the frame's structure, word count, or banned-words list.
    Add/extend a test on `_build_prompt` asserting this sentence is present in the rendered prompt.
-3. **`blog_engine/core/source_scan.py`** — new module:
+3. **`source_scan.py`** (new module in `blog_engine/core/`):
    - `ALLOWED_REPOS: list[str]` — a small constant list of absolute repo paths this scan is allowed
      to read (start with just this repo's own path and `C:/Github/AgentFlow`; read from a
      `SOURCE_SCAN_REPOS` env var if set — comma-separated absolute paths — else fall back to the
