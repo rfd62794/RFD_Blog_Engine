@@ -8,7 +8,7 @@ Built for Robert Dugger, RFD IT Services. Mined read-only from the git logs and 
 - **Evidence.** A commit hash or doc path inside the named repo. If the cell says `none in repos`, the post needs Robert's own experience and cannot be drafted from the repos.
 - **Difficulty.** S = one sitting from the cited evidence. M = needs a re-check of live state. L = needs Robert's input or a new measurement.
 - **Guardrails for every post.** No employer, client or employer-tool names. Run the NCA boundary check before any client-lane post that touches contact-center operations. No personal finances, keys, IPs or credentials. Claims trace to evidence or carry `[VERIFY]`.
-- **Drafted already:** items 1, 2, 3 and 5 have full first drafts in `drafts/` (see the end).
+- **Drafted already:** items 1, 2, 3, 5 and 13 to 20 have full first drafts in `drafts/` (see the end).
 
 ## Series: How I use AI to be maximally productive (8 posts)
 
@@ -69,3 +69,11 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 2 | `drafts/free-model-lanes-cost-routing.md` | draft |
 | 5 | `drafts/memory-server-867mb-fix.md` | draft |
 | 3 | `drafts/bot-playtest-web-game.md` | draft |
+| 13 | `drafts/agent-runs-die-silently.md` | draft, needs Robert's approval and a fact-check pass |
+| 14 | `drafts/merge-rule-defer-when-unsure.md` | draft, needs Robert's approval and a fact-check pass |
+| 15 | `drafts/zero-failing-zero-skipped-test-floor.md` | draft, needs Robert's approval and a fact-check pass |
+| 16 | `drafts/router-smaller-than-its-description.md` | draft, needs Robert's approval and a fact-check pass |
+| 17 | `drafts/agents-md-matches-the-tree.md` | draft, needs Robert's approval and a fact-check pass |
+| 18 | `drafts/the-night-a-test-deleted-my-repo.md` | draft, needs Robert's approval and a fact-check pass |
+| 19 | `drafts/git-dir-isolation-for-tests.md` | draft, needs Robert's approval and a fact-check pass |
+| 20 | `drafts/deterministic-checks-before-model-review.md` | draft, needs Robert's approval and a fact-check pass |
