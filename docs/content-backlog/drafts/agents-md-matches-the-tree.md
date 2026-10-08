@@ -4,7 +4,7 @@ excerpt: "I ran every command in my AGENTS.md files and diffed the claims agains
 tags: [agents-md, ai-agents, documentation, onboarding, python, developer-experience]
 categories: [How-to]
 keyword: agents.md file best practices
-status: draft
+status: reviewed
 ---
 
 An AGENTS.md file is the first thing a coding agent reads in a repo. If it is wrong, the agent starts the job with a wrong map and does not know it. A human new hire notices the README is off and asks someone. An unattended agent just follows it.
@@ -29,7 +29,7 @@ Every repo failed that test at least once. Here are the failures.
 
 **A test command that fails.** This was the most useful find. In a research repo of mine, the documented command for the paper-only tests was `uv run pytest -c tests/paper/pytest.ini -q`. The agent ran it live. It failed: with no path argument pytest fell back to a scan of the whole repo, and reported 54 collection errors, including from plain text files in an artifacts folder. Two forms work, and both passed 87 tests: `uv run pytest tests/paper -q`, and the `-c` form with the path added. The broken form had been copied into three docs and seven places in the roadmap.
 
-**Documents that describe a repo that is gone.** Several old docs in that repo name paths that no longer exist, or describe the project by an earlier name with command flags that were removed. The fix I chose is deliberately small: put a one-sentence "superseded" banner at the top of each stale doc pointing at AGENTS.md, and leave the body alone. The goal is not to modernise history. It is to stop an agent trusting it.
+**Documents that describe a repo that is gone.** Five old docs in that repo name paths that no longer exist, or describe a pip-and-venv flow the project has since left. The fix I drafted is deliberately small: put a one-sentence "superseded" banner at the top of each stale doc pointing at AGENTS.md, and leave the body alone. The goal is not to modernise history. It is to stop an agent trusting it.
 
 ## What the good version has in it
 
@@ -42,7 +42,7 @@ After three of these I now expect the same sections.
 5. **Pitfalls found the hard way.** The `.env.example` trap and "do not report the suite as broken over the one known failure" both earned their places.
 6. **A link to the current-state file.** I keep a short `docs/state/current.md` for verified facts that change often. AGENTS.md is the stable map, not the daily log.
 
-Some of those fixes were still drafts when I looked. [VERIFY: whether the freshness and stale-docs directives have since merged.]
+Most of those fixes are still only drafts. As of 2026-10-07 the follow-up directives for the video pipeline, the research repo and the memory server are all still in Draft, so the stale claims they describe are written down but not yet corrected.
 
 ## Keep it from rotting
 
@@ -62,3 +62,5 @@ Take any AGENTS.md, yours included, and:
 5. Search for words like "yet", "not merged" and "queued", which go stale first.
 
 Where I skipped these steps, my agents inherited my mistakes.
+
+<!-- fact-checked 2026-10-08: 15 claims confirmed, 2 corrected, 0 removed; remaining notes: all three follow-up directives still Draft as of 2026-10-07 -->

@@ -4,7 +4,7 @@ excerpt: "I let my agents merge pull requests, but only if a tool says yes on ev
 tags: [ai-agents, git, code-review, automation, safety, solo-developer]
 categories: [Build in public]
 keyword: ai agent merge rules human approval
-status: draft
+status: reviewed
 ---
 
 For months I was the only one who merged. Every pull request from an AI agent waited for me, and I had a day job. The queue of finished-but-unmerged work grew faster than I could read it.
@@ -52,14 +52,16 @@ The same command also refuses to run at all when the environment says it is a di
 
 The role section of the directive is a single paragraph that I want pasted verbatim into the instructions, the collaboration doc and the persona: merge means one command, from an interactive session or the delegated overseer only, never squashing and never merging locally. Done is set only after the merge verifies, on non-protected repos, and never for blog publishing.
 
-That is also what keeps the squash lesson from repeating. A squash-merged directive PR made my mark-Done step refuse, because the branch tip was no longer an ancestor of main. I now use real merge commits. [VERIFY: the squash and mark-Done refusal comes from my own notes, not from the directive; confirm against the merge code before publishing.]
+That also covers a lesson I already paid for. On 2026-10-01 my mark-Done step refused five squash-merged pull requests, because a squash makes a new commit and the branch tip never becomes an ancestor of main. A later fix teaches the step to prove a squash landed by comparing trees, but the rule still says never squash.
 
 ## Where it actually stands
 
-This is a work in progress, and I should say so. As of the last queue entry I read, the directive is In progress: dispatched on 2026-10-06 at 19:22 to my second agent on the laptop, with a 600-line limit per file and two modules (the safe-merge file at 486 lines and the merge-ready file at 591) that it must barely touch. I did not find the new modules on main when I looked on 2026-10-07. [VERIFY: whether it has landed since.]
+This is a work in progress, and I should say so. As of the last queue entry I read, the directive is In progress: dispatched on 2026-10-06 at 19:22 to my second agent, with a 600-line limit per file and two modules that it must barely touch (the safe-merge file at 486 lines, and the merge-ready file, which was 591 lines when I wrote the directive and is 519 on main now). When I looked on 2026-10-07, neither main nor the directive's branch had the new modules, so none of this is shipped yet.
 
 It will probably also defer on its own pull request. The directive edits the agent instructions and the collaboration doc, which are held paths. I wrote that into the directive: "that is correct."
 
 ## What to take from this
 
 If you want an agent to merge, write the default first. Not "merge unless a check fails", but "defer unless every check positively passes". Make a missing fact a reason, not a pass. And give deferral its own exit code and its own comment, so it is a visible outcome and not a silent skip.
+
+<!-- fact-checked 2026-10-08: 18 claims confirmed, 3 corrected, 1 removed; remaining notes: directive not yet landed (no merge_defer/merge_identity on main or branch as of 2026-10-07); line counts are as of directive time -->

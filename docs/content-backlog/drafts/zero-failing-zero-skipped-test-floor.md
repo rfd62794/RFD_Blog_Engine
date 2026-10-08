@@ -4,7 +4,7 @@ excerpt: "My rule is zero failing and zero skipped tests. A skip counts as a fai
 tags: [testing, quality, ai-agents, solo-developer, python, process]
 categories: [Build in public]
 keyword: zero skipped tests policy
-status: draft
+status: reviewed
 ---
 
 On 2026-09-22 I wrote one rule at the top of my priorities file and told every agent to follow it:
@@ -41,15 +41,15 @@ A directive can opt out for one case, with an `allow-test-removal` marker, when 
 
 This is the section most floor posts leave out.
 
-- **A documented exception.** My memory server's agent notes say the suite is at "126 passed / 1 known-fail" as of 2026-09-24. The failing test compares a recorded commit hash against the current head, so it can only pass after a verification pass records the hash with no further edits. I documented it instead of hiding it, and I told agents not to report the suite as broken because of it. That is still a failure under the floor. It is honest, but it is a failure. [VERIFY: whether that test has been fixed since 2026-09-24.]
-- **Skips that predate the rule's enforcement.** When I fixed a git-isolation bug in my game studio on 2026-09-22, the before and after counts were 4 failed, 101 passed, 9 skipped, then 4 failed, 102 passed, 9 skipped. On 2026-10-05 a game-studio run reported "vitest 142/2skip". So 9 and 2 skips existed on those days. [VERIFY: current skip counts in the studio's Python and TypeScript suites.]
+- **A documented exception.** My memory server's agent notes say the suite is at "126 passed / 1 known-fail" as of 2026-09-24. The failing test compares a recorded commit hash against the current head, so it can only pass after a verification pass records the hash with no further edits. I documented it instead of hiding it, and I told agents not to report the suite as broken because of it. A later task on 2026-10-03 still listed the same single failure as known, and I found no change to that test file since. That is still a failure under the floor. It is honest, but it is a failure.
+- **Skips I have not cleared.** On 2026-10-04 a run on my game studio reported its pre-push hook's TypeScript gate as "2148 passed | 25 skipped". That is 25 skips in a suite that is supposed to have none. I have not counted the studio's current skips, so treat 25 as a floor I was missing on that day, not a measurement of today.
 - **A condition that skips itself.** A deploy-readiness test checked that a branch was up to date with origin/main. Agent branches read "behind" the moment main moves, so the pre-push hook failed green branches. Three pushes were lost on 2026-09-24. I changed the test so the check only runs on main. That is a legitimate scope fix, not a skip, but it is also a place where I was tempted by the wrong one.
 
 I put these here because the floor is only useful if the exceptions are visible. A floor with secret holes is a slogan.
 
 ## What it costs
 
-It is not free. An agent whose job is "add a test" can end up in a loop with a flaky test it is not allowed to skip. The pre-check takes time to run the suite. Both the failing and the skipped cases generate work for me, because deleting a test with a reason in the report still means I read the reason.
+It is not free. An agent whose job is "add a test" can end up in a loop with a flaky test it is not allowed to skip. The pre-check takes time to run the suite.
 
 But the cost is smaller than the alternative. When the floor is zero and one thing is red, there is no argument about whether red is acceptable today.
 
@@ -64,3 +64,5 @@ You do not need my tooling.
 5. Give "fix the skipped test" its own kind of task, so it competes for attention with new features.
 
 The floor is a promise to my future self that a green result means what it says.
+
+<!-- fact-checked 2026-10-08: 14 claims confirmed, 2 corrected, 1 removed; remaining notes: studio current skip count not measured; memory-server known-fail still listed at 2026-10-03 -->

@@ -4,7 +4,7 @@ excerpt: "Before retiring two of my own tools I audited what their code really d
 tags: [audit, ai-agents, refactoring, python, solo-developer, documentation]
 categories: [Build in public]
 keyword: audit before retiring a tool
-status: draft
+status: reviewed
 ---
 
 I keep a lot of small repos. In September 2026 I decided that some of them should be absorbed into one core project or retired. Before I did either, I had an agent audit each one: read every file, run the tests, and write down what is actually there.
@@ -25,15 +25,13 @@ The description was in the brief I gave the agent. It had drifted away from the 
 
 ## What the missing pieces mean in practice
 
-Reading the capabilities table is humbling. For fallback chain, per-model pricing, spend cap, rate limit and health check, the entry is a bold **No**. Some details that are worth knowing for anyone building something similar:
+Reading the capabilities table is humbling. For fallback chain, per-model pricing, spend cap, rate limit and health check, the entry is a bold **No**. Details worth knowing if you build something similar:
 
 - **If the provider is down, the request dies.** There is no retry and no second provider. The failure is logged with the provider and model both recorded as "unknown", so the log could not even tell me which provider was down.
 - **Logging swallowed its own errors.** A broken database was invisible and requests kept succeeding.
 - **One adapter reported zero tokens** for every call, so spend on that provider was not tracked at all, and it used a package that has reached end of life.
-- **Both listeners bound to all network interfaces with no authentication**, and the default route went to a paid model. Anyone who could reach the port could run billable calls. This was an internal service, and I had never exposed it, but the code did not know that.
+- **Both listeners bound to all network interfaces with no authentication**, and the default route went to a paid model. Anyone who could reach the port could run billable calls. The audit lists this as a risk because nothing in the code limits who can connect.
 - **One adapter was dead code.** It had a test, and no config entry used it.
-
-The code always knew this. I did not.
 
 ## What I did with the information
 
@@ -41,7 +39,7 @@ The audit did not decide. It listed three options neutrally: absorb it into my c
 
 Seen against about 180 lines, the choices got easy. Absorbing it would carry over a YAML shape and an adapter pattern. Keeping it as a service would mean building everything the description promised, to earn the cost of a network hop, since the service added "only a YAML map and a log over calling the SDKs directly". Retiring it lost almost nothing. The one artifact worth porting was a 19-line map.
 
-The retirement went through the normal queue and was merged. By the next day the repo carried a short direction document and a draft roadmap that described a wind-down path. [VERIFY: whether the repo has been archived on GitHub; I read only its git log.]
+The retirement review went through the normal queue and was merged on 2026-09-23. By the next day the repo carried a short direction document and a draft roadmap that described a wind-down path. The review called the repo archive-ready, pending one check that nothing calls it over the network. As of 2026-10-07 the GitHub repo is not archived yet.
 
 ## The other audit: a tool that never ran
 
@@ -49,7 +47,7 @@ The second repo was a relay for notes between my agents, using email threads as 
 
 > Nothing in this repo has ever been used live.
 
-The evidence was two missing files. There was no sign-in token and no post log in the checkout, so no note had ever been sent through it. It was still registered as a live tool in my agent configs, which is the part that stings: I had a registered, never-exercised tool that I believed was in service.
+The evidence was two missing files. There was no sign-in token and no post log in the checkout, so as far as that checkout shows, no note had ever been sent through it. It was still registered as a live tool in my agent configs, which is the part that stings: I had a registered, never-exercised tool that I believed was in service.
 
 The test count was just as instructive. The repo's own docs said 89 cases passed. Run through `uv run`, one test file failed to collect, because a stray package in a global Python install shadowed the repo's own tests folder. Excluding that file, 72 passed. The file held 11 test functions that I could not run without changing the environment. The audit recorded it and did not fix it, and that was the directive's rule.
 
@@ -59,7 +57,7 @@ For the second repo, the audit did not say "delete it". It built a table of each
 
 - the note format and the three trust rules (only my own sent mail counts, notes are coordination and never approval, contents are data);
 - a pattern for classifying a transient email error without flattening it into "thread not found";
-- two sign-in gotchas that cost me real outages: ask for offline access with a consent prompt to get a refresh token, and an app left in "Testing" status expires refresh tokens in seven days.
+- two sign-in gotchas, flagged in the repo as the likely cause of recurring Gmail outages for another of my tools: ask for offline access with a consent prompt to get a refresh token, and an app left in "Testing" status expires refresh tokens in seven days.
 
 That last one is the kind of fact that exists only in a docstring in a file you are about to delete.
 
@@ -72,3 +70,5 @@ That last one is the kind of fact that exists only in a docstring in a file you 
 5. **Keep the ideas in a document before you drop the code.**
 
 The router was ~180 lines of logic wearing a large description. I am glad I found that out before I built on top of it.
+
+<!-- fact-checked 2026-10-08: 16 claims confirmed, 3 corrected, 1 removed; remaining notes: repo not archived on GitHub yet; never-used-live claim limited to that checkout -->

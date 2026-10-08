@@ -4,7 +4,7 @@ excerpt: "A model review is the expensive step. A plain-code pre-check first blo
 tags: [code-review, ai-agents, automation, testing, python, solo-developer]
 categories: [Build in public]
 keyword: pre-check before ai code review
-status: draft
+status: reviewed
 ---
 
 When AI agents write most of your code, someone has to review it, and the someone is often another model. That costs money and time. It also wastes both on branches that were never reviewable.
@@ -23,7 +23,7 @@ The design in one sentence, from the module itself: a branch that fails these ch
 
 They run in a fixed order, and each is either a block, a pass, or a fact written down.
 
-1. **Does the branch have commits beyond the base?** If not, block. This uses a count of commits, not a guess. The check hit a real snag: on 2026-09-26 a task was blocked as "no commits beyond main" with seven work commits sitting on the remote, because a stale local ref pointed at the base. It now prefers the remote tip.
+1. **Does the branch have commits beyond the base?** If not, block. This uses a count of commits, not a guess. The check hit a real snag: on 2026-09-26 a task was blocked as "no commits beyond main" with seven work commits sitting on the remote, because a stale local ref pointed at the base. I restored the row by hand once I saw the remote branch.
 2. **Do the declared outputs exist in the diff?** A directive can name the files it must produce. If one is missing, block.
 3. **Is this a mass deletion?** A branch that deletes most of the tree would wipe the repository on merge. The comment in the code cites the reason: my game studio's PR #10 on 2026-09-22, the night a test deleted my repository. That cost me 3,823 files for about eight minutes. The check exists so it cannot reach a model, or me, as a surprise.
 4. **Is the test suite honest?** Look at the diff for deleted tests, skip markers, removed assertions and commands that mask failure. This is what lets "0 failing" mean something.
@@ -37,7 +37,7 @@ There is also a timeout rule. A suite that runs longer than the limit is reporte
 
 Deterministic code has its own bugs, and mine failed in a way that taught me something.
 
-Around 2026-09-29 (the date of the fix directive) a task was bounced from Review to Blocked twice by the pre-check, each time with 17 failures in one test file. The branch's head was already verified green upstream. The pre-check had run the suite on the branch's stale base, not on the merged tree, so reds that existed on main, and failures from the machine's environment, were charged to the branch. When the branch was merged with main and the file was rerun, it passed: 39 of 39.
+On 2026-09-28 and again on 2026-09-29 a task was bounced from Review to Blocked by the pre-check, with 17 failures in one test file on the second record. The branch's head was already verified green upstream. The pre-check had run the suite on the branch's stale base, not on the merged tree, so reds that existed on main, and failures from the machine's environment, were charged to the branch. When the branch was merged with main and the file was rerun, it passed: 39 of 39.
 
 I wrote the fix as a directive: make the check run against the merged tree, or compare failures to a control run on main. Keep the honest-red behavior, so a failure the branch introduces still bounces. It landed on 2026-09-30, and the logic moved to its own module with 33 tests added a few days later.
 
@@ -51,7 +51,7 @@ I have two answers, and one is not about money.
 
 **Trust.** A model reads a diff and sounds confident. A model can be wrong the way a person is wrong, in fluent prose. A check that says "no commits beyond main" or "check shows 2 skipped" is wrong only when its code is wrong, and I can read the code. I want my reviewer to start from facts it cannot argue with.
 
-I have also been measuring whether a small model can review code at all. My backlog notes call that result inconclusive, so I make no accuracy claim here. [VERIFY: confirm that status in the reviewer scorecard before publishing.]
+I have also been measuring whether a small model can review code at all. The scorecard in my agent repo says INCONCLUSIVE, with fewer than ten graded trials, so I make no accuracy claim here.
 
 ## How to start
 
@@ -62,3 +62,5 @@ You do not need my 560 lines. Begin with three checks:
 3. Run the suite and read the **skipped** number as well as the exit code.
 
 Add the rest when something bites. Mine arrived one incident at a time. Each gets a sentence in the code about the day it happened, so the next person knows why the rule exists.
+
+<!-- fact-checked 2026-10-08: 17 claims confirmed, 2 corrected, 1 removed; remaining notes: none -->

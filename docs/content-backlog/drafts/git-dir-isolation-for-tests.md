@@ -25,7 +25,7 @@ When git runs a hook it exports variables that tell tools which repository they 
 subprocess.run(["git", "commit", "-m", "first"], cwd=tmp_path)
 ```
 
-commits to the repository the hook is running for. In a plain shell there is no `GIT_DIR`, git discovers the repo from `cwd`, and everything is fine. That is why the tests were green for months.
+commits to the repository the hook is running for. In a plain shell there is no `GIT_DIR`, git discovers the repo from `cwd`, and everything is fine. That is why the tests pass in a normal terminal.
 
 I learned this on 2026-09-22 when a pre-push hook ran a studio project's tests from an agent's worktree. They committed fixture commits named `first` and `second` onto the branch being pushed, one of them removing every tracked file, set `core.bare = true` in the shared git config, and wrote a test author into the repo's config. The incident is in the previous post. This one is the fix.
 
@@ -86,7 +86,7 @@ The fix touched six files, 116 added lines and 33 removed. The studio test count
 
 ## Common problems
 
-**It still happens on an old branch.** On 2026-09-23 a commit authored `Test` reached main again. My notes put the cause on an agent branch created before the fix, whose own old tests ran unscrubbed. If you fix the tests, rebase every long-lived branch. [VERIFY: confirm the cause from the branch history before publishing; it is from my notes.]
+**It may come back.** On 2026-09-23, starting at 11:34, commits authored `Test` showed up on my main again, about twelve hours after this fix merged. I have not established why. My guess is a branch that predates the fix and still runs the old tests, but I have not confirmed that. If you fix the tests, check your long-lived branches and watch the author names on main.
 
 **Tests in other languages.** Anything that spawns `git`, such as a JavaScript test using `execSync`, inherits the same environment. The runner fix covers them. The helper only helps Python.
 
@@ -94,8 +94,10 @@ The fix touched six files, 116 added lines and 33 removed. The studio test count
 
 ## FAQ
 
-**Does this only matter on Windows?** No. The variables are git's, not the operating system's. My incident was on Windows, and I have not tested other platforms. [VERIFY]
+**Does this only matter on Windows?** No. The variables are git's, not the operating system's. My incident was on Windows, and I have not tested other platforms.
 
 **Is `GIT_CEILING_DIRECTORIES` needed if I remove `GIT_DIR`?** It is cheap insurance. Without it git may still discover a repository above your temp folder if the temp path sits inside one.
 
 **Can I just not run tests in a hook?** You can. I wanted the net, so I fixed the nets.
+
+<!-- fact-checked 2026-10-08: 14 claims confirmed, 1 corrected, 1 removed; remaining notes: 09-23 recurrence cause unverified; non-Windows behaviour untested -->

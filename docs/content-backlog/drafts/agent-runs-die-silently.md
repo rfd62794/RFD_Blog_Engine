@@ -25,7 +25,7 @@ The reporter's own verdict line says it plainly: inconclusive, instrumentation r
 
 The 41 "power" rows bothered me. A cluster of deaths at the same minute looks like the machine lost power. But the analysis note records that I also asked Windows for kernel-power and error-reporting events in each of those windows. There were zero. Nothing in the operating system's log agreed with the story.
 
-What the clusters look like instead is my own tooling. One cluster is three runs at 08:37 on 2026-09-20. Another is a run of deaths across a single afternoon on 2026-09-21. The note's reading, and I will call it a hypothesis because it is one, is that a dispatcher or service restart reaps the child processes it started. I was killing my own agents and then blaming the hardware.
+What the clusters look like instead may be my own tooling. One cluster is three runs at 08:37 on 2026-09-20. Another is a run of deaths across a single afternoon on 2026-09-21. The note's reading, and I will call it a hypothesis because it is one, is that a dispatcher or service restart reaps the child processes it started. I was killing my own agents and then blaming the hardware.
 
 ## Why I could not tell
 
@@ -67,7 +67,7 @@ If you run agents unattended, in order:
 4. **Do not label a cluster of deaths as power without checking the operating system's log.** Mine had none.
 5. **Let the verdict say "inconclusive".** An honest "I do not know yet" was worth more to me than a wrong fix.
 
-My note says to rerun the reporter after a few weeks of instrumented runs, and the verdict line will then separate exit codes, memory kills and watcher errors. I have not done that yet. [VERIFY: whether the instrumented runs since 2026-10-04 have changed the 54-silent count; I did not rerun the reporter.]
+My note says to rerun the reporter after a few weeks of instrumented runs, and the verdict line will then separate exit codes, memory kills and watcher errors. I have not done that yet, so the 54-silent count above is still the pre-instrumentation number.
 
 ## Questions people ask
 
@@ -75,4 +75,6 @@ My note says to rerun the reporter after a few weeks of instrumented runs, and t
 
 **Can you just retry?** Retries help, and I do resume runs, with a cap. But retrying without a reason repeats the cause.
 
-**Does sleep kill runs?** It did for one of mine, on a machine that was suspended for hours. [VERIFY: whether any power-plan setting would have prevented it; I only read the salvage commit.]
+**Does sleep kill runs?** It did for one of mine, on a machine that was suspended for hours. I only know that from the salvage commit, so I will not guess at a fix.
+
+<!-- fact-checked 2026-10-08: 14 claims confirmed, 2 corrected, 1 removed; remaining notes: 54-silent count not re-run since instrumentation; sleep story rests on one salvage commit; 'teardown' reading stays labelled a hypothesis -->
