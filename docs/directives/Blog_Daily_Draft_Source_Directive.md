@@ -150,4 +150,7 @@ nothing new under `data/`.
 - 2026-09-28 19:27 · devin-overseer (delegated) · assignee none -> devin
 - 2026-09-28 19:28 · devin-overseer (delegated) · Queued → Approved
 - 2026-10-01 16:47 · dispatcher · Approved → Blocked — preflight: needs: Read(C:/Github/AgentFlow/**)
+- 2026-10-03 17:08 · robert-claude-laptop · Blocked → Queued — Sandbox needs + lint wording fixed (225c498..51ddf10); preflight block cleared
+- 2026-10-03 17:09 · robert-claude-laptop · Queued → Approved
+- 2026-10-08 17:02 · dispatcher · Approved → Blocked — preflight: needs: `git -C <repo> log --since="<since_days> days ago" --oneline --no-merges` matches deny rule Exec(git -C), declare Exec(<prefix>) under ## Sandbox needs or rewrite the step
 <!-- queue:end -->
