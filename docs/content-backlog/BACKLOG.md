@@ -84,3 +84,11 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 18 | `drafts/the-night-a-test-deleted-my-repo.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
 | 19 | `drafts/git-dir-isolation-for-tests.md` | fact-checked 2026-10-08, still draft (labelled hypothesis/guess remains), needs Robert's approval |
 | 20 | `drafts/deterministic-checks-before-model-review.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 4 | `drafts/ffmpeg-youtube-shorts-yaml.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 21 | `drafts/transcribe-audio-locally-faster-whisper.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 22 | `drafts/ffmpeg-landscape-to-vertical-9x16.md` | reviewed (fact-checked 2026-10-08), commands rerun on a synthetic clip |
+| 23 | `drafts/python-cli-doctor-command.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 24 | `drafts/add-mcp-server-claude-desktop.md` | reviewed (fact-checked 2026-10-08), note the stdout-logger caveat |
+| 25 | `drafts/wordpress-contributor-role-automation.md` | draft (fact-checked 2026-10-08), confirm live role first |
+| 26 | `drafts/schedule-youtube-uploads-text-file.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 29 | `drafts/wordpress-bulk-update-meta-tags-categories.md` | draft (fact-checked 2026-10-08), live apply unconfirmed |
