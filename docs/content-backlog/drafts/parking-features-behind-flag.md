@@ -4,7 +4,7 @@ excerpt: "I hid three features in my card-and-court game with a flag, kept their
 tags: [game-design, feature-flags, scope, testing, typescript]
 categories: [Build in public]
 keyword: scope cutting game prototype feature flag
-status: draft
+status: reviewed
 ---
 
 My court-intrigue game, Succession, had too many choices on screen. Each turn offered three persuasion methods, a scout action, an indictment panel and a discredit move, against three court figures. The design note put it plainly: the menu is the load.
@@ -16,7 +16,7 @@ I did not want to delete anything. Two of those features are the seed of a later
 Three systems:
 
 1. **Discredit**, a move that mirrors the rival's slander. The note says it is not really a persuasion method and was the sixth choice on the menu.
-2. **The indictment panel**, a 329-line screen for accusing a figure. Each councilor has his own fixed case, so it is three separate mysteries rather than one, and a wrong accusation permanently exposes you to that figure. It is the seed of a later mystery mode, so it is parked, not cut.
+2. **The indictment panel**, a 354-line screen for accusing a figure. Each councilor has his own fixed case, so it is three separate mysteries rather than one, and a wrong accusation permanently exposes you to that figure. It is the seed of a later mystery mode, so it is parked, not cut.
 3. **Domain ripple friction**, a small favor penalty that hits an opposing councilor when you push one figure hard. The rule for this one was "park only if the measurement says balance holds without it". Decide by harness, not by argument.
 
 The note's rule for all three was: nothing is deleted, parked code stays with its tests, and any item revives by flipping the flag.
@@ -47,7 +47,7 @@ That second test matters. It shows that the parked path is really off, and that 
 
 Hiding features can quietly break balance, so I ran an ablation. The balance sim plays 7 strategies across 3 starting origins, 21 deterministic runs. The ablation test imports that sim five times, once per flag setting, and counts how many strategies win from each origin.
 
-The "player wins per origin" results, from the directive:
+The "player wins per origin" results. I reran the ablation test on current main for this post and got the same table:
 
 | Setting | Bastard scion | Disgraced knight | Merchant banker |
 |---|---:|---:|---:|
@@ -77,4 +77,6 @@ Keep the flag module tiny and the gates at the edges. Test both states. Run the 
 
 ## What I have not checked
 
-I did not rerun the ablation for this post, so the table is from the directive's prototype, which the implementation log says it matched. [VERIFY: rerun `test_succession_ablation.ts` on current main.] I have not timed a real playthrough. [VERIFY: stopwatch run.] And all three defaults are still "not parked", so players currently see no change. [VERIFY: whether I have flipped any default.]
+I have not timed a real playthrough, so the session estimate is still assumptions. All three defaults are still "not parked": the flag file has had one commit, so players currently see no change.
+
+<!-- fact-checked 2026-10-08: 22 claims confirmed, 1 corrected, 0 removed; remaining notes: indictment panel is 354 lines (draft said 329, the design note's older figure); session estimate remains assumption-based by design and is labelled as such -->

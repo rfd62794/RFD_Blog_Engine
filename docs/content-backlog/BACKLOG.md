@@ -69,10 +69,10 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 2 | `drafts/free-model-lanes-cost-routing.md` | draft |
 | 5 | `drafts/memory-server-867mb-fix.md` | draft |
 | 3 | `drafts/bot-playtest-web-game.md` | draft |
-| 6 | `drafts/agent-mailbox-git-relay.md` | draft, needs fact-check (3 [VERIFY]) |
-| 7 | `drafts/small-model-code-review-measured.md` | draft, reports INCONCLUSIVE as it is (5 [VERIFY]) |
-| 8 | `drafts/shoal-two-modes-ai-builder.md` | draft (3 [VERIFY]) |
-| 9 | `drafts/parking-features-behind-flag.md` | draft (3 [VERIFY]) |
-| 10 | `drafts/headless-ai-soak-test-game-length.md` | draft (3 [VERIFY]) |
-| 11 | `drafts/ten-point-nudge-game-balance.md` | draft (3 [VERIFY]) |
-| 12 | `drafts/seeded-randomness-ratchet-baseline.md` | draft (4 [VERIFY]) |
+| 6 | `drafts/agent-mailbox-git-relay.md` | draft, fact-checked 2026-10-08 (0 [VERIFY] left); restart survival and relay delivery time untested, so still draft |
+| 7 | `drafts/small-model-code-review-measured.md` | reviewed 2026-10-08 (fact-checked; shadow-reviewer numbers updated, reports INCONCLUSIVE as it is) |
+| 8 | `drafts/shoal-two-modes-ai-builder.md` | reviewed 2026-10-08 (fact-checked) |
+| 9 | `drafts/parking-features-behind-flag.md` | reviewed 2026-10-08 (fact-checked; ablation rerun, panel line count corrected) |
+| 10 | `drafts/headless-ai-soak-test-game-length.md` | reviewed 2026-10-08 (fact-checked; soak test rerun, matches) |
+| 11 | `drafts/ten-point-nudge-game-balance.md` | reviewed 2026-10-08 (fact-checked; headline corrected to 14.8%, probe rerun) |
+| 12 | `drafts/seeded-randomness-ratchet-baseline.md` | reviewed 2026-10-08 (fact-checked; 199/236 totals replaced by recount) |

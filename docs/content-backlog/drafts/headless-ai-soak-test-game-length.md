@@ -4,7 +4,7 @@ excerpt: "I made every faction in my strategy game an AI and ran 12 full campaig
 tags: [game-dev, simulation, testing, game-balance, typescript]
 categories: [How-to]
 keyword: game balance simulation soak test
-status: draft
+status: reviewed
 ---
 
 I wanted to know how long my strategy game, Planet of Greed, takes to finish. I did not want to play it twelve times to find out. So I let the computer play it: every faction run by the AI, no human, no screen, twelve full campaigns with fixed seeds.
@@ -55,18 +55,18 @@ It deliberately does not assert on a target length. The test prints weeks; decid
 
 ## What it found
 
-From the implementation log of the run:
+From the run's output, which I reran on current main and which matched the implementation log:
 
 - Weeks to finish: minimum 40, median 144, maximum 144.
 - Ten of 12 runs ended at the year cap. Two ended because the player's house was eliminated.
 - Zero rule violations. Zero runs hit the step bound.
-- The surrounding test suite passed: 14 files, 215 tests, and the type check was clean.
+- The surrounding Planet of Greed test files passed: 14 files, 215 tests. I reran them on current main and got the same.
 
 Two things stand out.
 
 **The calendar was wrong in my notes.** My design note said a campaign is 156 weeks. The engine's calendar is 7 days a week, 4 weeks a month, 12 months a year, ending when the date reaches year 4. That is 3 × 12 × 4 = 144 weeks, or 1,008 days. The soak test measured the real number and the note was off. The directive that built it said to report what is measured, and not to trust the note.
 
-**Most runs end because time runs out.** Ten of 12 ended at the cap. In those games, the AIs did not finish the conflict; the calendar did. That tells me the campaign length is set by the cap, not by play. The two early endings are the interesting runs, because the AIs finished the player off before the clock did. [VERIFY: that the 40-week run is one of the two elimination endings; the log gives the minimum but not which seed.]
+**Most runs end because time runs out.** Ten of 12 ended at the cap. In those games, the AIs did not finish the conflict; the calendar did. That tells me the campaign length is set by the cap, not by play. The two early endings are the interesting runs, because the AIs finished the player off before the clock did: seed 9 at 40 weeks and seed 8 at 92 weeks.
 
 ## What it cannot tell you
 
@@ -76,4 +76,6 @@ It also says nothing about fun. A campaign that always runs to the cap could mea
 
 ## What I have not checked
 
-The numbers above come from the implementation log, not from a run I did for this post. [VERIFY: rerun `test_planetofgreed_soak.ts` and compare the SOAK lines.] I have no per-seed breakdown of which cultures ended early. [VERIFY: the 12 per-run lines.]
+I have no stopwatch time for a human playthrough, so I cannot yet say whether 144 weeks fits the 5 to 15 minute target. I also have not studied why the AIs stay passive in the capped runs.
+
+<!-- fact-checked 2026-10-08: 21 claims confirmed, 1 corrected, 1 removed; remaining notes: type-check claim dropped (not rerun); per-seed output rerun and matches the summary; weeks-to-minutes conversion deliberately left unmeasured -->

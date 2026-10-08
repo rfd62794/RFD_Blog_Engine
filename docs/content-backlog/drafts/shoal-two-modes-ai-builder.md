@@ -4,7 +4,7 @@ excerpt: "How I settled a two-mode design for my fish game: what I decided, what
 tags: [game-design, ai-assisted-development, indie-games, shoal, process]
 categories: [Build in public]
 keyword: ai assisted game design process
-status: draft
+status: reviewed
 ---
 
 I have a small fish game called Shoal. On 2026-10-05 I made the design calls that turn it from a toy into two games on one page. The interesting part is not the design. It is how the work split between me and the AI, because that split is the process I now use for every game I touch.
@@ -13,7 +13,7 @@ I have a small fish game called Shoal. On 2026-10-05 I made the design calls tha
 
 Shoal began as an ecosystem you watch. Fish graze, sharks hunt, algae rises and falls with the grazing. There is no win state. The direction note written the day before says the intent stayed "ecosystem toy" while about 80% of the effort went into performance and rendering, not into giving a player a reason to come back.
 
-The numbers in that note are specific. The code is 2,820 lines of TypeScript, 716 of them in the main app file. A swap from a Lua interpreter to a native TypeScript sim made it 151.7 times faster. That is a lot of engineering for a game with no goal.
+The numbers in that note are specific. When the note was written the game was about 2,820 lines of TypeScript, 716 of them in the main app file. A swap from a Lua interpreter to a native TypeScript sim made it 151.7 times faster. That is a lot of engineering for a game with no goal.
 
 The note named the biggest turn-off in one line: with no goal or score, a 30-second visit has no "I did something" receipt.
 
@@ -28,7 +28,7 @@ The settled decisions, as recorded in the direction note:
 - Progress is saved in the browser only. No accounts, nothing to host or support.
 - The world keeps running around you. You are one creature among many.
 
-I also wrote down what this is not. It is a free game, built by one person with a day job. No promised dates, no accounts, no multiplayer, no content updates.
+It is also a free game, built by one person with a day job: no promised dates, no multiplayer, no content updates.
 
 None of that came from the AI. These are taste and scope decisions, and they are the part only I can make.
 
@@ -42,7 +42,7 @@ The agent answered a different question: can the existing code do this, and how 
 - Input today only spawns or culls things. Click-to-pick needs new fields.
 - There is no camera, and no stage or trait system. Those are new.
 
-It also flagged two risks I would not have spotted by feel. Many places identify fish by checking whether the id starts with the word "fish", which is fragile, so the new hook should sit beside it, not extend it. And if camouflage becomes an ability, shark targeting has to read it, which is a second small change.
+It also flagged two risks I would not have spotted by feel. Many places identify fish by checking whether the id starts with "fish", which is fragile, so the new hook should sit beside it. And if camouflage becomes an ability, shark targeting has to read it.
 
 Then it proposed the build as small new modules: a controller, growth stages, traits, mode state, a save file, and a thin UI. That follows a rule I set: new behaviour goes in small new files, not into the 716-line app file or the 737-line sim.
 
@@ -52,11 +52,11 @@ The most useful part of the note is the list it left for me. Seven open question
 
 It also marked what it did not know. Whether touch works on a real device is "UNVERIFIED". The cost of per-fish shapes against the drawing cache is "UNKNOWN". Whether the save format fits an evolved fish is "UNKNOWN".
 
-I trust that more than I would trust a confident plan. An answer that says "I do not know yet" tells me where to spend my own time.
+I trust that more than a confident plan. "I do not know yet" tells me where to spend my own time.
 
 ## The roadmap, in playable slices
 
-The milestones are proposed, not agreed. I have not picked a milestone style. Each one is something a stranger could play in a browser for minutes: the existing Aquarium; then "be a fish"; then growth; then traits; then a keepsake with saving. The gate for every step is that the Aquarium still plays and the headless test still passes.
+The milestones are proposed, not agreed. Each is something a stranger could play in a browser for minutes: the existing Aquarium; then "be a fish"; then growth; then traits; then a keepsake with saving. The gate for every step is that the Aquarium still plays and the headless test still passes.
 
 The first Aquarium item has already landed. The next day, a commit added a hint card that asks portrait-phone players to rotate their device, with a test.
 
@@ -73,4 +73,6 @@ The mistake I try to avoid is letting the plan outrun the evidence. The feasibil
 
 ## What I have not checked
 
-Everything above is about the plan, not a shipped Evolve mode. Nothing in Evolve is built yet. [VERIFY: current state of the Evolve work before publishing.] The line counts and the 151.7x figure come from the direction note and the roadmap, not from a fresh measurement. [VERIFY: line counts on current main.] The feasibility note was drafted with AI assistance, and I did not independently re-trace every line reference. [VERIFY: spot-check three of the cited line numbers.]
+Everything above is about the plan, not a shipped Evolve mode. As of 2026-10-08 nothing in Evolve is built: there is no evolve folder in the game and no Evolve commit. The game has since grown to about 2,900 lines. The 151.7x figure is from the game's changelog, not something I re-ran. I spot-checked four of the feasibility note's line references and they match the code.
+
+<!-- fact-checked 2026-10-08: 19 claims confirmed, 1 corrected, 0 removed; remaining notes: 151.7x speedup taken from CHANGELOG, not re-benchmarked; touch behaviour on a real device and Path2D cache cost remain unknown, as the post says -->
