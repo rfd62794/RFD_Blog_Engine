@@ -8,7 +8,7 @@ Built for Robert Dugger, RFD IT Services. Mined read-only from the git logs and 
 - **Evidence.** A commit hash or doc path inside the named repo. If the cell says `none in repos`, the post needs Robert's own experience and cannot be drafted from the repos.
 - **Difficulty.** S = one sitting from the cited evidence. M = needs a re-check of live state. L = needs Robert's input or a new measurement.
 - **Guardrails for every post.** No employer, client or employer-tool names. Run the NCA boundary check before any client-lane post that touches contact-center operations. No personal finances, keys, IPs or credentials. Claims trace to evidence or carry `[VERIFY]`.
-- **Drafted already:** items 1, 2, 3 and 5 have full first drafts in `drafts/` (see the end).
+- **Drafted already:** items 1, 2, 3, 5 and 13 to 20 have full first drafts in `drafts/` (see the end).
 
 ## Series: How I use AI to be maximally productive (8 posts)
 
@@ -76,3 +76,11 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 10 | `drafts/headless-ai-soak-test-game-length.md` | reviewed 2026-10-08 (fact-checked; soak test rerun, matches) |
 | 11 | `drafts/ten-point-nudge-game-balance.md` | reviewed 2026-10-08 (fact-checked; headline corrected to 14.8%, probe rerun) |
 | 12 | `drafts/seeded-randomness-ratchet-baseline.md` | reviewed 2026-10-08 (fact-checked; 199/236 totals replaced by recount) |
+| 13 | `drafts/agent-runs-die-silently.md` | fact-checked 2026-10-08, still draft (labelled hypothesis/guess remains), needs Robert's approval |
+| 14 | `drafts/merge-rule-defer-when-unsure.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 15 | `drafts/zero-failing-zero-skipped-test-floor.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 16 | `drafts/router-smaller-than-its-description.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 17 | `drafts/agents-md-matches-the-tree.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 18 | `drafts/the-night-a-test-deleted-my-repo.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
+| 19 | `drafts/git-dir-isolation-for-tests.md` | fact-checked 2026-10-08, still draft (labelled hypothesis/guess remains), needs Robert's approval |
+| 20 | `drafts/deterministic-checks-before-model-review.md` | fact-checked 2026-10-08, reviewed, needs Robert's approval |
