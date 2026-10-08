@@ -4,7 +4,7 @@ excerpt: "Scale the video to 1080 wide and pad it to 1080x1920, or crop or blur-
 tags: [ffmpeg, vertical-video, youtube-shorts, 9x16, video-automation]
 categories: [How-to]
 keyword: ffmpeg convert to vertical 9:16
-status: draft
+status: reviewed
 ---
 
 To turn a 16:9 video into 9:16 with FFmpeg, you choose between three things: pad it with bars, crop the sides off, or fill the empty space with a blurred copy. The padding command is `ffmpeg -i in.mp4 -vf "scale=1080:-1,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=0x131318" -c:a copy out.mp4`. It never cuts anything out of your picture, and it is the one I use.
@@ -59,7 +59,7 @@ You want `1080,1920`. My project has a test that builds a 320x180 test video wit
 
 ## Common problems
 
-- **Odd heights.** When I scaled a 1000x563 test video with `scale=1080:-1`, the height came out as 608 and libx264 accepted it. Some sources give an odd number, which libx264 with `yuv420p` rejects. Use `-2` in place of `-1` to force an even result. [VERIFY: I did not reproduce a rejection.]
+- **Odd heights.** When I scaled a 1000x563 test video with `scale=1080:-1`, the height came out as 608 and libx264 accepted it. A 1000x562 test video scaled the same way came out 607 tall, and libx264 with `yuv420p` refused it with "height not divisible by 2". Use `-2` in place of `-1` to force an even result.
 - **Audio gets re-encoded.** `-c:a copy` leaves the sound alone. If you also change containers, re-encode instead.
 - **A small source looks soft.** Scaling a 640-wide video up to 1080 enlarges every pixel. Cropping makes this worse because it enlarges even more.
 - **Line breaks fail in PowerShell.** The trailing backslashes are for a Unix shell. In Windows PowerShell, put the command on one line or use the backtick.
@@ -68,8 +68,10 @@ You want `1080,1920`. My project has a test that builds a 320x180 test video wit
 
 **Which option is best for YouTube Shorts?** I do not have data on which performs better. I pad because my recordings have information at the edges. If your subject is centered, crop.
 
-**What resolution should a Short be?** I use 1080x1920. Check YouTube's current guidance for anything else. [VERIFY]
+**What resolution should a Short be?** I use 1080x1920. I have not checked YouTube's current guidance, so check it before you rely on that.
 
-**How long can a Short be?** My own code disagrees with itself: one function treats anything up to 60 seconds as a Short, a calendar helper uses 180. YouTube changes this rule, so check the current limit before relying on either. [VERIFY]
+**How long can a Short be?** My own code disagrees with itself: one function treats anything up to 60 seconds as a Short, a calendar helper uses 180. I have not confirmed YouTube's current limit, so check it before relying on either.
 
 **Will it work in a script?** Yes. Mine calls FFmpeg through one helper, raises an error on a non-zero exit code and keeps the full command in the error for debugging.
+
+<!-- fact-checked 2026-10-08: 15 claims confirmed, 0 corrected, 2 removed; remaining notes: YouTube resolution and Shorts length rule not checked, stated as such; three commands rerun on FFmpeg 9.0 test clip -->

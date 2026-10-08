@@ -4,10 +4,10 @@ excerpt: "Put a schedule time in each video's YAML file, upload as private with 
 tags: [youtube-api, scheduling, python, yaml, automation]
 categories: [How-to]
 keyword: schedule youtube uploads api python
-status: draft
+status: reviewed
 ---
 
-Write the publish time into a small text file next to each video, upload the video as private with the `publishAt` field set, and let YouTube make it public at that time. YouTube requires a private status for scheduled videos. Before anything is sent, print the title and the exact request body so you can check every date.
+Write the publish time into a small text file next to each video, upload the video as private with the `publishAt` field set, and let YouTube make it public at that time. YouTube's documentation says `publishAt` can be set only when the video's privacy status is private. Before anything is sent, print the title and the exact request body so you can check every date.
 
 I should be honest about the title. I do not use one calendar file. Each of my Shorts has its own YAML file with a `schedule` line, plus a planning step that works out dates for a whole batch. Both are described here, and both come from my RFD_YT_Engine repo.
 
@@ -30,7 +30,7 @@ made_for_kids: false
 schedule: "2026-07-26T22:00:00-04:00"
 ```
 
-My repo has 142 of these. Always include the UTC offset, as every example I looked at does. My parser also accepts times with no offset (`2026-07-26 22:00`), but I do not know how YouTube would interpret them. [VERIFY]
+My repo has 142 of these. Always include the UTC offset, as the scheduled files in my repo do (six others leave `schedule` empty). My parser also accepts times with no offset (`2026-07-26 22:00`), but I do not know how YouTube would interpret them.
 
 ## Step 2: Turn it into an API request
 
@@ -38,7 +38,7 @@ When a schedule is present, the code ignores the `privacy` value, sends `privacy
 
 ## Step 3: Validate before sending
 
-The checks are the API's own limits as I have them in my code: a title that is not empty and not over 100 characters, a description of at most 5,000 characters, tags totalling at most 500 characters, and a privacy value of public, unlisted or private. [VERIFY: check these against the current API documentation]
+The checks are the limits as I have them in my code: a title that is not empty and not over 100 characters, a description of at most 5,000 characters, tags totalling at most 500 characters, and a privacy value of public, unlisted or private. I have not checked each one against YouTube's current documentation.
 
 ## Step 4: Dry run by default
 
@@ -61,14 +61,14 @@ The time zone is a fixed offset of UTC-4, not a named zone. The docstring says s
 
 ## Spotting clashes
 
-A second helper looks at a date range and flags runs where one game appears more than twice in a row (the limit is a parameter, default 2). It also separates two videos at the exact same moment, a real conflict, from two videos on the same date at different times, which I do on purpose. Its docstring says it would have flagged a week of one game back to back that ran on my real calendar.
+A second helper looks at a date range and flags runs where one game appears more than twice in a row (the limit is a parameter, default 2). It also separates two videos at the exact same moment, a real conflict, from two videos on the same date at different times, which I do on purpose. Its docstring says it would have flagged a seven-day run of one game on my calendar.
 
 ## Common problems
 
 - **The video went public at once.** It was probably uploaded with no schedule, or the field name was wrong.
 - **A scheduled video stays private.** Check `publishAt` is in the future and ends in a valid offset or `Z`.
-- **Uploads are locked to private.** I believe projects that have not passed YouTube's API audit can only upload private videos. [VERIFY]
-- **Quota.** An upload costs far more quota than a read. I believe the default daily allowance allows only a handful of uploads. [VERIFY: the exact cost and limit]
+- **Uploads are locked to private.** YouTube's documentation says videos uploaded through `videos.insert` from unverified API projects created after 28 July 2020 are restricted to private viewing until the project passes an audit.
+- **Quota.** An upload costs far more quota than a read. YouTube's quota pages are not consistent with each other on the exact figure, so check the current cost and your project's limit before planning a big batch.
 
 ## FAQ
 
@@ -77,3 +77,5 @@ A second helper looks at a date range and flags runs where one game appears more
 **Do I need a database?** My version keeps a local copy of the channel's video list so calendar checks cost no API calls. You could do without.
 
 **Can I do this with a spreadsheet?** I have not tried. A CSV would be an equally good source for the same plan.
+
+<!-- fact-checked 2026-10-08: 22 claims confirmed, 2 corrected, 1 removed; remaining notes: offset-less schedule behaviour and exact quota cost left as reader checks -->

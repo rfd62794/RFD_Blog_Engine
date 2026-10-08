@@ -69,11 +69,11 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 2 | `drafts/free-model-lanes-cost-routing.md` | draft |
 | 5 | `drafts/memory-server-867mb-fix.md` | draft |
 | 3 | `drafts/bot-playtest-web-game.md` | draft |
-| 4 | `drafts/ffmpeg-youtube-shorts-yaml.md` | draft (client-style how-to, evidence from RFD_YT_Engine only), needs fact-check |
-| 21 | `drafts/transcribe-audio-locally-faster-whisper.md` | draft, needs fact-check |
-| 22 | `drafts/ffmpeg-landscape-to-vertical-9x16.md` | draft, commands run on a synthetic clip, needs fact-check |
-| 23 | `drafts/python-cli-doctor-command.md` | draft, needs fact-check |
-| 24 | `drafts/add-mcp-server-claude-desktop.md` | draft, needs fact-check |
-| 25 | `drafts/wordpress-contributor-role-automation.md` | draft, confirm live role first |
-| 26 | `drafts/schedule-youtube-uploads-text-file.md` | draft, needs fact-check |
-| 29 | `drafts/wordpress-bulk-update-meta-tags-categories.md` | draft, live apply unconfirmed |
+| 4 | `drafts/ffmpeg-youtube-shorts-yaml.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 21 | `drafts/transcribe-audio-locally-faster-whisper.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 22 | `drafts/ffmpeg-landscape-to-vertical-9x16.md` | reviewed (fact-checked 2026-10-08), commands rerun on a synthetic clip |
+| 23 | `drafts/python-cli-doctor-command.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 24 | `drafts/add-mcp-server-claude-desktop.md` | reviewed (fact-checked 2026-10-08), note the stdout-logger caveat |
+| 25 | `drafts/wordpress-contributor-role-automation.md` | draft (fact-checked 2026-10-08), confirm live role first |
+| 26 | `drafts/schedule-youtube-uploads-text-file.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
+| 29 | `drafts/wordpress-bulk-update-meta-tags-categories.md` | draft (fact-checked 2026-10-08), live apply unconfirmed |

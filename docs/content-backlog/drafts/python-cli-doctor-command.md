@@ -4,7 +4,7 @@ excerpt: "A doctor command runs read-only checks on your tool's setup and prints
 tags: [python, cli, developer-experience, setup, testing]
 categories: [How-to]
 keyword: python cli doctor command setup check
-status: draft
+status: reviewed
 ---
 
 A doctor command is a subcommand that checks whether your tool is set up correctly and tells you what to run if it is not. Write one small function per setup step that returns True or False, loop over them, print `OK` or `MISSING` plus the fix command for each, and exit with 0 only if every check passed. Nothing in it should change anything.
@@ -58,7 +58,7 @@ def run_doctor() -> int:
     return 0 if all_ok else 1
 ```
 
-This is the shape of my real function, shortened. The output is one line per check. Return the number from `main()` so shell scripts can use `mytool doctor && mytool run`. [VERIFY: I rewrote this snippet from the repo and did not run this exact version.]
+This is the shape of my real function, shortened. The output is one line per check. Return the number from `main()` so shell scripts can use `mytool doctor && mytool run`. I rewrote this snippet from the repo and did not run this exact shortened version.
 
 ## Step 4: Keep it safe
 
@@ -70,7 +70,7 @@ Three rules. The first is my own advice, and the other two are in my code:
 
 ## Step 5: Test each state with fakes
 
-Never touch the real config, network or account in tests. For the doctor I wrote tests for: all three missing (it prints three fix commands), all three fine (exit code 0), a mix (exit code 1), and each check on its own with a temporary file. The whole setup module has 21 tests, and the suite went from 395 to 419 passing when it landed. [VERIFY: the 24-test difference includes tests outside the setup file]
+Never touch the real config, network or account in tests. For the doctor I wrote tests for: all three missing (it prints three fix commands), all three fine (exit code 0), a mix (exit code 1), and each check on its own with a temporary file. The setup test file has 21 tests, and my project notes record the suite going from 395 to 419 passing when the setup tools landed, then 420 after the token-guard test.
 
 ## Common problems
 
@@ -88,3 +88,5 @@ Never touch the real config, network or account in tests. For the doctor I wrote
 **How many checks should it have?** Mine has three, one per blocking setup step. A fourth check I would add is whether the tool's dependencies are installed. I have not built it.
 
 **Where should the code live?** In its own module. My command-line file only parses arguments and calls it.
+
+<!-- fact-checked 2026-10-08: 20 claims confirmed, 1 corrected, 0 removed; remaining notes: snippet is a shortened rewrite, stated as such -->

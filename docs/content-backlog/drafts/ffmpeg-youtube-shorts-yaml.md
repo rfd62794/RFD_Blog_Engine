@@ -4,12 +4,12 @@ excerpt: "Describe each Short in a YAML file, then let a script cut the clips, p
 tags: [ffmpeg, youtube-shorts, yaml, python, video-automation]
 categories: [How-to]
 keyword: ffmpeg automate youtube shorts
-status: draft
+status: reviewed
 ---
 
 Put each Short in a small YAML file: the source video, a list of clips with start and end times, and one caption line per clip. A script then cuts each clip with FFmpeg, scales it into a 1080x1920 canvas, draws the caption on top, joins the clips and mixes in music or a voice track. You review the file, not the timeline.
 
-This is how I make Shorts for my own YouTube channel, and the code is in a repo I call RFD_YT_Engine. I will only describe what that code does. Where I could not confirm something, it is marked.
+This is how I make Shorts for my own YouTube channel, and the code is in a repo I call RFD_YT_Engine. I will only describe what that code does. Where I could not confirm something, I say so.
 
 ## What you need
 
@@ -56,7 +56,7 @@ Each cut clip is scaled to 1080 pixels wide and padded onto a 1080x1920 canvas w
 
 ## Step 4: Draw the captions
 
-I do not use FFmpeg's `drawtext`. The repo renders the caption text to a transparent PNG with Pillow and overlays that image on the clip. The reason written in the code, for the outro card, is that font availability differs between machines and drawing with Pillow avoids it. [VERIFY: the same reason is not written for the caption function; I am inferring it applies there too.]
+I do not use FFmpeg's `drawtext`. The repo renders the caption text to a transparent PNG with Pillow and overlays that image on the clip. The reason written in the code, for the outro card, is that font availability differs between machines and drawing with Pillow avoids it. The caption function uses the same Pillow approach, but the code does not state a reason for it, so I will not claim one.
 
 Two details came from real mistakes. A caption line once ran off the right edge mid-word, so a `wrap_line` function now wraps at word boundaries and stops at a maximum number of lines. And `stack_text: true` keeps a sliding window of the last five lines on screen instead of replacing the caption each beat.
 
@@ -74,7 +74,7 @@ uv run python -m pipeline.interface produce-short shorts/<name>.yaml
 
 The output lands in `output/shorts/<name>.mp4`. Uploading is a different command with a second YAML file next to the first (`<name>.meta.yaml`: title, description, tags, privacy). It prints the metadata and the API request body and sends nothing unless I add `--upload`.
 
-The first unmocked run of this path was two beats plus an auto-added outro. The notes record an 8.0 second, 21 MB MP4 that I checked with ffprobe. I have not timed how long the render took. [VERIFY: render time on a typical Short]
+The first unmocked run of this path was two beats plus an auto-added outro. The notes record an 8.0 second, 21 MB MP4 that I checked with ffprobe. I have not timed how long the render took.
 
 ## Common problems
 
@@ -88,6 +88,8 @@ The first unmocked run of this path was two beats plus an auto-added outro. The 
 
 **Can I do this without Python?** Yes, with shell scripts, but the caption wrapping and the checks above are where Python earned its place for me.
 
-**How many Shorts have I made this way?** The repo tracks 142 metadata files and 159 Short definitions. I do not know how many were uploaded. [VERIFY]
+**How many Shorts have I made this way?** The repo tracks 142 metadata files and 155 Short definition files. I do not know how many were uploaded.
 
 **Is the render deterministic?** The inputs are, but I have not compared two renders byte for byte.
+
+<!-- fact-checked 2026-10-08: 24 claims confirmed, 1 corrected, 1 removed; remaining notes: render time and upload count not measured, stated as such -->

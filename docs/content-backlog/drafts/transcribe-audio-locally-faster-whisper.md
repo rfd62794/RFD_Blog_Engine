@@ -4,7 +4,7 @@ excerpt: "Install faster-whisper, load a model once with INT8, loop over the seg
 tags: [faster-whisper, transcription, python, whisper, local-ai]
 categories: [How-to]
 keyword: transcribe audio locally whisper python
-status: draft
+status: reviewed
 ---
 
 Install the `faster-whisper` package, load a Whisper model once with `compute_type="int8"`, call `transcribe()` on your file and loop over the segments it returns. Each segment has a start time, an end time and text, which is everything you need to write an SRT subtitle file. The audio never leaves your machine and there is no per-minute fee.
@@ -43,11 +43,11 @@ for seg in segments:
 
 I switched on three options on purpose:
 
-- **`vad_filter=True`** skips stretches with no speech. Before I switched backends, a transcript of one recording was full of one-letter fragments, foreign-language scraps and a repeated "Yeah" across near-silent stretches. My check afterwards was a clip with 3 seconds of tone followed by 3 seconds of silence, and it returned 0 segments.
+- **`vad_filter=True`** skips stretches with no speech. Before I switched backends, a transcript of one recording was full of one-letter fragments, foreign-language scraps and a repeated "Yeah" across near-silent stretches. My check afterwards was a 3 second synthetic tone with no speech in it. The test only asserts that the call finishes and returns a list; the comment beside it says I expect no segments, and I have not recorded the count.
 - **`word_timestamps=True`** gives start and end times for each word, which I need for captions.
-- **`language="en"`** is hard-coded because everything I record is English. Leave it out to let the model detect the language. [VERIFY: confirm detection behaviour on a non-English sample]
+- **`language="en"`** is hard-coded because everything I record is English. Leave it out and the library detects the language itself (its default is `None`). I have not tried a non-English file.
 
-As far as I know `transcribe()` returns a generator, so the real work happens as you loop. Do not be alarmed if the call itself returns instantly. [VERIFY against the faster-whisper documentation]
+The library documents `transcribe()` as returning a generator of segments plus an info object, so the real work happens as you loop. Do not be alarmed if the call itself returns instantly.
 
 ## Step 3: Write the SRT
 
@@ -73,14 +73,14 @@ These are measured numbers, read from `nvidia-smi` on the 4 GB card, with INT8:
 | medium | 1001 MB (24%) |
 | large-v3 | 1961 MB (48%) |
 
-I had assumed `small` was the biggest model that would fit on this card. That assumption was wrong. The thing that mattered was switching from the reference openai-whisper package to faster-whisper. My notes say the new backend is about four times faster with about half the VRAM, but those figures are the project's claim, not my benchmark. [VERIFY: I did not time both backends on the same file.] I have no CPU timings at all.
+I had assumed `small` was the biggest model that would fit on this card. That assumption was wrong. The thing that mattered was switching from the reference openai-whisper package to faster-whisper. My notes say the new backend is about four times faster with about half the VRAM, but those figures are the project's claim, not my benchmark. I did not time both backends on the same file, and I have no CPU timings at all.
 
 ## Common problems
 
 - **"CUDA requested but not available."** My wrapper raises immediately instead of quietly dropping to the CPU, because I would rather know. Pass `device="cpu"` to run without a GPU. Expect it to be slower, by an amount I have not measured.
 - **The package is not installed.** The wrapper imports faster-whisper only when you transcribe, so the rest of the code can be imported and tested without it, and the error says to install it.
 - **A missing file.** Check the path first and fail with a plain message before loading a model for nothing.
-- **First run is slow.** The model has to be fetched the first time you use a given size. [VERIFY: download size and location]
+- **First run is slow.** The library downloads the model from Hugging Face the first time you use a given size. I have not recorded the download sizes.
 
 ## FAQ
 
@@ -93,3 +93,5 @@ I had assumed `small` was the biggest model that would fit on this card. That as
 **How accurate is it?** I have not scored it against a reference transcript, so I will not give you a number. The medium model has been good enough for my own captions, and I still read them before posting.
 
 **Should I pick medium or large-v3?** Both fit on my 4 GB card. I default to medium and have no accuracy comparison to justify more.
+
+<!-- fact-checked 2026-10-08: 18 claims confirmed, 1 corrected, 1 removed; remaining notes: 4x speed and half VRAM remain the project's own claim, labelled as such; no accuracy or CPU numbers -->
