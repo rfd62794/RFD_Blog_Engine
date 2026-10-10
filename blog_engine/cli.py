@@ -56,5 +56,38 @@ def backfill(dry_run, do_apply, mapping):
     else:
         click.echo(f"dry-run: {len(results)} posts")
 
+@cli.command()
+@click.option("--since-days", default=2, show_default=True, type=int)
+@click.option("--dry-run", is_flag=True, default=False)
+def generate_daily(since_days, dry_run):
+    """Scan recent repo activity, register candidates, generate drafts (free lane)."""
+    import asyncio
+
+    from blog_engine.core.source_scan import register_candidates, scan_recent_activity
+
+    candidates = scan_recent_activity(since_days=since_days)
+    if not candidates:
+        # Exact string — an AgentFlow [specialists.jobs] skip_if matches on it.
+        click.echo("NO_CANDIDATES")
+        return
+
+    if dry_run:
+        for c in candidates:
+            click.echo(f"candidate: {c['post_id']} {c['title']} ({c['source_repo']}@{c['source_ref']})")
+        return
+
+    from blog_engine.core.draft_manager import DraftManager
+    from blog_engine.core.generator import PostGenerator
+    from blog_engine.core.inventory import InventoryManager
+    from blog_engine.infra.db_manager import DBManager
+
+    db = DBManager()
+    inventory = InventoryManager()
+    generator = PostGenerator(db, inventory, DraftManager(db))
+
+    for post_id in register_candidates(candidates, inventory):
+        result = asyncio.run(generator.generate(post_id))
+        click.echo(f"generated: {result['post_id']} {result['title']}")
+
 if __name__ == "__main__":
     cli()
