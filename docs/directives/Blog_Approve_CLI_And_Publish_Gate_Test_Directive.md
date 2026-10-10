@@ -115,7 +115,7 @@ so).
 
 | Field | Value |
 |---|---|
-| Status | Review |
+| Status | Done |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive |
 | Base branch | main |
@@ -130,4 +130,5 @@ so).
 - 2026-10-10 01:31 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive; lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J4QV0Y7D2KVZT5QB6YN2GF
 - 2026-10-10 01:32 · dispatcher · worktree C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive; provisioned: uv sync --frozen
 - 2026-10-10 01:41 · devin-overseer (delegated) · In progress → Review — Done. Tests: 276 passed before -> 281 passed after (+5 new in tests/test_approve_cli.py), 0 failed both runs. New tests: test_unapproved_draft_never_reaches_wordpress (ValueError 'Draft loop-post must be approved before publishing. Current status: draft'; create_post/upload_media/get_post all assert_not_called), test_approved_draft_with_placeholder_still_refused (real approve_draft then refuse: 'draft loop-post failed content checks: placeholder [ROBERT: fill me] in content'), plus 3 CliRunner tests (happy path; 'Draft not found for post_id: no-such-post'; 'Cannot approve draft with status: approved' - clean UsageError, no traceback). 'Approval alone does not bypass guards' already existed at tests/test_robert_only_publish.py::test_publish_wordpress_robert_placeholder_refused and tests/test_publisher.py::test_publish_wordpress_metadata_gate_blocks_push; my new test additionally covers it through the real approve_draft path. One addition beyond listed scope: [project.scripts] rfd-blog-engine = blog_engine.cli:cli in pyproject.toml - required for the declared 'uv run rfd-blog-engine approve' command to exist at all (verified: 'uv run rfd-blog-engine version' prints 0.1.0; uv.lock unchanged). Committed 14faa58, pushed.; under delegate.envelope [origin] spent: devin 1 min est. n/a
+- 2026-10-10 01:45 · robert-claude-laptop · Review → Done — note: PR #17 merged 2026-10-10 after Sonnet review (281 passed; approve CLI flips the local draft flag only, no network; gate tests assert WordPress create_post/upload_media/get_post are never called for unapproved or placeholder drafts; adds the rfd-blog-engine console script).
 <!-- queue:end -->
