@@ -141,7 +141,7 @@ nothing new under `data/`.
 
 | Field | Value |
 |---|---|
-| Status | Review |
+| Status | Done |
 | Assigned to | devin-laptop |
 | Branch | directive/rfd-blog-engine-blog-daily-draft-source-directive |
 | Base branch | spec/daily-draft-loop |
@@ -162,4 +162,5 @@ nothing new under `data/`.
 - 2026-10-10 01:05 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-daily-draft-source-directive; base origin/spec/daily-draft-loop (local spec/daily-draft-loop differs); lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J378567NR9H5GYG34S6XGB
 - 2026-10-10 01:05 · dispatcher · worktree C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-daily-draft-source-directive; provisioned: uv sync --frozen; venv pythonw swap
 - 2026-10-10 01:13 · devin · In progress → Review — Done. Tests 259->276 passed (+17 new: 3 model_router free-tier, 13 source_scan/CLI, 1 prompt sentence). OpenRouter slugs chosen offline, VERIFY free listing: generation=meta-llama/llama-3.3-70b-instruct:free, default=meta-llama/llama-3-8b-instruct:free. Changed: model_router.py (role_models to module level, :free entries), generator.py (ROBERT-placeholder sentence), cli.py (generate-daily), new core/source_scan.py, new tests/test_model_router.py + tests/test_source_scan.py, +1 test in test_generator.py. git status: no data/ artifacts. Note: source_scan uses stdlib logging (stderr) not structlog - unconfigured structlog writes to stdout and would corrupt the NO_CANDIDATES sentinel. Commit 688d9c2 pushed. [origin] spent: devin 5 min est. n/a
+- 2026-10-10 01:20 · robert-claude-laptop · Review → Done — note: PR #16 merged 2026-10-10 after Sonnet review (276 passed; no publish path or WordPress touch; argv-list git calls on an allow-list of repos; paid claude-3-haiku slug removed, free groq/gemini/openrouter :free chains). The two :free OpenRouter slugs were chosen offline - verify against the live free listing before the loop relies on them.
 <!-- queue:end -->
