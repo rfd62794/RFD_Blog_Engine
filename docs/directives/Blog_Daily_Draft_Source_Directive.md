@@ -141,7 +141,7 @@ nothing new under `data/`.
 
 | Field | Value |
 |---|---|
-| Status | Blocked |
+| Status | Queued |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-daily-draft-source-directive |
 | Base branch | spec/daily-draft-loop |
@@ -154,4 +154,5 @@ nothing new under `data/`.
 - 2026-10-03 17:08 · robert-claude-laptop · Blocked → Queued — Sandbox needs + lint wording fixed (225c498..51ddf10); preflight block cleared
 - 2026-10-03 17:09 · robert-claude-laptop · Queued → Approved
 - 2026-10-08 17:02 · dispatcher · Approved → Blocked — preflight: needs: `git -C <repo> log --since="<since_days> days ago" --oneline --no-merges` matches deny rule Exec(git -C), declare Exec(<prefix>) under ## Sandbox needs or rewrite the step
+- 2026-10-10 01:04 · robert-claude-laptop · Blocked → Queued — Directive now on main (spec/daily-draft-loop merged via PR #14; git -C step rewritten as a subprocess argv list in PR #13, preflight needs count 0). Live checkout switched to main so queue writes land where the dispatcher reads.
 <!-- queue:end -->
