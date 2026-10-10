@@ -141,10 +141,11 @@ nothing new under `data/`.
 
 | Field | Value |
 |---|---|
-| Status | Approved |
+| Status | In progress |
 | Assigned to | devin-laptop |
 | Branch | directive/rfd-blog-engine-blog-daily-draft-source-directive |
 | Base branch | spec/daily-draft-loop |
+| Base commit | 04c790d5b11e3e4e9f9b93614208088c7c4a7939 |
 
 **Status log**
 - 2026-09-27 09:30 · robert-claude · none → Queued — written alongside the daily-draft-loop spec; not yet approved or dispatched
@@ -156,4 +157,5 @@ nothing new under `data/`.
 - 2026-10-08 17:02 · dispatcher · Approved → Blocked — preflight: needs: `git -C <repo> log --since="<since_days> days ago" --oneline --no-merges` matches deny rule Exec(git -C), declare Exec(<prefix>) under ## Sandbox needs or rewrite the step
 - 2026-10-10 01:04 · robert-claude-laptop · Blocked → Queued — Directive now on main (spec/daily-draft-loop merged via PR #14; git -C step rewritten as a subprocess argv list in PR #13, preflight needs count 0). Live checkout switched to main so queue writes land where the dispatcher reads.
 - 2026-10-10 01:04 · robert-claude-laptop · Queued → Approved
+- 2026-10-10 01:05 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-daily-draft-source-directive; base origin/spec/daily-draft-loop (local spec/daily-draft-loop differs); lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J378567NR9H5GYG34S6XGB
 <!-- queue:end -->
