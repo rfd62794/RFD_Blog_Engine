@@ -89,5 +89,20 @@ def generate_daily(since_days, dry_run):
         result = asyncio.run(generator.generate(post_id))
         click.echo(f"generated: {result['post_id']} {result['title']}")
 
+@cli.command()
+@click.argument("post_id")
+def approve(post_id):
+    """Approve a draft so it can be pushed to WordPress as pending. Does not publish anything."""
+    from blog_engine.core.draft_manager import DraftManager
+    from blog_engine.infra.db_manager import DBManager
+
+    db = DBManager()
+    draft_manager = DraftManager(db=db)
+    try:
+        draft = draft_manager.approve_draft(post_id, approved_by="robert")
+    except ValueError as e:
+        raise click.UsageError(str(e))
+    click.echo(f"{draft['post_id']}: status={draft['status']} approved_at={draft['approved_at']}")
+
 if __name__ == "__main__":
     cli()
