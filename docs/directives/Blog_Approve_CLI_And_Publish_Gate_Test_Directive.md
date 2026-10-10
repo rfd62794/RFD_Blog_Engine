@@ -105,6 +105,11 @@ Test counts before and after; the exact refusal message text for each new test c
 "approval alone doesn't bypass content guard" case already existed elsewhere (name the file/test if
 so).
 
+## Sandbox needs
+
+- Exec(uv run pytest)
+- Exec(uv run rfd-blog-engine)
+
 <!-- queue:start -->
 ## Queue
 
@@ -113,7 +118,7 @@ so).
 | Status | Approved |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive |
-| Base branch | spec/daily-draft-loop |
+| Base branch | main |
 
 **Status log**
 - 2026-09-27 09:30 · robert-claude · none → Queued — written alongside the daily-draft-loop spec; not yet approved or dispatched
