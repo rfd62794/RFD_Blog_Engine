@@ -265,6 +265,31 @@ def test_build_prompt_with_frame_context(db):
     assert "Future direction" in prompt
 
 
+def test_build_prompt_includes_uncertainty_placeholder_instruction(db):
+    """Prompt must instruct the model to emit [ROBERT: ...] rather than invent facts."""
+    from blog_engine.core.generator import PostGenerator
+    from blog_engine.core.inventory import InventoryManager
+    from blog_engine.core.draft_manager import DraftManager
+
+    inv_manager = MagicMock(spec=InventoryManager)
+    draft_manager = MagicMock(spec=DraftManager)
+
+    generator = PostGenerator(db, inv_manager, draft_manager)
+
+    inventory_context = {
+        "title": "Test Post",
+        "category": "testing",
+        "notes": "Test notes",
+        "tags": ["tag1"]
+    }
+
+    prompt = generator._build_prompt(inventory_context)
+
+    assert "For any number, date, name, or quote you cannot find in the post details or context given above" in prompt
+    assert "[ROBERT: fill in" in prompt
+    assert "Never state a fact you were not given." in prompt
+
+
 def test_generate_model_fallback_logged(db):
     """Test that WARNING is logged when model fallback occurs."""
     from blog_engine.core.generator import PostGenerator

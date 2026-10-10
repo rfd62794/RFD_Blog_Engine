@@ -34,6 +34,8 @@ Tags: {tags}
 Additional context from past sessions:
 {context}
 
+For any number, date, name, or quote you cannot find in the post details or context given above, write `[ROBERT: fill in — <what's missing>]` instead of inventing it. Never state a fact you were not given.
+
 Write the full blog post using the RFD Content Frame. 400-600 words.
 No headers. No bullet points. Prose only. Authentic voice.
 Do not use: "genuinely", "fascinating", "dive into", "delve", "certainly".

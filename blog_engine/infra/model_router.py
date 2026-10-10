@@ -123,6 +123,30 @@ def _call_ollama(model: str, prompt: str, **kwargs) -> str:
     return response.choices[0].message.content
 
 
+# Model hierarchy for each role. OpenRouter entries must be free-tier slugs
+# (model id ending ":free") per the free-lane convention in
+# docs/superpowers/specs/2026-09-24-free-lane.md (AgentFlow repo). The slugs
+# below were picked offline as well-known :free listings — a human should
+# verify them against https://openrouter.ai/api/v1/models before relying on
+# them. groq/gemini/ollama entries are free by construction in this repo's usage.
+role_models = {
+    "generation": [
+        ("groq", "llama3-70b-8192"),
+        ("gemini", "gemini-1.5-flash"),
+        # meta-llama/llama-3.3-70b-instruct:free — free-tier OpenRouter slug (verify)
+        ("openrouter", "meta-llama/llama-3.3-70b-instruct:free"),
+        ("ollama", "llama3"),
+    ],
+    "default": [
+        ("groq", "llama3-8b-8192"),
+        ("gemini", "gemini-1.5-flash"),
+        # meta-llama/llama-3-8b-instruct:free — free-tier OpenRouter slug (verify)
+        ("openrouter", "meta-llama/llama-3-8b-instruct:free"),
+        ("ollama", "llama3"),
+    ],
+}
+
+
 def route(role: str, prompt: str, **kwargs) -> dict:
     """
     Route an LLM call to the best available model.
@@ -136,22 +160,6 @@ def route(role: str, prompt: str, **kwargs) -> dict:
     Returns dict with keys: result (str), model_used (str), provider (str)
     Raises RuntimeError if all models fail.
     """
-    # Model hierarchy for each role
-    role_models = {
-        "generation": [
-            ("groq", "llama3-70b-8192"),
-            ("gemini", "gemini-1.5-flash"),
-            ("openrouter", "anthropic/claude-3-haiku"),
-            ("ollama", "llama3"),
-        ],
-        "default": [
-            ("groq", "llama3-8b-8192"),
-            ("gemini", "gemini-1.5-flash"),
-            ("openrouter", "meta-llama/llama-3-8b-instruct"),
-            ("ollama", "llama3"),
-        ],
-    }
-    
     candidates = role_models.get(role, role_models["default"])
     
     last_error = None
