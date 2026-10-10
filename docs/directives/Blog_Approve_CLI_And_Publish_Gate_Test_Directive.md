@@ -126,4 +126,5 @@ so).
 - 2026-09-28 19:27 · devin-overseer (delegated) · assignee none -> devin
 - 2026-09-28 19:27 · devin-overseer (delegated) · Queued → Approved
 - 2026-10-10 01:31 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive; lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J4QV0Y7D2KVZT5QB6YN2GF
+- 2026-10-10 01:32 · dispatcher · worktree C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive; provisioned: uv sync --frozen
 <!-- queue:end -->
