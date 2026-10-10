@@ -115,13 +115,15 @@ so).
 
 | Field | Value |
 |---|---|
-| Status | Approved |
+| Status | In progress |
 | Assigned to | devin |
 | Branch | directive/rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive |
 | Base branch | main |
+| Base commit | 9003f9754b470f305769b03cf564731d8e3aca13 |
 
 **Status log**
 - 2026-09-27 09:30 · robert-claude · none → Queued — written alongside the daily-draft-loop spec; not yet approved or dispatched
 - 2026-09-28 19:27 · devin-overseer (delegated) · assignee none -> devin
 - 2026-09-28 19:27 · devin-overseer (delegated) · Queued → Approved
+- 2026-10-10 01:31 · dispatcher · Approved → In progress — dispatched devin on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-approve-cli-and-publish-gate-test-directive; lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J4QV0Y7D2KVZT5QB6YN2GF
 <!-- queue:end -->
