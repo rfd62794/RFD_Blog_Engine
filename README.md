@@ -51,6 +51,8 @@ Add to `claude_desktop_config.json`:
 
 ## Publishing
 
+Robert approves a draft from the CLI — `uv run rfd-blog-engine approve <post_id>` flips it to `approved`; approval is what lets a draft reach WordPress at all, and it never publishes anything.
+
 The engine drafts; Robert publishes. `publish_to_wordpress` pushes an approved
 draft to WordPress with status `pending` (submit for review) — Robert reviews
 and publishes (or schedules) it in WordPress itself. Passing `publish=True` or

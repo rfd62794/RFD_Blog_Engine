@@ -18,6 +18,9 @@ dependencies = [
     "pillow>=10",
 ]
 
+[project.scripts]
+rfd-blog-engine = "blog_engine.cli:cli"
+
 [dependency-groups]
 dev = [
     "pytest>=8.4.0",
