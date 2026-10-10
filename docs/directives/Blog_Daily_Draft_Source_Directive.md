@@ -43,8 +43,9 @@ generation model router's free-lane fallback quietly includes a paid model.
      `SOURCE_SCAN_REPOS` env var if set — comma-separated absolute paths — else fall back to the
      constant). Never scan a path not in this list.
    - `scan_recent_activity(repos: list[str] = None, since_days: int = 2, max_candidates: int = 2) -> list[dict]`:
-     for each repo, run `git -C <repo> log --since="<since_days> days ago" --oneline --no-merges`
-     (use `subprocess.run`, capture output, never raise on a repo that isn't a git repo — skip it
+     for each repo, call the git CLI through `subprocess.run` with the argument list
+     `["git", "-C", repo, "log", f"--since={since_days} days ago", "--oneline", "--no-merges"]`
+     (this is the one call the Rules section sanctions; capture output, never raise on a repo that isn't a git repo — skip it
      and log a warning) and turn each commit line into a candidate dict:
      `{"post_id": <derived, e.g. "src-<shortsha>">, "title": <derived from subject, truncated>,
      "notes": <the raw commit subject, verbatim>, "category": "building", "tags": [],
