@@ -158,4 +158,5 @@ nothing new under `data/`.
 - 2026-10-10 01:04 · robert-claude-laptop · Blocked → Queued — Directive now on main (spec/daily-draft-loop merged via PR #14; git -C step rewritten as a subprocess argv list in PR #13, preflight needs count 0). Live checkout switched to main so queue writes land where the dispatcher reads.
 - 2026-10-10 01:04 · robert-claude-laptop · Queued → Approved
 - 2026-10-10 01:05 · dispatcher · Approved → In progress — dispatched devin-laptop on personal-laptop in C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-daily-draft-source-directive; base origin/spec/daily-draft-loop (local spec/daily-draft-loop differs); lane=default; model=swe-2-high; persona=steady-builder; agent_id=01M4J378567NR9H5GYG34S6XGB
+- 2026-10-10 01:05 · dispatcher · worktree C:\GitHub\.worktrees\RFD_Blog_Engine--rfd-blog-engine-blog-daily-draft-source-directive; provisioned: uv sync --frozen; venv pythonw swap
 <!-- queue:end -->
