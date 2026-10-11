@@ -191,6 +191,45 @@ milestones:
     status: pending
     directive: ''
     detail: Every syndicated post carries the blog canonical URL; every post opens with a one-paragraph factual summary an answer engine can quote. Checked by the validator.
+- id: M6
+  title: The Blog is the readable bridge in the Office-Blog-Arcade federation
+  status: pending
+  exit:
+  - file: docs/notes/2026-10-11-federated-identity-handoff.md
+  - test: uv run --extra dev pytest -q
+  steps:
+  - id: M6.1
+    title: Mirror the ecosystem switcher and add Blog-local navigation
+    kind: feature
+    size: M
+    value: 5
+    status: pending
+    directive: docs/directives/Federated_Blog_Bridge_Directive.md
+    detail: Implement the approved Office · Blog · Arcade ecosystem switcher separately from Latest · Automation · Game Building · About Robert. Preserve WordPress behavior, keyboard access, mobile navigation and the Blog active state.
+    accept:
+    - test: uv run --extra dev pytest -q
+  - id: M6.2
+    title: Make one readable article system with lane accents and exact related destinations
+    kind: feature
+    size: M
+    value: 5
+    needs: [M6.1]
+    status: pending
+    directive: docs/directives/Federated_Blog_Bridge_Directive.md
+    detail: Long-form readability comes first. Automation and Game Building use metadata and restrained accents, not separate templates. Explicit post relationships link to the exact Office project/case study or Arcade game/Studio story; no title guessing.
+    accept:
+    - test: uv run --extra dev pytest -q
+  - id: M6.3
+    title: Coordinate final cross-site journey validation with the site repo
+    kind: test
+    size: S
+    value: 4
+    needs: [M6.2]
+    status: pending
+    directive: docs/directives/Federated_Blog_Bridge_Directive.md
+    detail: Provide deterministic fixtures or exported link contracts for the site repo's M13 validation. Live publishing and theme deployment remain Robert-only.
+    accept:
+    - test: uv run --extra dev pytest -q
 ```
 
 ## Direction questions for Robert
