@@ -165,6 +165,19 @@ file.
   configured in AgentFlow's `agentflow.toml` — separate repo, separate
   directive; this repo only documents the commands those jobs call.
 
+### M7.5 — Retrofit the existing catalog (added per Robert, 2026-10-11)
+
+Once the gate and pack machinery exist, reuse them on the 56 published posts —
+**on the blog only** (WordPress + its Dev.to canonical mirror; no changes to
+posts living elsewhere). Shape: `review --all-published` runs the gate across
+the live catalog and emits a triage report (missing metadata = failures, slop
+tells = warnings, no pack = degraded). Each post gets a post_type assignment
+and, where real sources still exist (the repo history the post describes), a
+retrospective pack. Revision proposals land as ordinary drafts going through
+the normal approve → push path — every edit is Robert-approved before it
+touches WordPress, nothing is unpublished or deleted, and Dev.to stays
+canonical-linked to the blog. Directive to be written when M7.3/M7.4 land.
+
 ## 4. Guardrails (unchanged)
 
 - Robert-only publish stays exactly as is; every new gate adds checks before
@@ -185,6 +198,7 @@ file.
 | `Blog_Interview_Source_Directive.md` | M7.2b | Draft |
 | `Blog_Draft_Review_Gate_Directive.md` | M7.3 | Draft |
 | `Blog_Pack_Only_Generation_Directive.md` | M7.4 wiring (needs M7.1+M7.2a) | Draft |
+| catalog retrofit directive | M7.5 (needs M7.3+M7.4) | To write when deps land |
 
 Order rationale: templates first (they define what a pack must supply), then
 collectors, then the gate — the gate's fact-coverage check is meaningless

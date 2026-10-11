@@ -280,6 +280,17 @@ milestones:
     detail: generate() requires a pack when the template demands it; model cites [S#] per claim; post-render strips citations into a claim ledger; bogus refs fail closed via [ROBERT: verify] + content_guard.
     accept:
     - test: uv run pytest -q
+  - id: M7.5
+    title: Retrofit the existing published catalog (blog only)
+    kind: feature
+    size: L
+    value: 4
+    needs: [M7.3, M7.4]
+    status: pending
+    directive: ''
+    detail: Robert, 2026-10-11 - reuse the pipeline to revamp existing posts everywhere necessary, on the blog only. Batch-review every published post through draft_review (taxonomy/metadata gaps from the engine audit count as failures, style tells as warnings), assign each a post_type, build retrospective packs where real sources exist, and produce revision proposals as drafts - Robert approves each edit before it touches WordPress. Never deletes or unpublishes; Dev.to sync stays canonical-linked.
+    accept:
+    - test: uv run pytest -q
 ```
 
 ## Direction questions for Robert
