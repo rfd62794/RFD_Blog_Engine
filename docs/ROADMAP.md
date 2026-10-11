@@ -230,6 +230,56 @@ milestones:
     detail: Provide deterministic fixtures or exported link contracts for the site repo's M13 validation. Live publishing and theme deployment remain Robert-only.
     accept:
     - test: uv run --extra dev pytest -q
+- id: M7
+  title: Real-voice pipeline - typed posts, sourced claims, review gates
+  status: pending
+  detail: Designed with Robert 2026-10-11; full plan docs/plans/2026-10-11-real-voice-pipeline.md. Six post-type templates as data, deterministic source packs (GitHub + scheduled interviews), and a draft review gate that treats style tells as warnings and verifiable facts as the hard gate.
+  exit:
+  - test: uv run pytest -q
+  steps:
+  - id: M7.1
+    title: Post type templates as data (six launch types)
+    kind: feature
+    size: L
+    value: 5
+    status: pending
+    directive: docs/directives/Blog_Post_Templates_Directive.md
+    detail: templates/*.yaml (dev-note, how-to, postmortem, case-study, interview, release-roundup) with fact vs narrative sections, word envelopes, required_pack_keys; core/templates.py loader; generate(post_type) with dev-note default preserving the existing frame.
+    accept:
+    - test: uv run pytest -q
+  - id: M7.2
+    title: Deterministic source packs - GitHub collector + interviews
+    kind: feature
+    size: L
+    value: 5
+    needs: [M7.1]
+    status: pending
+    directive: docs/directives/Blog_Github_Source_Packs_Directive.md; docs/directives/Blog_Interview_Source_Directive.md
+    detail: data/source_packs/{post_id}.yaml with numbered S# refs and real origins; gh-CLI collector (git fallback) for commits/PRs/issues/releases; data/interviews/ transcripts via CLI and scheduled Telegram ping (AgentFlow-side job config is a separate directive there).
+    accept:
+    - test: uv run pytest -q
+  - id: M7.3
+    title: Draft review gate - failures verifiable, slop tells advisory
+    kind: feature
+    size: L
+    value: 5
+    needs: [M7.2]
+    status: pending
+    directive: docs/directives/Blog_Draft_Review_Gate_Directive.md
+    detail: core/draft_review.py writes data/reviews/{post_id}.json; failures = placeholders/unsourced-facts/missing-metadata, warnings = SLOPxxx style catalog (deslop taxonomy, stdlib only); publisher refuses absent/rejected reviews; warnings inform Robert's approval, never auto-block.
+    accept:
+    - test: uv run pytest -q
+  - id: M7.4
+    title: Pack-only generation and claim ledger
+    kind: feature
+    size: M
+    value: 5
+    needs: [M7.1, M7.2]
+    status: pending
+    directive: docs/directives/Blog_Pack_Only_Generation_Directive.md
+    detail: generate() requires a pack when the template demands it; model cites [S#] per claim; post-render strips citations into a claim ledger; bogus refs fail closed via [ROBERT: verify] + content_guard.
+    accept:
+    - test: uv run pytest -q
 ```
 
 ## Direction questions for Robert
