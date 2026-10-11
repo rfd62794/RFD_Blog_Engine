@@ -49,8 +49,8 @@ milestones:
     kind: fix
     size: S
     value: 5
-    status: pending
-    directive: ''
+    status: done
+    directive: docs/directives/Blog_M1_1_Test_Command_Directive.md
     detail: Move pytest, pytest-asyncio, pytest-cov and ruff from [project.optional-dependencies] dev to [dependency-groups] dev so a plain `uv run pytest -q` uses the project venv. Baseline 188 passed must hold; update README's test command.
     accept:
     - test: uv run pytest -q

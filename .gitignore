@@ -64,3 +64,5 @@ data/drafts/*.json
 /data/tags/*.yaml
 /data/categories/*.yaml
 /data/drafts/*.json
+# Local WordPress non-publish state; never commit
+wp_nonpub.json
