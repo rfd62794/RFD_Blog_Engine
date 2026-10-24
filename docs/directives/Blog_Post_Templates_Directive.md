@@ -5,7 +5,9 @@
 Robert, 2026-10-11: the engine needs different blog post type templates and
 more deterministic handling. Today every post runs through one hardcoded
 prompt (`RFD_CONTENT_FRAME_PROMPT` in `blog_engine/core/generator.py`). The
-full design is `docs/plans/2026-10-11-real-voice-pipeline.md` (M7.1). This is
+full design is the M7.1 plan (2026-10-11-real-voice-pipeline.md under docs/plans/,
+which lives on branch `docs/m7-real-voice-pipeline` and is not on main yet; section 3
+below is self-sufficient, so you do not need it). This is
 the first M7 step: templates become data files other steps build on — source
 packs (M7.2) fill a template's required pack keys, and the review gate (M7.3)
 reads a template's section kinds to decide which paragraphs need a source.
@@ -56,7 +58,7 @@ reads a template's section kinds to decide which paragraphs need a source.
      `narrative`: `framing`, `analysis`. 500-800 words.
    - `release-roundup` — digest. `fact`: `items` (version/date/ref list).
      `narrative`: `commentary`, `next`. 300-600 words.
-3. **`core/templates.py`.** `load_template(type_id) -> Template` (dataclass or
+3. **`blog_engine/core/templates.py`** <!-- new: blog_engine/core/templates.py -->. `load_template(type_id) -> Template` (dataclass or
    TypedDict — match repo style), `list_templates() -> list[str]`,
    `default_type() -> "dev-note"`. Parse with `yaml.safe_load` (pyyaml is
    already a dependency — inventory uses it; verify in `pyproject.toml` first,
@@ -120,8 +122,8 @@ without `post_type` still generates (no regression — baseline must hold).
 ## 7. Completion criteria
 
 - [ ] `blog_engine/templates/` has six valid YAML templates covering the table
-      in `docs/plans/2026-10-11-real-voice-pipeline.md`
-- [ ] `core/templates.py` loads/validates them with clear errors
+      listed in section 3 (dev-note, how-to, postmortem, case-study, interview, release-roundup)
+- [ ] `blog_engine/core/templates.py` loads/validates them with clear errors
 - [ ] `generate(post_type=...)` renders per-template prompts; `dev-note`
       preserves the existing frame byte-for-byte in spirit (same sections,
       same rules)
