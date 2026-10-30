@@ -64,3 +64,4 @@ data/drafts/*.json
 /data/tags/*.yaml
 /data/categories/*.yaml
 /data/drafts/*.json
+.devin-scratch/
