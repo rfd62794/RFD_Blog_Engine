@@ -92,3 +92,40 @@ Lead with 1, then 5, 2, 3, 7, 4, 6, 8. Posts 1 and 5 are the strongest because t
 | 25 | `drafts/wordpress-contributor-role-automation.md` | draft (fact-checked 2026-10-08), confirm live role first |
 | 26 | `drafts/schedule-youtube-uploads-text-file.md` | reviewed (fact-checked 2026-10-08), ready for Robert's read |
 | 29 | `drafts/wordpress-bulk-update-meta-tags-categories.md` | draft (fact-checked 2026-10-08), live apply unconfirmed |
+
+
+## November 2026 drafts (29 posts)
+
+Added 2026-11-04 to refill the queue after the last scheduled post went out Nov 1. Mined from Robert's public repos (RFDRepoMan, ClineMCP, OpenAgentMCP, RFD_Logging, VoidDrift, RFDGameStudio, DuggerBot), the tcpa-hours library, the arcade and site, and his own account of recent work. Each file's `source:` front matter names where its claims come from. Same guardrails as above: no employer, client or employer-tool names. A 30th post, on removing a secret from git history, is held back until the related key rotation is done.
+
+| File | Title | Lane | Status |
+|---|---|---|---|
+| `drafts/a-deck-instead-of-a-backlog.md` | I replaced my project backlog with a deck of cards | dev | draft, needs Robert's read |
+| `drafts/arcade-origins-section.md` | My arcade lists the games that didn't make it | dev | draft, needs Robert's read |
+| `drafts/area-code-is-not-a-time-zone.md` | An area code is not a time zone | client | draft, needs Robert's read |
+| `drafts/bevy-b0001-query-conflict.md` | Bevy B0001 query conflict: why it only crashed on my phone, and the fix | client | draft, needs Robert's read |
+| `drafts/bevy-too-many-systems-e0277.md` | Bevy add_systems error E0277 with too many systems: the 20-tuple limit | client | draft, needs Robert's read |
+| `drafts/can-i-call-this-lead-right-now.md` | Can I call this lead right now? How to check TCPA calling hours by state | client | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/change-commit-author-history.md` | How to change the author name and email on old git commits | client | draft, needs Robert's read |
+| `drafts/check-the-portal-sdk-yourself.md` | I was wrong about Y8's game SDK. Check a portal's dashboard before you plan around it. | dev | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/clean-public-copy-of-private-repo.md` | How to publish a clean public copy of a private repo | client | draft, needs Robert's read |
+| `drafts/daily-ai-spend-cap-in-code.md` | How to put a daily spending cap on AI API calls in Python | client | draft, needs Robert's read |
+| `drafts/docs-that-show-their-age.md` | The same wrong fact showed up twice in one day. Now every claim in my docs carries a date. | dev | draft, needs Robert's read |
+| `drafts/dst-safe-calling-windows.md` | How to check a time window across daylight saving time in Python | client | draft, needs Robert's read |
+| `drafts/git-for-an-agent-without-a-shell.md` | I gave my AI agents git without giving them a shell | dev | draft, needs Robert's read |
+| `drafts/github-profile-like-a-stranger.md` | I reviewed my GitHub the way a hiring manager would | dev | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/holiday-calling-rules-by-state.md` | Which states ban telemarketing calls on holidays, and what counts as a holiday | client | draft, needs Robert's read |
+| `drafts/home-mcp-server-fail-closed.md` | Safe defaults for a self-hosted MCP server: bind to localhost and fail closed | client | draft, needs Robert's read |
+| `drafts/my-agents-first-report-was-fiction.md` | My new AI agent's first status report was fiction | dev | draft, needs Robert's read |
+| `drafts/no-sprites-procedural-visuals.md` | My game has no sprites. Every item is drawn with math. | dev | draft, needs Robert's read |
+| `drafts/opt-in-telemetry-fastapi-sqlite.md` | Opt-in anonymous telemetry for a small game with FastAPI and SQLite | client | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/rules-belong-in-data.md` | I put 52 jurisdictions' calling rules in a JSON file instead of code | dev | draft, needs Robert's read |
+| `drafts/seo-geo-small-consulting-site.md` | SEO and GEO for a one-person consulting site: what I checked and fixed | client | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/share-code-after-second-user.md` | Don't extract shared code until a second project uses it | dev | draft, needs Robert's read |
+| `drafts/text-invisible-on-mali-gpu.md` | My game's text was invisible on one phone, so every screen became egui | dev | draft, needs Robert's read |
+| `drafts/the-tool-became-the-project.md` | At 160,000 lines, my agent harness became the project | dev | draft, needs Robert's read |
+| `drafts/three-runtimes-retired.md` | I designed my games to run in three languages. Then I retired the idea. | dev | draft, needs Robert's read |
+| `drafts/train-the-harness-not-the-model.md` | Train the harness, not the model | dev | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/wasm-game-itch-iframe-sizing.md` | How to size a Rust WASM game for an itch.io embed (and make fullscreen work) | client | draft, needs Robert's read |
+| `drafts/why-i-priced-it-at-4-99.md` | Why I priced my mobile idle game at $4.99 with no ads | dev | draft, has a note for Robert to settle first (content guard blocks it until cleared) |
+| `drafts/zero-dependency-json-logging.md` | How to get JSON logs in Python with no dependencies | client | draft, needs Robert's read |
