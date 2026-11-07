@@ -37,6 +37,23 @@ class Publisher:
         self.devto = devto_handler
         self.logger = get_logger(__name__)
 
+    async def _resolve_category_names(self, categories: list) -> list[str]:
+        """Map draft categories (WP IDs or names) to names. Names pass through;
+        unknown IDs are dropped so a bare number is never shown on a card."""
+        if not any(isinstance(c, int) for c in categories):
+            return [str(c) for c in categories]
+        try:
+            id_to_name = {c["id"]: c["name"] for c in await self.wp.get_categories()}
+        except Exception as e:
+            self.logger.warning("category_lookup_failed", error=str(e))
+            id_to_name = {}
+        names = []
+        for c in categories:
+            name = id_to_name.get(c) if isinstance(c, int) else str(c)
+            if name:
+                names.append(name)
+        return names
+
     async def publish_wordpress(
         self,
         post_id: str,
@@ -84,7 +101,9 @@ class Publisher:
 
         # Metadata gate prep: derive the lane and make sure the draft carries
         # a featured image — render and upload one when it doesn't.
-        lane = lanes.lane_for(draft.get("categories", []))
+        # Drafts store WordPress category IDs; lanes and the card label need names.
+        category_names = await self._resolve_category_names(draft.get("categories", []))
+        lane = lanes.lane_for(category_names)
 
         if not draft.get("featured_media_id"):
             fd, tmp_path = tempfile.mkstemp(suffix=".png")
@@ -92,7 +111,7 @@ class Publisher:
             try:
                 featured_image.render(
                     title=draft["title"],
-                    category=draft["categories"][0] if draft.get("categories") else "",
+                    category=category_names[0] if category_names else "",
                     lane=lane,
                     out_path=tmp_path,
                 )

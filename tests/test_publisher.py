@@ -74,6 +74,7 @@ def wp_handler(db):
         "wp_url": "https://blog.rfditservices.com/test-post"
     })
     handler.upload_media = AsyncMock(return_value=77)
+    handler.get_categories = AsyncMock(return_value=[])
     # Dev.to syndication only follows a live WordPress post
     handler.get_post = AsyncMock(return_value={
         "id": 123,
@@ -610,3 +611,38 @@ def test_publish_wordpress_skips_render_when_featured_media_set(publisher, draft
     mock_render.assert_not_called()
     wp_handler.upload_media.assert_not_called()
     assert wp_handler.create_post.call_args[1]["featured_media"] == 55
+
+
+def test_card_resolves_category_id_to_name_and_lane(publisher, approved_draft, wp_handler, draft_manager, temp_dir):
+    """ID [38] -> card label is the name and the lane accent is 'building'."""
+    kwargs = _set_cats_and_publish(publisher, wp_handler, temp_dir, [38],
+                                   [{"id": 38, "name": "Agents & Automation"}])
+    assert kwargs["category"] == "Agents & Automation"
+    assert kwargs["lane"] == "building"
+
+
+def test_card_unknown_category_id_never_prints_number(publisher, approved_draft, wp_handler, temp_dir):
+    kwargs = _set_cats_and_publish(publisher, wp_handler, temp_dir, [999],
+                                   [{"id": 38, "name": "Agents & Automation"}])
+    assert kwargs["category"] == ""
+    assert kwargs["lane"] is None
+
+
+def test_card_category_names_pass_through_without_lookup(publisher, approved_draft, wp_handler, temp_dir):
+    kwargs = _set_cats_and_publish(publisher, wp_handler, temp_dir, ["Agents & Automation"], [])
+    assert kwargs["category"] == "Agents & Automation"
+    assert kwargs["lane"] == "building"
+    wp_handler.get_categories.assert_not_called()
+
+
+def _set_cats_and_publish(publisher, wp_handler, temp_dir, cats, wp_cats):
+    import json
+    path = temp_dir / "test-post.json"
+    data = json.loads(path.read_text())
+    data["categories"] = cats
+    path.write_text(json.dumps(data))
+    wp_handler.get_categories = AsyncMock(return_value=wp_cats)
+    with patch.object(publisher.inventory, "update_status"):
+        with patch("blog_engine.core.featured_image.render") as mock_render:
+            asyncio.run(publisher.publish_wordpress("test-post"))
+    return mock_render.call_args[1]
