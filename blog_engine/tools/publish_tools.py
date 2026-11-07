@@ -5,6 +5,10 @@ MCP tools for publishing and thread management.
 """
 
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
 from blog_engine.infra.db_manager import DBManager
 from blog_engine.infra.logger import get_logger
 from blog_engine.core.inventory import InventoryManager
@@ -19,6 +23,17 @@ from blog_engine.api.devto import DevToHandler
 
 logger = get_logger(__name__)
 
+ENV_FILE = Path(__file__).parent.parent.parent / ".env"
+
+
+def _load_env(env_file: Path = ENV_FILE) -> None:
+    """
+    Load the repo's .env so direct (non-MCP) calls see the credentials too.
+    override=False: variables already in the environment (the MCP launcher's) win.
+    """
+    if env_file.is_file():
+        load_dotenv(dotenv_path=env_file, override=False)
+
 
 def _get_wp_handler() -> WordPressHandler:
     """
@@ -26,6 +41,7 @@ def _get_wp_handler() -> WordPressHandler:
     Reads credentials from environment variables.
     Raises EnvironmentError if any required credential is missing.
     """
+    _load_env()
     wp_url = os.getenv("WORDPRESS_URL")
     wp_user = os.getenv("WORDPRESS_USER")
     wp_app_password = os.getenv("WORDPRESS_APP_PASSWORD")
@@ -53,6 +69,7 @@ def _get_publisher() -> Publisher:
     Reads credentials from environment variables.
     Raises EnvironmentError if any required credential is missing.
     """
+    _load_env()
     wp_url = os.getenv("WORDPRESS_URL")
     wp_user = os.getenv("WORDPRESS_USER")
     wp_app_password = os.getenv("WORDPRESS_APP_PASSWORD")
